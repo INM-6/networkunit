@@ -2,7 +2,7 @@ from elephant.spike_train_correlation import corrcoef, cch
 from elephant.conversion import BinnedSpikeTrain
 import numpy as np
 from quantities import ms, quantity
-from networkunit.tests.base_tests.ABCtest_two_sample_test import two_sample_test
+from networkunit.tests import two_sample_test
 from networkunit.capabilities import ProducesSpikeTrains
 from abc import ABCMeta, abstractmethod
 
@@ -55,7 +55,7 @@ class correlation_test(two_sample_test):
 
     def generate_correlations(self, spiketrains=None, binary=False, **kwargs):
         self.generate_cc_matrix(spiketrains=spiketrains,
-                                    binary=binary, **kwargs)
+                                binary=binary, **kwargs)
         idx = np.triu_indices(len(self.cc_matrix), 1)
         return self.cc_matrix[idx]
 
@@ -81,13 +81,13 @@ class correlation_test(two_sample_test):
             of spike trains.
         -------
         """
-        if spiketrains is None:
-            binned_sts = self.robust_BinnedSpikeTrain(self.spiketrains, **kwargs)
-        else:
-            binned_sts = self.robust_BinnedSpikeTrain(spiketrains, **kwargs)
+        # if spiketrains is None:
+        #     binned_sts = self.robust_BinnedSpikeTrain(self.spiketrains, **kwargs)
+        # else:
+        binned_sts = self.robust_BinnedSpikeTrain(spiketrains, **kwargs)
 
-        self.cc_matrix = corrcoef(binned_sts, binary=binary)
-        return self.cc_matrix
+        cc_matrix = corrcoef(binned_sts, binary=binary)
+        return cc_matrix
 
     def generate_cch_array(self, spiketrains, maxlag=None,
                            **kwargs):

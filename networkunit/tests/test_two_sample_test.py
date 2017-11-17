@@ -35,31 +35,51 @@ class two_sample_test(sciunit.Test):
         score = self.score_type.compute(observation, prediction, **self.params)
         return score
 
-    def visualize_sample(self, model=None, ax=None, bins=100, palette=None,
+    def _create_plotting_samples(self, model1=None, model2=None, palette=None):
+        samples = []
+        if palette is None:
+            palette = []
+        if self.observation is not None:
+            samples += [self.observation]
+            if palette is None:
+                try:
+                    palette += [self.observation_params['color']]
+                except:
+                    palette += [sns.color_palette()[0]]
+        if model1 is not None:
+            samples += [self.generate_prediction(model1, **self.params)]
+            if palette is None:
+                try:
+                    palette += [model1.params['color']]
+                except:
+                    palette += [sns.color_palette()[len(samples)]]
+        if model2 is not None:
+            samples += [self.generate_prediction(model2, **self.params)]
+            if palette is None:
+                try:
+                    palette += [model1.params['color']]
+                except:
+                    palette += [sns.color_palette()[len(samples)]]
+
+        return samples, palette
+
+    def visualize_sample(self, model1=None, model2=None, ax=None, bins=100,
+                         palette=None,
                          sample_names=['observation', 'prediction'],
                          var_name='Measured Parameter', **kwargs):
-        if palette is None:
-            try:
-                color_0 = self.observation_params['color']
-            except:
-                color_0 = sns.color_palette()[0]
-            try:
-                color_1 = model.params['color']
-            except:
-                color_1 = sns.color_palette()[1]
-            palette = [color_0, color_1]
-        if model is None:
-            sample2 = None
-        else:
-            sample2 = self.generate_prediction(model, **self.params)
-        sample1 = self.observation
 
-        sample_histogram(sample1=sample1, sample2=sample2, ax=ax, bins=bins,
+        samples, palette = self._create_plotting_samples( model1=model1,
+                                                         model2=model2,
+                                                         palette=palette)
+
+        sample_histogram(sample1=samples[0], sample2=samples[1],
+                         ax=ax, bins=bins,
                          palette=palette, sample_names=sample_names,
                          var_name=var_name, **kwargs)
         return ax
 
-    def visualize_score(self, model, ax=None, palette=None, **kwargs):
+    def visualize_score(self, model1, model2=None, ax=None, palette=None,
+                        **kwargs):
         """
         When there is a specific visualization function called plot() for the
         given score type, score_type.plot() is called;
@@ -75,20 +95,15 @@ class two_sample_test(sciunit.Test):
         -------
         """
         # try:
-        if palette is None:
-            try:
-                color_0 = self.observation_params['color']
-            except:
-                color_0 = sns.color_palette()[0]
-            try:
-                color_1 = model.params['color']
-            except:
-                color_1 = sns.color_palette()[1]
-            palette = [color_0, color_1]
-        ax = self.score_type.plot(self.observation,
-                                  self.generate_prediction(model),
+        samples, palette = self._create_plotting_samples(model1=model1,
+                                                         model2=model2,
+                                                         palette=palette)
+
+        kwargs.update(self.params)
+        ax = self.score_type.plot(samples[0], samples[1],
                                   ax=ax, palette=palette, **kwargs)
-        return ax
         # except:
         #     self.visualize_sample(model=model, ax=ax, palette=palette)
+
         return ax
+

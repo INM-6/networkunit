@@ -2,7 +2,6 @@
 
 from os.path import dirname, basename, isfile
 import glob
-from base_capabilities import *
 
 """
 NOTE: All capability files must have a prefix "cap_" and extension ".py".
