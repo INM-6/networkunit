@@ -39,27 +39,30 @@ class two_sample_test(sciunit.Test):
         samples = []
         if palette is None:
             palette = []
+            fill_palette = True
+        else:
+            fill_palette = False
         if self.observation is not None:
             samples += [self.observation]
-            if palette is None:
+            if fill_palette:
                 try:
-                    palette += [self.observation_params['color']]
+                    palette = palette + [self.observation_params['color']]
                 except:
-                    palette += [sns.color_palette()[0]]
+                    palette = palette + [sns.color_palette()[0]]
         if model1 is not None:
             samples += [self.generate_prediction(model1, **self.params)]
-            if palette is None:
+            if fill_palette:
                 try:
-                    palette += [model1.params['color']]
+                    palette = palette +[model1.params['color']]
                 except:
-                    palette += [sns.color_palette()[len(samples)]]
+                    palette = palette + [sns.color_palette()[len(samples)-1]]
         if model2 is not None:
             samples += [self.generate_prediction(model2, **self.params)]
-            if palette is None:
+            if fill_palette:
                 try:
-                    palette += [model1.params['color']]
+                    palette = palette + [model1.params['color']]
                 except:
-                    palette += [sns.color_palette()[len(samples)]]
+                    palette = palette + [sns.color_palette()[len(samples)-1]]
 
         return samples, palette
 

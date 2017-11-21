@@ -8,9 +8,14 @@ import sciunit
 from networkunit.scores import to_precision
 
 
-class eigen_angle(sciunit.Score):
+class eigenvector_angle(sciunit.Score):
     """
-
+    Eigenvectors can represent dominant features of a network. Similar networks
+    should therefore have similar eigenvectors such that the angle between them
+    should be small. The angles are counted which are
+    significantly smaller (with respect to significance level alpha) than
+    expected from random network activity of N neurons. The score is then the
+    number of small angles / N.
     """
     score = np.nan
 
@@ -64,7 +69,7 @@ class eigen_angle(sciunit.Score):
         self.two_sided = two_sided
         self.threshold = th
         self.pvalue = -1 # ToDo
-        self.score = eigen_angle(j_max/float(N))
+        self.score = eigenvector_angle(j_max/float(N))
         return self.score
 
 
@@ -91,7 +96,7 @@ class eigen_angle(sciunit.Score):
         if len(M) == 1:
             angles = np.arccos(M[0])
         else:
-            if self.all_to_all:
+            if all_to_all:
                 angles = np.arccos(M.flatten())
                 NB = N**2
             else:
@@ -112,7 +117,7 @@ class eigen_angle(sciunit.Score):
         hist, _ = np.histogram(angles, bins=edges, density=True)
 
         ax.bar(edges[:-1], hist, np.diff(edges)[0] * .99,
-               color=sns.color_palette()[0], edgecolor='w',
+               color=palette[0], edgecolor='w',
                label=r'$\angle (\mathbf{v}_i,\mathbf{w}_j)$'
                      + r'$: i,j\in [1,{}]$'.format(str(N)))
 
@@ -132,7 +137,6 @@ class eigen_angle(sciunit.Score):
             ax.set_xlim(xlim)
         if ylim is not None:
             ax.set_ylim(ylim)
-        log = False
         if log:
             ax.set_yscale('log')
         plt.legend()
@@ -143,7 +147,7 @@ class eigen_angle(sciunit.Score):
         return self.score
 
     def __str__(self):
-        return "\n\n\033[4mEigen Angle Score\033[0m" \
+        return "\n\n\033[4mEigenvector Angle Score\033[0m" \
              + "\n\tdatasize: {} x {}" \
                .format(self.data_size[0], self.data_size[1]) \
              + "\n" + "\ttwo sided" if self.two_sided else "" \

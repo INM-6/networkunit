@@ -54,10 +54,10 @@ class correlation_test(two_sample_test):
                                 t_stop=t_stop)
 
     def generate_correlations(self, spiketrains=None, binary=False, **kwargs):
-        self.generate_cc_matrix(spiketrains=spiketrains,
-                                binary=binary, **kwargs)
-        idx = np.triu_indices(len(self.cc_matrix), 1)
-        return self.cc_matrix[idx]
+        cc_matrix = self.generate_cc_matrix(spiketrains=spiketrains,
+                                            binary=binary, **kwargs)
+        idx = np.triu_indices(len(cc_matrix), 1)
+        return cc_matrix[idx]
 
     def generate_cc_matrix(self, spiketrains=None, binary=False, **kwargs):
         """
