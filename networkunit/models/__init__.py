@@ -2,7 +2,6 @@
 
 from os.path import dirname, basename, isfile
 import glob
-from model_simulation_data import *
 
 """
 NOTE: All plot files must have a prefix "model_" and extension ".py".
