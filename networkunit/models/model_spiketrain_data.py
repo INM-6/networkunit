@@ -2,8 +2,8 @@ import sciunit
 #from networkunit import capabilities as cap
 #from networkunit import models
 
-from networkunit.capabilities import ProducesSpikeTrains
-from networkunit.models import simulation_data
+from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
+from networkunit.models.model_simulation_data import simulation_data
 from neo.core import SpikeTrain
 from neo.io import NeoHdf5IO
 from copy import copy

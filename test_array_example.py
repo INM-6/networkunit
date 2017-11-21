@@ -42,6 +42,19 @@ class angle_test(sciunit.TestM2M, tests.correlation_matrix_test):
     score_type = scores.eigenvector_angle
     params = {'all_to_all': False,
               'two_sided': False,
+              'alpha': 0.0001,
+              'maxlag': 100,  # in bins
+              'binsize': 2 * ms,
+              'time_reduction': 'threshold 0.13'
+              }
+    def compute_score(self, prediction1, prediction2):
+        score = self.score_type.compute(prediction1, prediction2, **self.params)
+        return score
+
+class generalized_angle_test(sciunit.TestM2M, tests.generalized_correlation_matrix_test):
+    score_type = scores.eigenvector_angle
+    params = {'all_to_all': False,
+              'two_sided': False,
               'alpha': 0.0001}
     def compute_score(self, prediction1, prediction2):
         score = self.score_type.compute(prediction1, prediction2, **self.params)
@@ -49,6 +62,7 @@ class angle_test(sciunit.TestM2M, tests.correlation_matrix_test):
 
 test_list = [m2m_cov_kl_test_2msbins_100sample(),
              angle_test(),
+             generalized_angle_test()
              ]
 score_list = [[]] * len(test_list)
 

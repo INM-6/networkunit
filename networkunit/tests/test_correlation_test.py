@@ -91,67 +91,67 @@ class correlation_test(two_sample_test):
 
     def generate_cch_array(self, spiketrains, maxlag=None,
                            **kwargs):
-        if not hasattr(self, 'cch_array'):
-            return self.cch_array
+        if 'binsize' in self.params:
+            binsize = self.params['binsize']
+        elif 'num_bins' in self.params:
+            t_lims = [(st.t_start, st.t_stop) for st in spiketrains]
+            tmin = min(t_lims, key=lambda f: f[0])[0]
+            tmax = max(t_lims, key=lambda f: f[1])[1]
+            T = tmax - tmin
+            binsize = T / float(self.params['num_bins'])
         else:
-            if 'binsize' in self.params:
-                binsize = self.params['binsize']
+            raise AttributeError("Neither bin size or number of bins was set!")
+        if maxlag is None:
+            maxlag = self.params['maxlag']
+        else:
+            self.params['maxlag'] = maxlag
+        if type(maxlag) == quantity.Quantity:
+            maxlag = int(float(maxlag.rescale('ms'))
+                       / float(binsize.rescale('ms')))
+        try:
+            from mpi4py import MPI
+            mpi = True
+        except:
+            mpi = False
+        N = len(spiketrains)
+        B = 2 * maxlag + 1
+        pairs_idx = np.triu_indices(N, 1)
+        pairs = [[i, j] for i, j in zip(pairs_idx[0], pairs_idx[1])]
+        if mpi:
+            comm = MPI.COMM_WORLD
+            rank = comm.Get_rank()
+            Nnodes = comm.Get_size()
+            print 'Using MPI with {} node'.format(Nnodes)
+            comm.Barrier()
+            if rank == 0:
+                split = np.array_split(pairs, Nnodes)
             else:
-                t_lims = [(st.t_start, st.t_stop) for st in spiketrains]
-                tmin = min(t_lims, key=lambda f: f[0])[0]
-                tmax = max(t_lims, key=lambda f: f[1])[1]
-                T = tmax - tmin
-                binsize = T / float(self.params['num_bins'])
-            if maxlag is None:
-                maxlag = self.params['maxlag']
-            else:
-                self.params['maxlag'] = maxlag
-            if type(maxlag) == quantity.Quantity:
-                maxlag = int(float(maxlag.rescale('ms'))
-                           / float(binsize.rescale('ms')))
-            try:
-                from mpi4py import MPI
-                mpi = True
-            except:
-                mpi = False
-            N = len(spiketrains)
-            B = 2 * maxlag + 1
-            pairs_idx = np.triu_indices(N, 1)
-            pairs = [[i, j] for i, j in zip(pairs_idx[0], pairs_idx[1])]
-            if mpi:
-                comm = MPI.COMM_WORLD
-                rank = comm.Get_rank()
-                Nnodes = comm.Get_size()
-                comm.Barrier()
-                if rank == 0:
-                    split = np.array_split(pairs, Nnodes)
-                else:
-                    split = None
-                pair_per_node = int(np.ceil(float(len(pairs)) / Nnodes))
-                split_pairs = comm.scatter(split, root=0)
-            else:
-                split_pairs = pairs
-                pair_per_node = len(pairs)
+                split = None
+            pair_per_node = int(np.ceil(float(len(pairs)) / Nnodes))
+            split_pairs = comm.scatter(split, root=0)
+        else:
+            split_pairs = pairs
+            pair_per_node = len(pairs)
 
-            cch_array = np.zeros((pair_per_node, B))
-            max_cc = 0
-            for count, (i, j) in enumerate(split_pairs):
-                binned_sts_i = self.robust_BinnedSpikeTrain(spiketrains[i],
-                                                            binsize=binsize)
-                binned_sts_j = self.robust_BinnedSpikeTrain(spiketrains[j],
-                                                            binsize=binsize)
-                cch_array[count] = np.squeeze(cch(binned_sts_i,
-                                                  binned_sts_j,
-                                                  window=[-maxlag, maxlag],
-                                                  cross_corr_coef=True,
-                                                  **kwargs)[0])
-                max_cc = max([max_cc, max(cch_array[count])])
-            if mpi:
-                pop_cch = comm.gather(cch_array, root=0)
-                pop_max_cc = comm.gather(max_cc, root=0)
-                if rank == 0:
-                    cch_array = pop_cch
-                    max_cc = pop_max_cc
-            self.cch_array = cch_array
-            self.max_cc = max_cc
-            return self.cch_array
+        cch_array = np.zeros((pair_per_node, B))
+        max_cc = 0
+        for count, (i, j) in enumerate(split_pairs):
+            binned_sts_i = self.robust_BinnedSpikeTrain(spiketrains[i],
+                                                        binsize=binsize)
+            binned_sts_j = self.robust_BinnedSpikeTrain(spiketrains[j],
+                                                        binsize=binsize)
+            cch_array[count] = np.squeeze(cch(binned_sts_i,
+                                              binned_sts_j,
+                                              window=[-maxlag, maxlag],
+                                              cross_corr_coef=True,
+                                              **kwargs)[0])
+            max_cc = max([max_cc, max(cch_array[count])])
+        if mpi:
+            pop_cch = comm.gather(cch_array, root=0)
+            pop_max_cc = comm.gather(max_cc, root=0)
+            if rank == 0:
+                cch_array = pop_cch
+                max_cc = pop_max_cc
+        self.cch_array = cch_array
+        self.max_cc = max_cc
+        return self.cch_array
