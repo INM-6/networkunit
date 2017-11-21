@@ -2,8 +2,8 @@ from elephant.spike_train_correlation import covariance
 from elephant.conversion import BinnedSpikeTrain
 from numpy import triu_indices
 from quantities import ms
-from networkunit.tests import two_sample_test
-from networkunit.capabilities import ProducesSpikeTrains
+from networkunit.tests.test_two_sample_test import two_sample_test
+from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
 from abc import ABCMeta, abstractmethod
 
 

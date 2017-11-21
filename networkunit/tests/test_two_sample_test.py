@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 from abc import ABCMeta, abstractmethod
-from networkunit.plots import sample_histogram
+from networkunit.plots.plot_sample_histogram import sample_histogram
 
 
 class two_sample_test(sciunit.Test):
