@@ -34,8 +34,6 @@ class ks_distance(sciunit.Score):
         sample1 = np.array(data_sample_1)[np.isfinite(data_sample_1)]
         sample2 = np.array(data_sample_2)[np.isfinite(data_sample_2)]
 
-        self.data_size = [len(sample1), len(sample2)]
-
         if init_length[0] - len(sample1) or init_length[1] - len(sample2):
             print("Warning: {} non-finite elements of the data samples were "
                   "filtered."
@@ -43,9 +41,10 @@ class ks_distance(sciunit.Score):
                           - sum([len(s) for s in [sample1, sample2]])))
 
         DKS, pvalue = ks_2samp(sample1, sample2)
-        self.pvalue = pvalue
-        self.score = ks_distance(DKS)
-        return self.score
+        score = ks_distance(DKS)
+        score.pvalue = pvalue
+        score.data_size = [len(sample1), len(sample2)]
+        return score
 
     @classmethod
     def plot(self, sample1, sample2, ax=None, palette=None,

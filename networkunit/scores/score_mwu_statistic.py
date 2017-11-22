@@ -47,10 +47,10 @@ class mwu_statistic(sciunit.Score):
         U, pvalue = mannwhitneyu(sample1, sample2, alternative=None)
         pvalue *= 2
 
-        self.data_size = [len(sample1), len(sample2)]
-        self.discarded_values = discard
-        self.pvalue = pvalue
         self.score = mwu_statistic(U)
+        self.score.data_size = [len(sample1), len(sample2)]
+        self.score.discarded_values = discard
+        self.score.pvalue = pvalue
         return self.score
 
 

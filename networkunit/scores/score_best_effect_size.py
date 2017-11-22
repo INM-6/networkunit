@@ -28,8 +28,6 @@ class best_effect_size(sciunit.Score):
                 mcmc_burn=10000,
                 effect_size_type='mode', # 'mean'
                 **kwargs):
-        self.mcmc_iter = mcmc_iter
-        self.mcmc_burn = mcmc_burn
         data_dict = {observation_name:observation, prediction_name:prediction}
         best_model = self.make_model(data_dict)
         M = MCMC(best_model)
@@ -40,7 +38,6 @@ class best_effect_size(sciunit.Score):
 
         N1 = len(group1_data)
         N2 = len(group2_data)
-        self.data_size = [N1, N2]
 
         posterior_mean1 = M.trace('group1_mean')[:]
         posterior_mean2 = M.trace('group2_mean')[:]
@@ -56,10 +53,11 @@ class best_effect_size(sciunit.Score):
 
         stats = best.calculate_sample_statistics(self.effect_size)
 
-        self.HDI = (stats['hdi_min'], stats['hdi_max'])
-
         self.score = best_effect_size(stats[effect_size_type])
-
+        self.score.mcmc_iter = mcmc_iter
+        self.score.mcmc_burn = mcmc_burn
+        self.score.data_size = [N1, N2]
+        self.score.HDI = (stats['hdi_min'], stats['hdi_max'])
         return self.score
 
     @classmethod

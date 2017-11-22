@@ -58,10 +58,10 @@ class kl_divergence(sciunit.Score):
 
         D_KL = .5 * (D_KL_PQ + D_KL_QP)
 
-        self.data_size = [len(sample1), len(sample2)]
-        self.discarded_values = discard
-        self.bins = bins
         self.score = kl_divergence(D_KL)
+        self.score.data_size = [len(sample1), len(sample2)]
+        self.score.discarded_values = discard
+        self.score.bins = bins
         return self.score
 
 

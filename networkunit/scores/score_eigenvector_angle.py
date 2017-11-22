@@ -63,13 +63,13 @@ class eigenvector_angle(sciunit.Score):
 
         # ToDo: Calculate pvalue
 
-        self.data_size = (N,N)
-        self.alpha = alpha
-        self.all_to_all = all_to_all
-        self.two_sided = two_sided
-        self.threshold = th
-        self.pvalue = -1 # ToDo
         self.score = eigenvector_angle(j_max/float(N))
+        self.score.data_size = (N, N)
+        self.score.alpha = alpha
+        self.score.all_to_all = all_to_all
+        self.score.two_sided = two_sided
+        self.score.threshold = th
+        self.score.pvalue = -1  # ToDo
         return self.score
 
 

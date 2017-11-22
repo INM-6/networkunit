@@ -8,6 +8,7 @@ sys.path.append('/home/robin/Projects/INM6/python-neo')
 sys.path.append('/home/robin/Projects/NetworkUnit')
 sys.path.insert(0,'/home/robin/Projects/sciunit')
 from networkunit import models, tests, scores
+from networkunit.scores import to_precision
 import sciunit
 import seaborn as sns
 from quantities import Hz, ms
@@ -71,12 +72,16 @@ if __name__ == '__main__':
                  ]
     score_list = [[]] * len(test_list)
 
-    task_id = int(sys.argv[0])
+    task_id = int(sys.argv[-1])
 
-    for count, test in enumerate(test_list):
-        score_list[count] = test.judge([model_A, model_B])
+    for count, test in enumerate(test_list[:-1]):
+        score = test.judge([model_A, model_B]).iloc[0,1]
         test.visualize_sample(model_A, model_B)
-        plt.savefig('/home/r.gutzen/Output/networkunit/figures/task-{}_test-{}_sample.png'.format(task_id, test.name))
+        plt.savefig('/home/r.gutzen/Output/networkunit/figures/task-{}_test-{}_sample.pdf'.format(task_id, test.name))
         test.visualize_score(model_A, model_B)
-        plt.savefig('/home/r.gutzen/Output/networkunit/figures/task-{}_test-{}_score.png'.format(task_id, test.name))
-        print score_list[count].score
+        plt.savefig('/home/r.gutzen/Output/networkunit/figures/task-{}_test-{}_score.pdf'.format(task_id, test.name))
+        print "\nTest: {}".format(test.name)
+        print "Score: {} \t\t pvalue: {}".format(to_precision(score.score,3),
+                                                 score.pvalue if 'pvalue' in dir(score) \
+                                                 else 'nan')
+        score_list[count] = score
