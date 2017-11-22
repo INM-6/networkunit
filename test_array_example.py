@@ -1,5 +1,7 @@
-import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('pdf')
 from matplotlib import rc, rcParams
+import matplotlib.pyplot as plt
 import sys
 sys.path.insert(0,'/home/robin/Projects/INM6/elephant')
 sys.path.append('/home/robin/Projects/INM6/python-neo')
@@ -23,10 +25,10 @@ binsize = 2*ms
 
 model_A = models.stochastic_activity(size=size, correlations=cc, assembly_sizes=A,
                                 correlation_method='CPP', t_start=tstart, t_stop=tstop,
-                                shuffle=False, name='modelA')
+                                shuffle=True, shuffle_seed=321, name='modelA')
 model_B = models.stochastic_activity(size=size, correlations=cc, assembly_sizes=A,
                                 correlation_method='CPP', t_start=tstart, t_stop=tstop,
-                                shuffle=False, name='modelB')
+                                shuffle=True, shuffle_seed=321, name='modelB')
 
 # SET UP TESTS
 class m2m_cov_kl_test_2msbins_100sample(sciunit.TestM2M, tests.correlation_dist_test):
@@ -61,16 +63,20 @@ class generalized_angle_test(sciunit.TestM2M, tests.generalized_correlation_matr
         score = self.score_type.compute(prediction1, prediction2, **self.params)
         return score
 
-test_list = [m2m_cov_kl_test_2msbins_100sample(),
-             angle_test(),
-             generalized_angle_test()
-             ]
-score_list = [[]] * len(test_list)
+if __name__ == '__main__':
 
-for count, test in enumerate(test_list):
-    score_list[count] = test.judge([model_A, model_B])
-    test.visualize_sample(model_A, model_B)
-    test.visualize_score(model_A, model_B)
-    print score_list[count].score
+    test_list = [m2m_cov_kl_test_2msbins_100sample(),
+                 angle_test(),
+                 generalized_angle_test()
+                 ]
+    score_list = [[]] * len(test_list)
 
-plt.show()
+    task_id = int(sys.argv[0])
+
+    for count, test in enumerate(test_list):
+        score_list[count] = test.judge([model_A, model_B])
+        test.visualize_sample(model_A, model_B)
+        plt.savefig('/home/r.gutzen/Output/networkunit/figures/task-{}_test-{}_sample.png'.format(task_id, test.name))
+        test.visualize_score(model_A, model_B)
+        plt.savefig('/home/r.gutzen/Output/networkunit/figures/task-{}_test-{}_score.png'.format(task_id, test.name))
+        print score_list[count].score
