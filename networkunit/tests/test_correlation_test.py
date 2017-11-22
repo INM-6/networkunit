@@ -1,5 +1,6 @@
 from elephant.spike_train_correlation import corrcoef, cch
 from elephant.conversion import BinnedSpikeTrain
+import neo
 import numpy as np
 from quantities import ms, quantity
 from networkunit.tests.test_two_sample_test import two_sample_test
@@ -43,6 +44,8 @@ class correlation_test(two_sample_test):
 
     def robust_BinnedSpikeTrain(self, spiketrains, binsize=None, num_bins=None,
                                 t_start=None, t_stop=None, **add_args):
+        if type(spiketrains) == neo.core.spiketrain.SpikeTrain:
+            spiketrains = [spiketrains]
         if t_start is None:
             t_start = min([st.t_start for st in spiketrains])
         if t_stop is None:
@@ -144,7 +147,7 @@ class correlation_test(two_sample_test):
                                               binned_sts_j,
                                               window=[-maxlag, maxlag],
                                               cross_corr_coef=True,
-                                              **kwargs)[0])
+                                              )[0])
             max_cc = max([max_cc, max(cch_array[count])])
         if mpi:
             pop_cch = comm.gather(cch_array, root=0)

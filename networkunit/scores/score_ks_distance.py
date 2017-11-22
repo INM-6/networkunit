@@ -70,7 +70,7 @@ class ks_distance(sciunit.Score):
             sorted_sample = np.append(sorted_sample[0], sorted_sample)
             CDF = (np.arange(len(sample)+1)) / float(len(sample))
             ax.step(sorted_sample, CDF, where='post', color=palette[i],
-                    label=sample_names[i], **kwargs)
+                    label=sample_names[i])
             if include_scatterplot:
                 ax.scatter(sorted_sample, [.99-i*.02]*len(sorted_sample),
                            color=palette[i], marker='D', linewidth=1)

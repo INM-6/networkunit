@@ -43,9 +43,6 @@ class angle_test(sciunit.TestM2M, tests.correlation_matrix_test):
     params = {'all_to_all': False,
               'two_sided': False,
               'alpha': 0.0001,
-              'maxlag': 100,  # in bins
-              'binsize': 2 * ms,
-              'time_reduction': 'threshold 0.13'
               }
     def compute_score(self, prediction1, prediction2):
         score = self.score_type.compute(prediction1, prediction2, **self.params)
@@ -55,7 +52,11 @@ class generalized_angle_test(sciunit.TestM2M, tests.generalized_correlation_matr
     score_type = scores.eigenvector_angle
     params = {'all_to_all': False,
               'two_sided': False,
-              'alpha': 0.0001}
+              'alpha': 0.0001,
+              'maxlag': 100,  # in bins
+              'binsize': 2 * ms,
+              'time_reduction': 'max'
+              }
     def compute_score(self, prediction1, prediction2):
         score = self.score_type.compute(prediction1, prediction2, **self.params)
         return score
@@ -68,4 +69,8 @@ score_list = [[]] * len(test_list)
 
 for count, test in enumerate(test_list):
     score_list[count] = test.judge([model_A, model_B])
+    test.visualize_sample(model_A, model_B)
+    test.visualize_score(model_A, model_B)
     print score_list[count].score
+
+plt.show()
