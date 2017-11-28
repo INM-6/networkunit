@@ -1,22 +1,20 @@
-import sciunit
-#from networkunit import capabilities as cap
-#from networkunit import models
-
 from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
 from networkunit.models.model_simulation_data import simulation_data
+from networkunit.plots.plot_rasterplot import rasterplot
 from neo.core import SpikeTrain
 from neo.io import NeoHdf5IO
 from copy import copy
 import numpy as np
 import os
 import neo
+from abc import ABCMeta, abstractmethod, abstractproperty
+
 
 class spiketrain_data(simulation_data, ProducesSpikeTrains):
-    """
-    A model class to wrap network activity data (in form of spike trains) from
-    an already performed simulation of the Potjans-Diesman cortical
-    microcircuit model.
-    """
+
+    # __metaclass__ = ABCMeta
+
+    # Example loading routine for hdf files
     def load(self, file_path, client=None, **kwargs):
         """
         Loads spiketrains from a hdf5 file in the neo data format.
@@ -31,7 +29,6 @@ class spiketrain_data(simulation_data, ProducesSpikeTrains):
         Returns :
             List of neo.SpikeTrains of length N
             """
-        # Load NEST or SpiNNaker data using NeoHdf5IO
         if file_path[-2:] != 'h5':
             raise IOError, 'file must be in hdf5 file in Neo format'
 
@@ -53,10 +50,12 @@ class spiketrain_data(simulation_data, ProducesSpikeTrains):
         tmax = max(t_lims, key=lambda f: f[1])[1]
         unit = spiketrains[0].units
         for count, spiketrain in enumerate(spiketrains):
+            annotations = spiketrain.annotations
             spiketrains[count] = SpikeTrain(
                 np.array(spiketrain.tolist()) * unit - tmin,
                 t_start=0 * unit,
                 t_stop=tmax - tmin)
+            spiketrains[count].annotations = annotations
         return spiketrains
 
     def preprocess(self, spiketrain_list, max_subsamplesize=None,
@@ -89,3 +88,6 @@ class spiketrain_data(simulation_data, ProducesSpikeTrains):
 
         self.spiketrains = self.preprocess(self.spiketrains, **self.params)
         return self.spiketrains
+
+    def show_rasterplot(self, **kwargs):
+        return rasterplot(self.spiketrains, **kwargs)

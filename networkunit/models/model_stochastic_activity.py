@@ -110,7 +110,7 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
                                                       T=self.t_stop - self.t_start,
                                                       binsize=self.expected_binsize)
         if self.correlation_method == 'CPP' \
-        or self.correlation_method == 'spatio_temporal':
+        or self.correlation_method == 'spatio-temporal':
             assembly_sts = self._generate_CPP_assembly(A_size=A_size,
                                                        syncprob=syncprob,
                                                        bkgr_syncprob=bkgr_syncprob)
