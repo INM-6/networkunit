@@ -1,4 +1,4 @@
-from networkunit.tests.test_correlation_test import correlation_test
+from networkunit.tests.test_correlation_matrix_test import correlation_matrix_test
 from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
 from networkunit.plots.plot_correlation_matrix import plot_correlation_matrix
 import matplotlib.pyplot as plt
@@ -7,7 +7,7 @@ from quantities import ms
 import numpy as np
 
 
-class generalized_correlation_matrix_test(correlation_test):
+class generalized_correlation_matrix_test(correlation_matrix_test):
     """
     Test to compare the pairwise correlations of a set of neurons in a network.
     """
@@ -20,20 +20,16 @@ class generalized_correlation_matrix_test(correlation_test):
               'time_reduction': 'threshold 0.13'
                 }
 
-    def generate_prediction(self, model, **kwargs):
-        # call the function of the required capability of the model
-        # and pass the parameters of the test class instance in case the
-        if kwargs:
-            self.params.update(kwargs)
-        # check is model has already stored prediction
-        spiketrains = model.produce_spiketrains(**self.params)
+
+    def generate_cc_matrix(self, spiketrains, **kwargs):
         cch_array  = self.generate_cch_array(spiketrains=spiketrains,
                                        **self.params)
         pairs_idx = np.triu_indices(len(spiketrains), 1)
         pairs = [[i, j] for i, j in zip(pairs_idx[0], pairs_idx[1])]
+        if 'time_reduction' not in self.params:
+            raise KeyError, "A method for 'time_reduction' needs to be set!"
         return self.generalized_cc_matrix(cch_array, pairs,
                                           self.params['time_reduction'])
-
 
     def generalized_cc_matrix(self, cch_array, pair_ids, time_reduction,
                               rescale=False, **kwargs):
@@ -66,25 +62,6 @@ class generalized_correlation_matrix_test(correlation_test):
             cc_mat[j,i] = cc_array[count]
         return cc_mat
 
-    def visualize_sample(self, model1=None, model2=None, ax=None,
-                         palette=None,
-                         sample_names=['observation', 'prediction'],
-                         var_name='Measured Parameter', **kwargs):
 
-        matrices, palette = self._create_plotting_samples(model1=model1,
-                                                          model2=model2,
-                                                          palette=palette)
-        fig, ax = plt.subplots(nrows=1, ncols=2)
-        plot_correlation_matrix(matrices[0], ax=ax[0], remove_autocorr=True,
-                                labels=None, sort=False, cluster=False,
-                                linkmethod='ward', dendrogram_args={},
-                                **kwargs)
-        ax[0].set_title(sample_names[0])
-        plot_correlation_matrix(matrices[1], ax=ax[1], remove_autocorr=True,
-                                labels=None, sort=False, cluster=False,
-                                linkmethod='ward', dendrogram_args={},
-                                **kwargs)
-        ax[1].set_title(sample_names[1])
-        return ax
 
 
