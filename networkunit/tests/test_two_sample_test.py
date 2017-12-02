@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 from abc import ABCMeta, abstractmethod
+from uuid import uuid4
 from networkunit.plots.plot_sample_histogram import sample_histogram
 
 
@@ -19,6 +20,7 @@ class two_sample_test(sciunit.Test):
                                               # i.e ProduceCovariances
 
     def __init__(self, observation=None, name=None, **params):
+        self.test_hash = uuid4().hex
         super(two_sample_test,self).__init__(observation, name=name, **params)
 
     def generate_prediction(self, model, **kwargs):
@@ -71,9 +73,15 @@ class two_sample_test(sciunit.Test):
                          sample_names=['observation', 'prediction'],
                          var_name='Measured Parameter', **kwargs):
 
-        samples, palette = self._create_plotting_samples( model1=model1,
+        samples, palette = self._create_plotting_samples(model1=model1,
                                                          model2=model2,
                                                          palette=palette)
+        if self.observation is None:
+            sample_names[0] = model1.name
+            if model2 is not None:
+                sample_names[1] = model2.name
+        else:
+            sample_names[1] = model1.name
 
         sample_histogram(sample1=samples[0], sample2=samples[1],
                          ax=ax, bins=bins,

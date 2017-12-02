@@ -21,7 +21,7 @@ class weighted_angle(sciunit.Score):
 
     @classmethod
     def compute(self, matrix_1, matrix_2, **kwargs):
-        EWs1, EVs1 = eigh(matrix_1) # retuns EWs in ascending order
+        EWs1, EVs1 = eigh(matrix_1) # returns EWs in ascending order
         EWs2, EVs2 = eigh(matrix_2)
         EWs1 = EWs1[::-1]
         EWs2 = EWs2[::-1]

@@ -1,6 +1,8 @@
 from networkunit.tests.test_correlation_test import correlation_test
 from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
 from networkunit.plots.plot_correlation_matrix import plot_correlation_matrix
+from scipy.cluster.hierarchy import linkage, dendrogram
+from scipy.spatial.distance import squareform
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
@@ -19,13 +21,26 @@ class correlation_matrix_test(correlation_test):
     def generate_prediction(self, model, **kwargs):
         # call the function of the required capability of the model
         # and pass the parameters of the test class instance in case the
-        if kwargs:
-            self.params.update(kwargs)
-        # check if model has already stored prediction!
-        spiketrains = model.produce_spiketrains(**self.params)
-        matrix = self.generate_cc_matrix(spiketrains=spiketrains,
-                                         **self.params)
-        return matrix
+        try:
+            if not hasattr(model, 'prediction'):
+                model.prediction = {}
+            cc_matrix = model.prediction[self.test_hash]
+        except:
+            if kwargs:
+                self.params.update(kwargs)
+            spiketrains = model.produce_spiketrains(**self.params)
+            cc_matrix = self.generate_cc_matrix(spiketrains=spiketrains,
+                                             **self.params)
+            if self.params['cluster_matrix']:
+                np.fill_diagonal(cc_matrix, 1)
+                linkagematrix = linkage(squareform(1 - cc_matrix),
+                                        method=self.params['cluster_method'])
+                dendro = dendrogram(linkagematrix, no_plot=True)
+                order = dendro['leaves']
+                cc_matrix = cc_matrix[order, :][:, order]
+                np.fill_diagonal(cc_matrix, 0)
+            model.prediction[self.test_hash] = cc_matrix
+        return cc_matrix
 
     def visualize_sample(self, model1=None, model2=None, ax=None,
                          palette=None, remove_autocorr=True,
@@ -35,17 +50,29 @@ class correlation_matrix_test(correlation_test):
         matrices, palette = self._create_plotting_samples(model1=model1,
                                                           model2=model2,
                                                           palette=palette)
-        fig, ax = plt.subplots(nrows=1, ncols=2)
+        if ax is None:
+            fig, ax = plt.subplots(ncols=len(matrices))
+        if len(matrices) == 1:
+            ax = [ax]
+
+        if self.observation is None:
+            sample_names[0] = model1.name
+            if model2 is not None:
+                sample_names[1] = model2.name
+        else:
+            sample_names[1] = model1.name
+
         plot_correlation_matrix(matrices[0], ax=ax[0], remove_autocorr=remove_autocorr,
                                 labels=None, sort=False, cluster=False,
                                 linkmethod='ward', dendrogram_args={},
                                 **kwargs)
         ax[0].set_title(sample_names[0])
-        plot_correlation_matrix(matrices[1], ax=ax[1], remove_autocorr=remove_autocorr,
-                                labels=None, sort=False, cluster=False,
-                                linkmethod='ward', dendrogram_args={},
-                                **kwargs)
-        ax[1].set_title(sample_names[1])
+        if len(matrices) > 1:
+            plot_correlation_matrix(matrices[1], ax=ax[1], remove_autocorr=remove_autocorr,
+                                    labels=None, sort=False, cluster=False,
+                                    linkmethod='ward', dendrogram_args={},
+                                    **kwargs)
+            ax[1].set_title(sample_names[1])
         return ax
 
     def draw_graph(self, model, **kwargs):

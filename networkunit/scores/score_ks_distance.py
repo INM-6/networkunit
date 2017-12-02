@@ -30,6 +30,10 @@ class ks_distance(sciunit.Score):
     @classmethod
     def compute(self, data_sample_1, data_sample_2, **kwargs):
         # Filter out nans and infs
+        if len(np.shape(data_sample_1)) > 1:
+            data_sample_1 = data_sample_1.flatten()
+        if len(np.shape(data_sample_2)) > 1:
+            data_sample_2 = data_sample_2.flatten()
         init_length = [len(smpl) for smpl in [data_sample_1, data_sample_2]]
         sample1 = np.array(data_sample_1)[np.isfinite(data_sample_1)]
         sample2 = np.array(data_sample_2)[np.isfinite(data_sample_2)]

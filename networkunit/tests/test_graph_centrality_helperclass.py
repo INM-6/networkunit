@@ -20,24 +20,25 @@ class graph_centrality_helperclass(sciunit.Test):
     def generate_prediction(self, model, **kwargs):
         matrix = super(graph_centrality_helperclass, self).\
             generate_prediction(model)
-        weight_matrix = copy(matrix)
-        if 'edge_threshold' in self.params:
-            edge_threshold = self.params['edge_threshold']
-        else:
-            edge_threshold = 0.
-        non_edges = np.where(weight_matrix <= edge_threshold)
-        weight_matrix[non_edges[0], non_edges[1]] = 0.
-        np.fill_diagonal(weight_matrix, 0)
-        N = len(matrix)
-        triu_idx = np.triu_indices(N, 1)
-        weight_list = weight_matrix[triu_idx[0],triu_idx[1]]
-        graph_list = [(i,j,w) for i,j,w in zip(triu_idx[0],triu_idx[1],weight_list)
-                      if w]
-        G = nx.Graph()
-        G.add_weighted_edges_from(graph_list)
-
         if 'graph measure' in self.params \
-                          and self.params['graph measure'] is not None:
+                and self.params['graph measure'] is not None:
+
+            weight_matrix = copy(matrix)
+            if 'edge_threshold' in self.params:
+                edge_threshold = self.params['edge_threshold']
+            else:
+                edge_threshold = 0.
+            non_edges = np.where(weight_matrix <= edge_threshold)
+            weight_matrix[non_edges[0], non_edges[1]] = 0.
+            np.fill_diagonal(weight_matrix, 0)
+            N = len(matrix)
+            triu_idx = np.triu_indices(N, 1)
+            weight_list = weight_matrix[triu_idx[0],triu_idx[1]]
+            graph_list = [(i,j,w) for i,j,w in
+                          zip(triu_idx[0],triu_idx[1],weight_list) if w]
+            G = nx.Graph()
+            G.add_weighted_edges_from(graph_list)
+
             if self.params['graph measure'] == 'degree strength':
                 degrees = nx.degree(G, weight='weight')
                 return np.array([d[1] for d in degrees])
@@ -51,7 +52,7 @@ class graph_centrality_helperclass(sciunit.Test):
 
             if self.params['graph measure'] == 'betweenness':
                 betweenness = nx.betweenness_centrality(G, weight='weight', normalized=True)
-                return np.array([betweenness[i] for i in range(len(betweenness))])
+                return np.array([betweenness[i] for i in betweenness.keys()])
 
             if self.params['graph measure'] == 'edge betweenness':
                 edge_betweenness = nx.edge_betweenness_centrality(G, weight='weight', normalized=True)
@@ -63,7 +64,12 @@ class graph_centrality_helperclass(sciunit.Test):
 
             if self.params['graph measure'] == 'katz':
                 katz = nx.katz_centrality(G, weight='weight', normalized=True)
-                return np.array([katz[i] for i in range(len(katz))])
+                return np.array([katz[i] for i in katz.keys()])
+
+            else:
+                raise KeyError, 'Graph measure not know!'
+        else:
+            return matrix
 
 
 
