@@ -10,9 +10,10 @@ import seaborn as sns
 
 def plot_correlation_matrix(matrix, ax=None, remove_autocorr=True, labels=None,
                 sort=False, cluster=False, linkmethod='ward', dendrogram_args={},
+                vmin=None, vmax=None,
                 **kwargs):
-    if ax is None:
-        fig, ax = plt.subplots()
+    # if ax is None:
+    #     fig, ax = plt.subplots()
 
     pltmatrix = copy(matrix)
     if sort:
@@ -39,7 +40,7 @@ def plot_correlation_matrix(matrix, ax=None, remove_autocorr=True, labels=None,
         np.fill_diagonal(pltmatrix, 0)
 
     sns.heatmap(pltmatrix, ax=ax, cbar=True,
-                xticklabels=labels, yticklabels=labels)
+                xticklabels=labels, yticklabels=labels, vmin=vmin, vmax=vmax)
     if sort:
         return order
     if cluster:

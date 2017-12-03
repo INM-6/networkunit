@@ -31,7 +31,7 @@ class correlation_matrix_test(correlation_test):
             spiketrains = model.produce_spiketrains(**self.params)
             cc_matrix = self.generate_cc_matrix(spiketrains=spiketrains,
                                              **self.params)
-            if self.params['cluster_matrix']:
+            if 'cluster_matrix' in self.params and self.params['cluster_matrix']:
                 np.fill_diagonal(cc_matrix, 1)
                 linkagematrix = linkage(squareform(1 - cc_matrix),
                                         method=self.params['cluster_method'])
@@ -62,48 +62,61 @@ class correlation_matrix_test(correlation_test):
         else:
             sample_names[1] = model1.name
 
+        if 'cluster_matrix' not in self.params:
+            self.params.update(cluster_matrix=False)
+
         plot_correlation_matrix(matrices[0], ax=ax[0], remove_autocorr=remove_autocorr,
-                                labels=None, sort=False, cluster=False,
+                                labels=None, sort=False, cluster=self.params['cluster_matrix'],
                                 linkmethod='ward', dendrogram_args={},
                                 **kwargs)
         ax[0].set_title(sample_names[0])
         if len(matrices) > 1:
             plot_correlation_matrix(matrices[1], ax=ax[1], remove_autocorr=remove_autocorr,
-                                    labels=None, sort=False, cluster=False,
+                                    labels=None, sort=False, cluster=self.params['cluster_matrix'],
                                     linkmethod='ward', dendrogram_args={},
                                     **kwargs)
             ax[1].set_title(sample_names[1])
         return ax
 
-    def draw_graph(self, model, **kwargs):
-        spiketrains = model.produce_spiketrains(**self.params)
-        matrix = self.generate_cc_matrix(spiketrains=spiketrains, **self.params)
-        weight_matrix = copy(matrix)
-        if 'edge_threshold' in self.params:
-            edge_threshold = self.params['edge_threshold']
+    def draw_graph(self, model, draw_edge_threshold=None, **kwargs):
+        if draw_edge_threshold is None and hasattr(self, 'graph') \
+                            and 'graph_{}'.format(model.name) in self.graph:
+            G = self.graph['graph_{}'.format(model.name)]
         else:
-            edge_threshold = 0.
-        non_edges = np.where(weight_matrix <= edge_threshold)
-        if len(non_edges[0]):
-            weight_matrix[non_edges[0], non_edges[1]] = 0.
-        np.fill_diagonal(weight_matrix, 0)
-        N = len(matrix)
-        triu_idx = np.triu_indices(N, 1)
-        weight_list = weight_matrix[triu_idx[0],triu_idx[1]]
-        graph_list = [(i,j,w) for i,j,w in zip(triu_idx[0],triu_idx[1],weight_list)
-                      if w]
-        G = nx.Graph()
-        G.add_weighted_edges_from(graph_list)
+            spiketrains = model.produce_spiketrains(**self.params)
+            matrix = self.generate_cc_matrix(spiketrains=spiketrains, **self.params)
+            weight_matrix = copy(matrix)
+            if draw_edge_threshold is None:
+                if 'edge_threshold' in self.params:
+                    draw_edge_threshold = self.params['edge_threshold']
+                else:
+                    draw_edge_threshold = 0.
+            non_edges = np.where(weight_matrix <= draw_edge_threshold)
+            if len(non_edges[0]):
+                weight_matrix[non_edges[0], non_edges[1]] = 0.
+            np.fill_diagonal(weight_matrix, 0)
+            N = len(matrix)
+            triu_idx = np.triu_indices(N, 1)
+            weight_list = weight_matrix[triu_idx[0],triu_idx[1]]
+            graph_list = [(i,j,w) for i,j,w in
+                          zip(triu_idx[0],triu_idx[1],weight_list) if w]
+            G = nx.Graph()
+            G.add_weighted_edges_from(graph_list)
+            if draw_edge_threshold is None:
+                if not hasattr(self, 'graph'):
+                    self.graph = {}
+                self.graph['graph_{}'.format(model.name)] = G
+
         test_measure = self.generate_prediction(model)
-        test_measure = test_measure / float(max(test_measure))
+        test_measure = test_measure / float(np.max(test_measure))
         if len(np.shape(test_measure)) == 1 and len(test_measure) == len(G.nodes):
             node_measure = test_measure
         else:
-            node_measure = np.ones(len(graph_list))
-        if len(np.shape(test_measure)) == 2:
+            node_measure = np.ones(len(G.nodes))
+        if False: #len(np.shape(test_measure)) == 2:
             edge_measure = test_measure
         else:
-            pos_weight_list = [w for w in weight_list if w]
-            edge_measure = pos_weight_list
+            weight_dict = nx.get_edge_attributes(G, 'weight')
+            edge_measure = [weight_dict[edge] for edge in weight_dict.keys()]
         nx.draw_networkx(G, edge_color=edge_measure, node_size=node_measure*300., **kwargs)
         return plt.gca()

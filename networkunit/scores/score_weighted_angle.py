@@ -87,7 +87,7 @@ class weighted_angle(sciunit.Score):
             return combined_dist(phi)
 
     @classmethod
-    def plot(self, matrix_1, matrix_2, ax=None, B=None, palette=None, xlim=None,
+    def plot(self, matrix_1, matrix_2, ax=None, bin_num=None, palette=None, xlim=None,
              ylim=None, log=False, **kwargs):
         if ax is None:
             fig, ax = plt.subplots()
@@ -126,9 +126,9 @@ class weighted_angle(sciunit.Score):
                      + r'$: i,j\in [1,{}]$'.format(str(N)))
 
         # analytical distribution for random activity
-        if B is not None:
+        if bin_num is not None:
             x = np.linspace(0, np.pi, 120)
-            y = self.weighted_angle_distribution(x, N, B)
+            y = self.weighted_angle_distribution(x, N, bin_num)
             norm = np.sum(y) * (x[1] - x[0])
             ax.plot(x, y / norm, color=palette[1])
 

@@ -54,6 +54,10 @@ class ks_distance(sciunit.Score):
     def plot(self, sample1, sample2, ax=None, palette=None,
              include_scatterplot=False, var_name='Measured Parameter',
              sample_names=['observation', 'prediction'], **kwargs):
+        if len(np.shape(sample1)) > 1:
+            sample1 = sample1.flatten()
+        if len(np.shape(sample2)) > 1:
+            sample2 = sample2.flatten()
         if ax is None:
             fig, ax = plt.subplots()
         ax.set_ylabel('CDF')

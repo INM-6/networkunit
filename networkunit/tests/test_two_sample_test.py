@@ -13,7 +13,7 @@ class two_sample_test(sciunit.Test):
     initialization via a data model instead of a direct observation,
     interchangeable test scores, and basic sample visualization.
     """
-    __metaclass__ = ABCMeta
+    # __metaclass__ = ABCMeta
 
     # required_capabilites = (ProducesSample, ) # Replace by more appropriate
                                               # capability in child class
@@ -109,10 +109,19 @@ class two_sample_test(sciunit.Test):
         samples, palette = self._create_plotting_samples(model1=model1,
                                                          model2=model2,
                                                          palette=palette)
+        sample_names = ['observation', 'prediction']
+        if self.observation is None:
+            sample_names[0] = model1.name
+            if model2 is not None:
+                sample_names[1] = model2.name
+        else:
+            sample_names[1] = model1.name
 
         kwargs.update(self.params)
         ax = self.score_type.plot(samples[0], samples[1],
-                                  ax=ax, palette=palette, **kwargs)
+                                  ax=ax, palette=palette,
+                                  sample_names=sample_names,
+                                  **kwargs)
         # except:
         #     self.visualize_sample(model=model, ax=ax, palette=palette)
 
