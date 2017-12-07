@@ -21,9 +21,21 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
                 }
 
 
-    def generate_cc_matrix(self, spiketrains, **kwargs):
-        cch_array  = self.generate_cch_array(spiketrains=spiketrains,
-                                       **self.params)
+    def generate_cc_matrix(self, spiketrains, model=None, **kwargs):
+        if hasattr(model, 'cch_array')\
+             and 'binsize{}_maxlag{}'.format(self.params['binsize'],self.params['maxlag'])\
+             in model.cch_array:
+            cch_array = model.cch_array['binsize{}_maxlag{}'\
+                .format(self.params['binsize'],self.params['maxlag'])]
+        else:
+            cch_array  = self.generate_cch_array(spiketrains=spiketrains,
+                                                 **self.params)
+            if model is not None:
+                if not hasattr(model, 'cch_array'):
+                    model.cch_array = {}
+                model.cch_array['binsize{}_maxlag{}'\
+                        .format(self.params['binsize'], self.params['maxlag'])] = cch_array
+            
         pairs_idx = np.triu_indices(len(spiketrains), 1)
         pairs = [[i, j] for i, j in zip(pairs_idx[0], pairs_idx[1])]
         if 'time_reduction' not in self.params:

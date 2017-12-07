@@ -30,15 +30,18 @@ class correlation_matrix_test(correlation_test):
                 self.params.update(kwargs)
             spiketrains = model.produce_spiketrains(**self.params)
             cc_matrix = self.generate_cc_matrix(spiketrains=spiketrains,
-                                             **self.params)
+                                                model=model, **self.params)
             if 'cluster_matrix' in self.params and self.params['cluster_matrix']:
-                np.fill_diagonal(cc_matrix, 1)
-                linkagematrix = linkage(squareform(1 - cc_matrix),
-                                        method=self.params['cluster_method'])
-                dendro = dendrogram(linkagematrix, no_plot=True)
-                order = dendro['leaves']
-                cc_matrix = cc_matrix[order, :][:, order]
-                np.fill_diagonal(cc_matrix, 0)
+                np.fill_diagonal(cc_matrix, 1.)
+                try:
+                    linkagematrix = linkage(squareform(1. - cc_matrix),
+                                            method=self.params['cluster_method'])
+                    dendro = dendrogram(linkagematrix, no_plot=True)
+                    order = dendro['leaves']
+                    cc_matrix = cc_matrix[order, :][:, order]
+                except:
+                    print 'Clustering failed!'
+                np.fill_diagonal(cc_matrix, 0.)
             model.prediction[self.test_hash] = cc_matrix
         return cc_matrix
 
@@ -119,4 +122,5 @@ class correlation_matrix_test(correlation_test):
             weight_dict = nx.get_edge_attributes(G, 'weight')
             edge_measure = [weight_dict[edge] for edge in weight_dict.keys()]
         nx.draw_networkx(G, edge_color=edge_measure, node_size=node_measure*300., **kwargs)
+        plt.gca().set_title(model.name)
         return plt.gca()

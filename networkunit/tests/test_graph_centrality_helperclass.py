@@ -69,6 +69,7 @@ class graph_centrality_helperclass(sciunit.Test):
 
             if self.params['graph_measure'] == 'edge betweenness':
                 edge_betweenness = nx.edge_betweenness_centrality(G, weight='weight', normalized=True)
+                N = max(G.nodes) + 1
                 betweenness_matrix = np.zeros((N, N))
                 for edge in edge_betweenness:
                     betweenness_matrix[edge] = edge_betweenness[edge]
@@ -77,6 +78,7 @@ class graph_centrality_helperclass(sciunit.Test):
 
             if self.params['graph_measure'] == 'katz':
                 katz = nx.katz_centrality(G, weight='weight', normalized=True)
+                self.prediction_dim = 1
                 return np.array([katz[i] for i in katz.keys()])
 
             else:
@@ -90,7 +92,7 @@ class graph_centrality_helperclass(sciunit.Test):
                          sample_names=['observation', 'prediction'],
                          var_name='Measured Parameter', sort=False, **kwargs):
 
-        if self.prediction_dim == 1:
+        if hasattr(self, 'prediction_dim') and self.prediction_dim == 1:
             if ax is None:
                 fig, new_ax = plt.subplots()
             else:
@@ -114,6 +116,7 @@ class graph_centrality_helperclass(sciunit.Test):
             new_ax.bar(nodes2, -1*samples[1], color=palette[1], label=model2.name)
             new_ax.set_title(self.params['graph_measure']
                              + '{}'.format(' sorted' if sort else ''))
+            new_ax.set_xlabel('Neurons')
             plt.legend()
 
         else:
