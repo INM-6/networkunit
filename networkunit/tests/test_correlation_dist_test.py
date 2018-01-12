@@ -7,7 +7,7 @@ class correlation_dist_test(correlation_test):
     """
     Test to compare the pairwise correlations of a set of neurons in a network.
     """
-    __metaclass__ = ABCMeta
+    # __metaclass__ = ABCMeta
 
     required_capabilities = (ProducesSpikeTrains, )
 

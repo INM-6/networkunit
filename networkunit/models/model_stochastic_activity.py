@@ -19,7 +19,7 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
               't_stop': 10000 * ms,
               'rate': 10 * Hz,
               'statistic': 'poisson',
-              'correlation_method': 'CPP', # 'spatio-temporal', 'pairwise_equivalent'
+              'method': 'CPP', # 'spatio-temporal', 'pairwise_equivalent'
               'expected_binsize': 2 * ms,
               'correlations': 0.,
               'assembly_sizes': [],
@@ -52,7 +52,7 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
     def generate_spiketrains(self, **kwargs):
         spiketrains = [None] * self.size
 
-        if self.correlation_method == 'pairwise_equivalent':
+        if self.method == 'pairwise_equivalent':
         # change input to pairwise correlations with expected distribution
         # correlation coefficients
             nbr_of_pairs = [0] * len(self.assembly_sizes)
@@ -65,7 +65,7 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
                                   'pairwise equivalent with the network size.'
             self.assembly_sizes = [2] * sum(nbr_of_pairs)
             self.correlations = new_correlation
-            self.correlation_method = 'CPP'
+            self.method = 'CPP'
 
         # generate correlated assemblies
         for i, a_size in enumerate(self.assembly_sizes):
@@ -109,12 +109,12 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
                                                       rate=self.rate,
                                                       T=self.t_stop - self.t_start,
                                                       binsize=self.expected_binsize)
-        if self.correlation_method == 'CPP' \
-        or self.correlation_method == 'spatio-temporal':
+        if self.method == 'CPP' \
+        or self.method == 'spatio-temporal':
             assembly_sts = self._generate_CPP_assembly(A_size=A_size,
                                                        syncprob=syncprob,
                                                        bkgr_syncprob=bkgr_syncprob)
-            if self.correlation_method == 'CPP':
+            if self.method == 'CPP':
                 return assembly_sts
             else:
                 return self._shift_spiketrains(assembly_sts)

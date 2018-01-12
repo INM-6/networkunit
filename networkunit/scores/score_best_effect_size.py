@@ -58,6 +58,7 @@ class best_effect_size(sciunit.Score):
         self.score.mcmc_burn = mcmc_burn
         self.score.data_size = [N1, N2]
         self.score.HDI = (stats['hdi_min'], stats['hdi_max'])
+        self.HDI = self.score.HDI
         return self.score
 
     @classmethod

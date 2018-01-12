@@ -18,6 +18,7 @@ class model2model_test(sciunit.Test):
             params = {}
         self.params.update(params)
         self.observation_params = observation.params
+        self.observation_model = observation
         observation = self.generate_prediction(observation, **params)
         super(model2model_test, self).__init__(observation, name=name, **params)
 

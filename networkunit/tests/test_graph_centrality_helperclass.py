@@ -3,6 +3,7 @@ import networkx as nx
 from networkunit.tests.test_correlation_matrix_test import correlation_matrix_test
 from networkunit.tests.test_two_sample_test import two_sample_test
 import matplotlib.pyplot as plt
+import seaborn as sns
 from abc import ABCMeta, abstractmethod
 from quantities import ms
 import numpy as np
@@ -81,13 +82,109 @@ class graph_centrality_helperclass(sciunit.Test):
                 self.prediction_dim = 1
                 return np.array([katz[i] for i in katz.keys()])
 
+            if self.params['graph_measure'] == 'clustering coefficient':
+                clustering = nx.clustering(G, weight='weight')
+                self.prediction_dim = 1
+                return np.array([clustering[i] for i in clustering.keys()])
+
+            if self.params['graph_measure'] == 'transitivity':
+                weight_matrix = copy(matrix)
+                N = len(matrix)
+                B = None
+                if 'bin_num' in self.params:
+                    B = self.params['bin_num']
+                elif 'binsize' in self.params:
+                    if 't_start' in self.params and 't_stop' in self.params:
+                        B = float((self.params['t_stop']-self.params['t_start'])/self.params['binsize'])
+
+                if 'edge_threshold' in self.params:
+                    edge_threshold = self.params['edge_threshold']
+                elif B is not None:
+                    Z = 1.96 / np.sqrt(B - 3.)
+                    edge_threshold = (np.exp(2. * Z) - 1.) / (np.exp(2. * Z) + 1.)
+                    self.params['edge_threshold'] = edge_threshold
+                else:
+                    raise ValueError, 'Not enough information to threshold graph!'
+                non_edges = np.where(weight_matrix <= edge_threshold)
+                weight_matrix[non_edges[0], non_edges[1]] = 0.
+                np.fill_diagonal(weight_matrix, 0)
+                triu_idx = np.triu_indices(N, 1)
+                weight_list = weight_matrix[triu_idx[0], triu_idx[1]]
+                graph_list = [(i, j, w) for i, j, w in
+                              zip(triu_idx[0], triu_idx[1], weight_list) if w]
+                G = nx.Graph()
+                G.add_weighted_edges_from(graph_list)
+                self.prediction_dim = 0
+                return nx.transitivity(G)
+
+            if self.params['graph_measure'] == 'small-worldness':
+                G_rand = nx.gnm_random_graph(G.number_of_nodes(), G.number_of_edges())
+                path_length = nx.average_shortest_path_length(G, weight='weight')
+
+                # G_rand path length
+                weight_matrix = copy(matrix)
+                if 'edge_threshold' in self.params:
+                    edge_threshold = self.params['edge_threshold']
+                else:
+                    edge_threshold = 0.
+                non_edges = np.where(weight_matrix <= edge_threshold)
+                weight_matrix[non_edges[0], non_edges[1]] = 0.
+                np.fill_diagonal(weight_matrix, 0)
+                N = len(matrix)
+                triu_idx = np.triu_indices(N, 1)
+                rand_weights = weight_matrix[triu_idx[0], triu_idx[1]]
+                rand_weights = np.array([w for w in rand_weights if w])
+                np.random.shuffle(rand_weights)
+                # print len(rand_weights), len(G_rand.edges())
+                for count, e in enumerate(G_rand.edges()):
+                    G_rand[e[0]][e[1]]['weight'] = rand_weights[count]
+
+                path_length_rand = nx.average_shortest_path_length(G_rand, weight='weight')
+
+                # transitivity
+                weight_matrix = copy(matrix)
+                N = len(matrix)
+                B = None
+                if 'bin_num' in self.params:
+                    B = self.params['bin_num']
+                elif 'binsize' in self.params:
+                    if 't_start' in self.params and 't_stop' in self.params:
+                        B = float((self.params['t_stop']-self.params['t_start'])/self.params['binsize'])
+
+                if 'edge_threshold' in self.params:
+                    edge_threshold = self.params['edge_threshold']
+                elif B is not None:
+                    Z = 1.96 / np.sqrt(B - 3.)
+                    edge_threshold = (np.exp(2. * Z) - 1.) / (np.exp(2. * Z) + 1.)
+                    self.params['edge_threshold'] = edge_threshold
+                else:
+                    raise ValueError, 'Not enough information to threshold graph!'
+                non_edges = np.where(weight_matrix <= edge_threshold)
+                weight_matrix[non_edges[0], non_edges[1]] = 0.
+                np.fill_diagonal(weight_matrix, 0)
+                triu_idx = np.triu_indices(N, 1)
+                weight_list = weight_matrix[triu_idx[0], triu_idx[1]]
+                graph_list = [(i, j, w) for i, j, w in
+                              zip(triu_idx[0], triu_idx[1], weight_list) if w]
+                G = nx.Graph()
+                G.add_weighted_edges_from(graph_list)
+                transitivity =  nx.transitivity(G)
+
+                # G_rand transitivity
+                G_rand2 = nx.gnm_random_graph(G.number_of_nodes(), G.number_of_edges())
+                transitivity_rand = nx.transitivity(G_rand2)
+                self.prediction_dim = 0
+                # print transitivity, transitivity_rand
+                # print path_length, path_length_rand
+                return (transitivity/transitivity_rand) / (path_length/path_length_rand)
+
             else:
                 raise KeyError, 'Graph measure not know!'
         else:
             return matrix
 
 
-    def visualize_sample(self, model1=None, model2=None, ax=None,
+    def visualize_samples(self, model1=None, model2=None, ax=None,
                          palette=None, remove_autocorr=True,
                          sample_names=['observation', 'prediction'],
                          var_name='Measured Parameter', sort=False, **kwargs):
@@ -97,26 +194,35 @@ class graph_centrality_helperclass(sciunit.Test):
                 fig, new_ax = plt.subplots()
             else:
                 new_ax = ax
-            samples, palette = super(graph_centrality_helperclass, self)._create_plotting_samples(
+            samples, palette, names = super(graph_centrality_helperclass, self)._create_plotting_samples(
                                                           model1=model1,
                                                           model2=model2,
                                                           palette=palette)
+            nodes = [[]]*len(samples)
             if sort:
-                samples[0] = np.sort(samples[0])[::-1]
-                samples[1] = np.sort(samples[1])[::-1]
-                nodes1 = np.arange(len(samples[0]))
-                nodes2 = np.arange(len(samples[1]))
+                for count, sample in enumerate(samples):
+                    samples[count] = np.sort(samples[count])[::-1]
+                    nodes[count] = np.arange(len(samples[count]))
             else:
-                nodes1 = self.graph['graph_{}'.format(model1.name)].nodes
-                nodes2 = self.graph['graph_{}'.format(model2.name)].nodes
+                for count, sample in enumerate(samples):
+                    nodes[count] = self.graph['graph_{}'.format(names[count])].nodes
 
-            N = len(samples[0])
-
-            new_ax.bar(nodes1, samples[0], color=palette[0], label=model1.name)
-            new_ax.bar(nodes2, -1*samples[1], color=palette[1], label=model2.name)
+            for count, sample in enumerate(samples):
+                sign = -1 if count else 1
+                new_ax.bar(nodes[count], sign*sample, color=palette[count],
+                           label=names[count], edgecolor='w')
             new_ax.set_title(self.params['graph_measure']
                              + '{}'.format(' sorted' if sort else ''))
             new_ax.set_xlabel('Neurons')
+
+            # mplticklabels = new_ax.get_yticklabels()
+            # ticklabels = np.array([])
+            # for label in mplticklabels:
+            #     ticklabels = np.append(ticklabels, float(label.get_text()))
+            # ticklabels = np.abs(ticklabels)
+            # new_ax.set_yticklabels([str(label) for label in ticklabels])
+
+            sns.despine()
             plt.legend()
 
         else:

@@ -39,6 +39,7 @@ class two_sample_test(sciunit.Test):
 
     def _create_plotting_samples(self, model1=None, model2=None, palette=None):
         samples = []
+        names = []
         if palette is None:
             palette = []
             fill_palette = True
@@ -46,6 +47,10 @@ class two_sample_test(sciunit.Test):
             fill_palette = False
         if self.observation is not None:
             samples += [self.observation]
+            if hasattr(self, 'observation_model'):
+                names += [self.observation_model.name]
+            else:
+                names += ['observation']
             if fill_palette:
                 try:
                     palette = palette + [self.observation_params['color']]
@@ -53,6 +58,7 @@ class two_sample_test(sciunit.Test):
                     palette = palette + [sns.color_palette()[0]]
         if model1 is not None:
             samples += [self.generate_prediction(model1, **self.params)]
+            names += [model1.name]
             if fill_palette:
                 try:
                     palette = palette +[model1.params['color']]
@@ -60,20 +66,21 @@ class two_sample_test(sciunit.Test):
                     palette = palette + [sns.color_palette()[len(samples)-1]]
         if model2 is not None:
             samples += [self.generate_prediction(model2, **self.params)]
+            names += [model2.name]
             if fill_palette:
                 try:
                     palette = palette + [model1.params['color']]
                 except:
-                    palette = palette + [sns.color_palette()[len(samples)-1]]
+                    palette = palette + [sns.color_palette()[len(samples)-2]]
 
-        return samples, palette
+        return samples, palette, names
 
     def visualize_sample(self, model1=None, model2=None, ax=None, bins=100,
                          palette=None,
                          sample_names=['observation', 'prediction'],
                          var_name='Measured Parameter', **kwargs):
 
-        samples, palette = self._create_plotting_samples(model1=model1,
+        samples, palette, names = self._create_plotting_samples(model1=model1,
                                                          model2=model2,
                                                          palette=palette)
         if self.observation is None:
@@ -106,7 +113,7 @@ class two_sample_test(sciunit.Test):
         -------
         """
         # try:
-        samples, palette = self._create_plotting_samples(model1=model1,
+        samples, palette, names = self._create_plotting_samples(model1=model1,
                                                          model2=model2,
                                                          palette=palette)
         sample_names = ['observation', 'prediction']

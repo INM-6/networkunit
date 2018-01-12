@@ -11,8 +11,14 @@ class simulation_data(sciunit.Model):
         raise NotImplementedError
 
     def __init__(self, name=None, **params):
-        self.data = self.load(file_path=self.file_path, **params)
-        super(simulation_data, self).__init__(name=name, **params)
+        if params is None:
+            params = {}
+        if hasattr(self, 'params'):
+            self.params.update(params)
+        else:
+            self.params = params
+        self.data = self.load(file_path=self.file_path, **self.params)
+        super(simulation_data, self).__init__(name=name, **self.params)
 
     def load(self, file_path, **kwargs):
         raise NotImplementedError

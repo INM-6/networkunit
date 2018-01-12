@@ -2,6 +2,7 @@ import numpy as np
 from scipy.linalg import eigh
 import matplotlib.pyplot as plt
 from scipy.cluster.hierarchy import linkage, fcluster, dendrogram
+import fastcluster
 from scipy.special import binom
 from scipy.spatial.distance import squareform
 from copy import copy
@@ -9,9 +10,15 @@ from scipy.integrate import quad
 import seaborn as sns
 
 def plot_correlation_matrix(matrix, ax=None, remove_autocorr=True, labels=None,
-                sort=False, cluster=False, linkmethod='ward', dendrogram_args={},
-                vmin=None, vmax=None, show_colorbar=True,
-                **kwargs):
+                            sort=False, cluster=False, linkmethod='ward',
+                            dendrogram_args={}, sort_alpha=0.001,
+                            vmin=None, vmax=None, cmap=None, center=0.,
+                            robust=False, annot=None, fmt='.2g',
+                            annot_kws=None, linewidths=0, linecolor='white',
+                            cbar=True, cbar_kws=None, cbar_ax=None,
+                            square=True, xticklabels='auto',
+                            yticklabels='auto', mask=None, addkwargs={},
+                            **kwargs):
     # if ax is None:
     #     fig, ax = plt.subplots()
 
@@ -19,15 +26,26 @@ def plot_correlation_matrix(matrix, ax=None, remove_autocorr=True, labels=None,
     if sort:
         EWs, EVs = eigh(pltmatrix)
         # _, order = detect_assemblies(EVs, EWs, detect_by='eigenvalues', sort=True)
-        order = reorder_matrix(EVs, EWs, alpha=0.001)
+        order = reorder_matrix(EVs, EWs, alpha=sort_alpha)
         pltmatrix = pltmatrix[order, :][:, order]
 
     if cluster:
-        np.fill_diagonal(pltmatrix, 1)
-        linkagematrix = linkage(squareform(1 - pltmatrix), method=linkmethod)
-        dendro = dendrogram(linkagematrix, no_plot=True, **dendrogram_args)
-        order = dendro['leaves']
-        pltmatrix = pltmatrix[order, :][:, order]
+        try:
+            np.fill_diagonal(pltmatrix, 1)
+            try:
+                linkagematrix = linkage(squareform(1. - pltmatrix),
+                                        method=linkmethod)
+            except:
+                print 'using fastcluster'
+                linkagematrix = fastcluster.linkage(squareform(1. - pltmatrix),
+                                                    method=linkmethod)
+            dendro = dendrogram(linkagematrix, no_plot=True, **dendrogram_args)
+            order = dendro['leaves']
+            pltmatrix = pltmatrix[order, :][:, order]
+        except Exception as e:
+            print 'Clustering failed'
+            print e
+            linkagematrix = None
 
     if labels is None:
         labels = matrix.shape[0]/10
@@ -39,9 +57,14 @@ def plot_correlation_matrix(matrix, ax=None, remove_autocorr=True, labels=None,
     if remove_autocorr:
         np.fill_diagonal(pltmatrix, 0)
 
-    sns.heatmap(pltmatrix, ax=ax,
-                xticklabels=labels, yticklabels=labels, vmin=vmin, vmax=vmax,
-                square=True, cbar=show_colorbar)
+    sns.heatmap(pltmatrix, ax=ax, vmin=vmin, vmax=vmax, square=square,
+                            cbar=cbar, cmap=cmap, center=center,
+                            robust=robust, annot=annot, fmt=fmt,
+                            annot_kws=annot_kws, linewidths=linewidths,
+                            linecolor=linecolor,
+                            cbar_kws=cbar_kws, cbar_ax=cbar_ax,
+                            xticklabels=labels,
+                            yticklabels=labels, mask=mask, **addkwargs)
     if sort:
         return order
     if cluster:

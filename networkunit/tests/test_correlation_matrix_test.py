@@ -2,6 +2,7 @@ from networkunit.tests.test_correlation_test import correlation_test
 from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
 from networkunit.plots.plot_correlation_matrix import plot_correlation_matrix
 from scipy.cluster.hierarchy import linkage, dendrogram
+import fastcluster
 from scipy.spatial.distance import squareform
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -14,18 +15,18 @@ class correlation_matrix_test(correlation_test):
     """
     Test to compare the pairwise correlations of a set of neurons in a network.
     """
-    __metaclass__ = ABCMeta
+    # __metaclass__ = ABCMeta
 
     required_capabilities = (ProducesSpikeTrains, )
 
     def generate_prediction(self, model, **kwargs):
         # call the function of the required capability of the model
         # and pass the parameters of the test class instance in case the
-        try:
-            if not hasattr(model, 'prediction'):
-                model.prediction = {}
+        if not hasattr(model, 'prediction'):
+            model.prediction = {}
+        if self.test_hash in model.prediction:
             cc_matrix = model.prediction[self.test_hash]
-        except:
+        else:
             if kwargs:
                 self.params.update(kwargs)
             spiketrains = model.produce_spiketrains(**self.params)
@@ -33,22 +34,32 @@ class correlation_matrix_test(correlation_test):
                                                 model=model, **self.params)
             if 'cluster_matrix' in self.params and self.params['cluster_matrix']:
                 np.fill_diagonal(cc_matrix, 1.)
+                if 'cluster_method' not in self.params:
+                    self.params.update(cluster_method='ward')
                 try:
-                    linkagematrix = linkage(squareform(1. - cc_matrix),
-                                            method=self.params['cluster_method'])
+                    try:
+                        linkagematrix = linkage(squareform(1. - cc_matrix),
+                                                method=self.params['cluster_method'])
+                    except:
+                        print 'using fastcluster'
+                        linkagematrix = fastcluster.linkage(squareform(1. - cc_matrix),
+                                                        method=self.params['cluster_method'])
                     dendro = dendrogram(linkagematrix, no_plot=True)
                     order = dendro['leaves']
+                    model.cluster_order = order
                     cc_matrix = cc_matrix[order, :][:, order]
-                except:
+                except Exception as e:
                     print 'Clustering failed!'
-                np.fill_diagonal(cc_matrix, 0.)
+                    print e
+            # np.fill_diagonal(cc_matrix, 0.)
             model.prediction[self.test_hash] = cc_matrix
         return cc_matrix
 
-    def visualize_sample(self, model1=None, model2=None, ax=None,
-                         palette=None, remove_autocorr=True,
-                         sample_names=['observation', 'prediction'],
-                         var_name='Measured Parameter', **kwargs):
+    def visualize_sample(self, model1=None, model2=None, ax=None, labels=None,
+                         palette=None, remove_autocorr=True, vmin=None, vmax=None,
+                         sample_names=['observation', 'prediction'], sort=False,
+                         var_name='Measured Parameter', linkmethod='ward',
+                         **kwargs):
 
         matrices, palette = self._create_plotting_samples(model1=model1,
                                                           model2=model2,
@@ -69,14 +80,14 @@ class correlation_matrix_test(correlation_test):
             self.params.update(cluster_matrix=False)
 
         plot_correlation_matrix(matrices[0], ax=ax[0], remove_autocorr=remove_autocorr,
-                                labels=None, sort=False, cluster=self.params['cluster_matrix'],
-                                linkmethod='ward', dendrogram_args={},
+                                labels=labels, sort=sort, cluster=self.params['cluster_matrix'],
+                                linkmethod=linkmethod, dendrogram_args={}, vmin=vmin, vmax=vmax,
                                 **kwargs)
         ax[0].set_title(sample_names[0])
         if len(matrices) > 1:
             plot_correlation_matrix(matrices[1], ax=ax[1], remove_autocorr=remove_autocorr,
-                                    labels=None, sort=False, cluster=self.params['cluster_matrix'],
-                                    linkmethod='ward', dendrogram_args={},
+                                    labels=labels, sort=sort, cluster=self.params['cluster_matrix'],
+                                    linkmethod=linkmethod, dendrogram_args={},  vmin=vmin, vmax=vmax,
                                     **kwargs)
             ax[1].set_title(sample_names[1])
         return ax

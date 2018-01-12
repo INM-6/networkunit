@@ -79,12 +79,12 @@ class mwu_statistic(sciunit.Score):
 
         dataframe = DataFrame({'Rank': ranks[0],
                                'Group': ranks[1],
-                               'Kernel Density Estimate': np.zeros(N)})
+                               'Rank Density Estimate': np.zeros(N)})
 
         if palette is None:
             palette = [sns.color_palette()[0], sns.color_palette()[1]]
 
-        sns.violinplot(data=dataframe, x='Kernel Density Estimate',
+        sns.violinplot(data=dataframe, x='Rank Density Estimate',
                        y='Rank',
                        hue='Group', split=True, palette=palette,
                        inner='quartile', cut=0, ax=ax,
