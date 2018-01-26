@@ -55,13 +55,13 @@ class correlation_matrix_test(correlation_test):
             model.prediction[self.test_hash] = cc_matrix
         return cc_matrix
 
-    def visualize_sample(self, model1=None, model2=None, ax=None, labels=None,
+    def visualize_samples(self, model1=None, model2=None, ax=None, labels=None,
                          palette=None, remove_autocorr=True, vmin=None, vmax=None,
                          sample_names=['observation', 'prediction'], sort=False,
                          var_name='Measured Parameter', linkmethod='ward',
                          **kwargs):
 
-        matrices, palette = self._create_plotting_samples(model1=model1,
+        matrices, palette, names  = self._create_plotting_samples(model1=model1,
                                                           model2=model2,
                                                           palette=palette)
         if ax is None:

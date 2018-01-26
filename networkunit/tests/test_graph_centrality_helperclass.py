@@ -211,16 +211,21 @@ class graph_centrality_helperclass(sciunit.Test):
                 sign = -1 if count else 1
                 new_ax.bar(nodes[count], sign*sample, color=palette[count],
                            label=names[count], edgecolor='w')
-            new_ax.set_title(self.params['graph_measure']
-                             + '{}'.format(' sorted' if sort else ''))
+            new_ax.set_ylabel(self.params['graph_measure'])
             new_ax.set_xlabel('Neurons')
 
-            # mplticklabels = new_ax.get_yticklabels()
-            # ticklabels = np.array([])
-            # for label in mplticklabels:
-            #     ticklabels = np.append(ticklabels, float(label.get_text()))
-            # ticklabels = np.abs(ticklabels)
-            # new_ax.set_yticklabels([str(label) for label in ticklabels])
+            ymax = np.max(np.abs(new_ax.get_ylim()))
+            if len(samples) == 2:
+                new_ax.set_ylim((-ymax, ymax))
+                plt.draw()
+                mplticklabels = new_ax.get_yticklabels(which='both')
+                ticklabels = np.array([])
+                for label in mplticklabels:
+                    if label.get_text():
+                        ticklabels = np.append(ticklabels, float(label.get_text()[1:-1]))
+                new_ax.set_yticks(ticklabels)
+                ticklabels = np.abs(ticklabels)
+                new_ax.set_yticklabels([str(label) for label in ticklabels])
 
             sns.despine()
             plt.legend()

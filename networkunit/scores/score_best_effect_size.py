@@ -28,6 +28,9 @@ class best_effect_size(sciunit.Score):
                 mcmc_burn=10000,
                 effect_size_type='mode', # 'mean'
                 **kwargs):
+        if not pymc:
+            raise ImportError, 'Module best or pymc could not be loaded!'
+
         data_dict = {observation_name:observation, prediction_name:prediction}
         best_model = self.make_model(data_dict)
         M = MCMC(best_model)

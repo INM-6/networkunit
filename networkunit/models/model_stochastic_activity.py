@@ -19,7 +19,7 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
               't_stop': 10000 * ms,
               'rate': 10 * Hz,
               'statistic': 'poisson',
-              'method': 'CPP', # 'spatio-temporal', 'pairwise_equivalent'
+              'correlation_method': 'CPP', # 'spatio-temporal', 'pairwise_equivalent'
               'expected_binsize': 2 * ms,
               'correlations': 0.,
               'assembly_sizes': [],
@@ -52,20 +52,20 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
     def generate_spiketrains(self, **kwargs):
         spiketrains = [None] * self.size
 
-        if self.method == 'pairwise_equivalent':
+        if self.correlation_method == 'pairwise_equivalent':
         # change input to pairwise correlations with expected distribution
         # correlation coefficients
             nbr_of_pairs = [0] * len(self.assembly_sizes)
             new_correlation = []
             for i, A_size in enumerate(self.assembly_sizes):
-                nbr_of_pairs[i] = A_size * (A_size - 1) / 2
+                nbr_of_pairs[i] = int(A_size * (A_size - 1) / 2.)
                 new_correlation = new_correlation + [self.correlations[i]]*nbr_of_pairs[i]
             if sum(nbr_of_pairs)*2 > self.size:
                 raise ValueError, 'Assemblies are too large to generate an ' \
                                   'pairwise equivalent with the network size.'
             self.assembly_sizes = [2] * sum(nbr_of_pairs)
             self.correlations = new_correlation
-            self.method = 'CPP'
+            self.correlation_method = 'CPP'
 
         # generate correlated assemblies
         for i, a_size in enumerate(self.assembly_sizes):
@@ -109,12 +109,12 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
                                                       rate=self.rate,
                                                       T=self.t_stop - self.t_start,
                                                       binsize=self.expected_binsize)
-        if self.method == 'CPP' \
-        or self.method == 'spatio-temporal':
+        if self.correlation_method == 'CPP' \
+        or self.correlation_method == 'spatio-temporal':
             assembly_sts = self._generate_CPP_assembly(A_size=A_size,
                                                        syncprob=syncprob,
                                                        bkgr_syncprob=bkgr_syncprob)
-            if self.method == 'CPP':
+            if self.correlation_method == 'CPP':
                 return assembly_sts
             else:
                 return self._shift_spiketrains(assembly_sts)

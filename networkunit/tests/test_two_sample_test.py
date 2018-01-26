@@ -75,7 +75,7 @@ class two_sample_test(sciunit.Test):
 
         return samples, palette, names
 
-    def visualize_sample(self, model1=None, model2=None, ax=None, bins=100,
+    def visualize_samples(self, model1=None, model2=None, ax=None, bins=100,
                          palette=None,
                          sample_names=['observation', 'prediction'],
                          var_name='Measured Parameter', **kwargs):
