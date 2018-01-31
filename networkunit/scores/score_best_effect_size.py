@@ -27,12 +27,13 @@ class best_effect_size(sciunit.Score):
                 mcmc_iter=110000,
                 mcmc_burn=10000,
                 effect_size_type='mode', # 'mean'
+                assume_normal = False,
                 **kwargs):
         if not pymc:
             raise ImportError, 'Module best or pymc could not be loaded!'
 
         data_dict = {observation_name:observation, prediction_name:prediction}
-        best_model = self.make_model(data_dict)
+        best_model = self.make_model(data_dict, assume_normal)
         M = MCMC(best_model)
         M.sample(iter=mcmc_iter, burn=mcmc_burn)
 
@@ -65,7 +66,7 @@ class best_effect_size(sciunit.Score):
         return self.score
 
     @classmethod
-    def make_model(self, data):
+    def make_model(self, data, assume_normal=False):
         assert len(data) == 2, 'There must be exactly two data arrays'
         name1, name2 = sorted(data.keys())
         y1 = np.array(data[name1])
@@ -87,10 +88,13 @@ class best_effect_size(sciunit.Score):
         group2_std = Uniform('group2_std', sigma_low, sigma_high)
         nu_minus_one = Exponential('nu_minus_one', 1 / 29)
 
-        @deterministic(plot=False)
-        def nu(n=nu_minus_one):
-            out = n + 1
-            return out
+        if assume_normal:
+            nu = 1000
+        else:
+            @deterministic(plot=False)
+            def nu(n=nu_minus_one):
+                out = n + 1
+                return out
 
         @deterministic(plot=False)
         def lam1(s=group1_std):

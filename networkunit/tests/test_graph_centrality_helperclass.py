@@ -24,6 +24,7 @@ class graph_centrality_helperclass(sciunit.Test):
         matrix = super(graph_centrality_helperclass, self).\
             generate_prediction(model, **kwargs)
         self.prediction_dim = 2
+        N = len(matrix)
         if 'graph_measure' in self.params \
                 and self.params['graph_measure'] is not None:
             if hasattr(self, 'graph') and 'graph_{}'.format(model.name) in self.graph:
@@ -37,7 +38,6 @@ class graph_centrality_helperclass(sciunit.Test):
                 non_edges = np.where(weight_matrix <= edge_threshold)
                 weight_matrix[non_edges[0], non_edges[1]] = 0.
                 np.fill_diagonal(weight_matrix, 0)
-                N = len(matrix)
                 triu_idx = np.triu_indices(N, 1)
                 weight_list = weight_matrix[triu_idx[0],triu_idx[1]]
                 graph_list = [(i,j,w) for i,j,w in
@@ -51,7 +51,8 @@ class graph_centrality_helperclass(sciunit.Test):
             if self.params['graph_measure'] == 'degree strength':
                 degrees = nx.degree(G, weight='weight')
                 self.prediction_dim = 1
-                return np.array([d[1] for d in degrees])
+                degree_array = np.array([d[1] for d in degrees])
+                return np.append(degree_array, np.zeros(N - len(degree_array)))
 
             if self.params['graph_measure'] == 'closeness':
                 weight_dict = nx.get_edge_attributes(G, 'weight')
@@ -61,12 +62,14 @@ class graph_centrality_helperclass(sciunit.Test):
                     G.edges[edge].update(distance = G.edges[edge]['weight'] / weight_sum)
                 closeness = nx.closeness_centrality(G, distance='distance')
                 self.prediction_dim = 1
-                return np.array([closeness[i] for i in closeness.keys()])
+                closeness_array =  np.array([closeness[i] for i in closeness.keys()])
+                return np.append(closeness_array, np.zeros(N-len(closeness_array)))
 
             if self.params['graph_measure'] == 'betweenness':
                 betweenness = nx.betweenness_centrality(G, weight='weight', normalized=True)
                 self.prediction_dim = 1
-                return np.array([betweenness[i] for i in betweenness.keys()])
+                betweenness_array = np.array([betweenness[i] for i in betweenness.keys()])
+                return np.append(betweenness_array, np.zeros(N - len(betweenness_array)))
 
             if self.params['graph_measure'] == 'edge betweenness':
                 edge_betweenness = nx.edge_betweenness_centrality(G, weight='weight', normalized=True)
@@ -85,7 +88,9 @@ class graph_centrality_helperclass(sciunit.Test):
             if self.params['graph_measure'] == 'clustering coefficient':
                 clustering = nx.clustering(G, weight='weight')
                 self.prediction_dim = 1
-                return np.array([clustering[i] for i in clustering.keys()])
+                cc_array =  np.array([clustering[i] for i in clustering.keys()])
+                return np.append(cc_array, np.zeros(N-len(cc_array)))
+
 
             if self.params['graph_measure'] == 'transitivity':
                 weight_matrix = copy(matrix)
@@ -206,6 +211,7 @@ class graph_centrality_helperclass(sciunit.Test):
             else:
                 for count, sample in enumerate(samples):
                     nodes[count] = self.graph['graph_{}'.format(names[count])].nodes
+                    samples[count] = sample[:len(nodes[count])]
 
             for count, sample in enumerate(samples):
                 sign = -1 if count else 1

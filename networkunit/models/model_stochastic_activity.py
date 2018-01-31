@@ -42,6 +42,8 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
             self.correlations = [self.correlations] * len(self.assembly_sizes)
         elif len(self.correlations) == 1:
             self.correlations *= len(self.assembly_sizes)
+        if len(self.assembly_sizes) == 1 and self.assembly_sizes[0] == 1:
+            self.assembly_sizes = []            
         pass
 
     def produce_spiketrains(self, **kwargs):
