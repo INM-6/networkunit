@@ -318,6 +318,10 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
                             color=color, edgecolor='w')
         return grid
 
+    def compute_score(self, observation, prediction):
+        score = self.score_type.compute(observation, prediction, **self.params)
+        return score
+
 
 
 

@@ -8,7 +8,7 @@ from abc import ABCMeta, abstractmethod
 from quantities import ms
 import numpy as np
 from copy import copy
-
+import re
 
 class graph_centrality_helperclass(sciunit.Test):
     """
@@ -228,7 +228,12 @@ class graph_centrality_helperclass(sciunit.Test):
                 ticklabels = np.array([])
                 for label in mplticklabels:
                     if label.get_text():
-                        ticklabels = np.append(ticklabels, float(label.get_text()[1:-1]))
+                        m = re.search(r'\d+', label.get_text())
+                        numeric = m.group()  # retrieve numeric string
+                        sign = 1
+                        if '-' in label.get_text() or u'\u2212' in label.get_text():
+                            sign = -1
+                        ticklabels = np.append(ticklabels, sign*float(numeric))
                 new_ax.set_yticks(ticklabels)
                 ticklabels = np.abs(ticklabels)
                 new_ax.set_yticklabels([str(label) for label in ticklabels])

@@ -57,7 +57,5 @@ class effect_size(sciunit.Score):
         return "\n\n\033[4mEffect Size\033[0m" \
              + "\n\tdatasize: {} \t {}" \
                .format(self.data_size[0], self.data_size[1]) \
-             + "\n\tIterations: {} \t Burn: {}" \
-               .format(self.mcmc_iter, self.mcmc_burn) \
              + "\n\tEffect Size = {:.3f} \t CI = {:.3f}\n\n" \
                .format(self.score, self.CI)
