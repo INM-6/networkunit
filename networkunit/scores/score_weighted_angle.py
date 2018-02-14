@@ -203,10 +203,10 @@ class weighted_angle(sciunit.Score):
 
         if all_to_all:
             label = [r'$w_{ij}\cdot\angle (\mathbf{v}_i,\mathbf{w}_j):$',
-                     '$\mathbf{v}_i,\mathbf{w}_j \in R^{100}$']
+                     '$\mathbf{v}_i,\mathbf{w}_j \in $'+'$R^{}$'.format('{'+str(N)+'}')]
         else:
             label = [r'$w_{ii}\cdot\angle (\mathbf{v}_i,\mathbf{w}_i):$',
-                     '$\mathbf{v}_i,\mathbf{w}_i \in R^{100}$']
+                     '$\mathbf{v}_i,\mathbf{w}_i \in $'+'$R^{}$'.format('{'+str(N)+'}')]
         ax.bar(edges[:-1], hist, np.diff(edges)[0] * .99,
                color=palette[1], edgecolor='w',
                label='{}'.format(label[0]))

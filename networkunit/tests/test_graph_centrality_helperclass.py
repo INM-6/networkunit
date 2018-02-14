@@ -216,7 +216,7 @@ class graph_centrality_helperclass(sciunit.Test):
             for count, sample in enumerate(samples):
                 sign = -1 if count else 1
                 new_ax.bar(nodes[count], sign*sample, color=palette[count],
-                           label=names[count], edgecolor='w')
+                           label=names[count], width=1., edgecolor='w')
             new_ax.set_ylabel(self.params['graph_measure'])
             new_ax.set_xlabel('Neurons')
 

@@ -59,7 +59,7 @@ class correlation_matrix_test(correlation_test):
                          palette=None, remove_autocorr=True, vmin=None, vmax=None,
                          sample_names=['observation', 'prediction'], sort=False,
                          var_name='Measured Parameter', linkmethod='ward',
-                         **kwargs):
+                         cluster=False, **kwargs):
 
         matrices, palette, names  = self._create_plotting_samples(model1=model1,
                                                           model2=model2,
@@ -80,13 +80,13 @@ class correlation_matrix_test(correlation_test):
             self.params.update(cluster_matrix=False)
 
         plot_correlation_matrix(matrices[0], ax=ax[0], remove_autocorr=remove_autocorr,
-                                labels=labels, sort=sort, cluster=self.params['cluster_matrix'],
+                                labels=labels, sort=sort, cluster=cluster,
                                 linkmethod=linkmethod, dendrogram_args={}, vmin=vmin, vmax=vmax,
                                 **kwargs)
         ax[0].set_title(sample_names[0])
         if len(matrices) > 1:
             plot_correlation_matrix(matrices[1], ax=ax[1], remove_autocorr=remove_autocorr,
-                                    labels=labels, sort=sort, cluster=self.params['cluster_matrix'],
+                                    labels=labels, sort=sort, cluster=cluster,
                                     linkmethod=linkmethod, dendrogram_args={},  vmin=vmin, vmax=vmax,
                                     **kwargs)
             ax[1].set_title(sample_names[1])

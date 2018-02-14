@@ -61,7 +61,7 @@ class two_sample_test(sciunit.Test):
             names += [model1.name]
             if fill_palette:
                 try:
-                    palette = palette +[model1.params['color']]
+                    palette = palette + [model1.params['color']]
                 except:
                     palette = palette + [sns.color_palette()[len(samples)-1]]
         if model2 is not None:
@@ -69,7 +69,7 @@ class two_sample_test(sciunit.Test):
             names += [model2.name]
             if fill_palette:
                 try:
-                    palette = palette + [model1.params['color']]
+                    palette = palette + [model2.params['color']]
                 except:
                     palette = palette + [sns.color_palette()[len(samples)-2]]
 

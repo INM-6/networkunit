@@ -20,11 +20,11 @@ class isi_variation_test(two_sample_test):
 
         spiketrains = model.produce_spiketrains(**self.params)
         isi_list = [isi(st) for st in spiketrains]
-        if self.params('variation_measure') == 'lv':
+        if self.params['variation_measure'] == 'lv':
             isi_var = [lv(intervals) for intervals in isi_list]
-        elif self.params('variation_measure') == 'cv':
+        elif self.params['variation_measure'] == 'cv':
             isi_var = [cv(intervals) for intervals in isi_list]
-        # elif self.params('variation_measure') == 'cv2':
+        # elif self.params['variation_measure'] == 'cv2':
         #     isi_var = [cv2(intervals) for intervals in isi_list]
         else:
             raise ValueError, 'Variation measure not known.'
