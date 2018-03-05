@@ -15,8 +15,14 @@ class firing_rate_test(two_sample_test):
     def generate_prediction(self, model, **kwargs):
         if kwargs:
             self.params.update(kwargs)
-        spiketrains = model.produce_spiketrains(**self.params)
-        rates = [mean_firing_rate(st) for st in spiketrains]
+        if not hasattr(model, 'prediction'):
+            model.prediction = {}
+        if self.test_hash in model.prediction:
+            rates = model.prediction[self.test_hash]
+        else:
+            spiketrains = model.produce_spiketrains(**self.params)
+            rates = [mean_firing_rate(st) for st in spiketrains]
+            model.prediction[self.test_hash] = rates
         return rates
 
 

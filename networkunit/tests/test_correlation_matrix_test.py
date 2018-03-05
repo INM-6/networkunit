@@ -59,7 +59,8 @@ class correlation_matrix_test(correlation_test):
                          palette=None, remove_autocorr=True, vmin=None, vmax=None,
                          sample_names=['observation', 'prediction'], sort=False,
                          var_name='Measured Parameter', linkmethod='ward',
-                         cluster=False, **kwargs):
+                         cluster=False, cluster_as=None, limit_to_1=True,
+                          **kwargs):
 
         matrices, palette, names  = self._create_plotting_samples(model1=model1,
                                                           model2=model2,
@@ -79,17 +80,31 @@ class correlation_matrix_test(correlation_test):
         if 'cluster_matrix' not in self.params:
             self.params.update(cluster_matrix=False)
 
-        plot_correlation_matrix(matrices[0], ax=ax[0], remove_autocorr=remove_autocorr,
-                                labels=labels, sort=sort, cluster=cluster,
+        i = 0
+        j = 1
+        if cluster_as:
+            if len(names) == 2 and (cluster or sort):
+                i = 1
+                j = 0
+            else:
+                raise ValueError
+
+
+        order = plot_correlation_matrix(matrices[i], ax=ax[i], remove_autocorr=remove_autocorr,
+                                labels=labels, sort=sort, cluster=cluster, limit_to_1=limit_to_1,
                                 linkmethod=linkmethod, dendrogram_args={}, vmin=vmin, vmax=vmax,
                                 **kwargs)
-        ax[0].set_title(sample_names[0])
+        ax[i].set_title(sample_names[i])
         if len(matrices) > 1:
-            plot_correlation_matrix(matrices[1], ax=ax[1], remove_autocorr=remove_autocorr,
-                                    labels=labels, sort=sort, cluster=cluster,
+            if cluster_as is None:
+                order = np.arange(len(matrices[0]))
+            else:
+                cluster = False
+            plot_correlation_matrix(matrices[j][order, :][:, order], ax=ax[j], remove_autocorr=remove_autocorr,
+                                    labels=labels, sort=sort, cluster=cluster, limit_to_1=limit_to_1,
                                     linkmethod=linkmethod, dendrogram_args={},  vmin=vmin, vmax=vmax,
                                     **kwargs)
-            ax[1].set_title(sample_names[1])
+            ax[j].set_title(sample_names[j])
         return ax
 
     def draw_graph(self, model, draw_edge_threshold=None, **kwargs):

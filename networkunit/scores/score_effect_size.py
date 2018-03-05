@@ -16,13 +16,7 @@ class effect_size(sciunit.Score):
     score = np.nan
 
     @classmethod
-    def compute(self, observation, prediction,
-                observation_name='observation',
-                prediction_name='prediction',
-                mcmc_iter=110000,
-                mcmc_burn=10000,
-                effect_size_type='mode', # 'mean'
-                **kwargs):
+    def compute(self, observation, prediction, **kwargs):
 
         def s_pooled(sample1, sample2):
             n = len(sample1)

@@ -90,14 +90,19 @@ class two_sample_test(sciunit.Test):
         else:
             sample_names[1] = model1.name
 
-        sample_histogram(sample1=samples[0], sample2=samples[1],
+        if len(samples) == 1:
+            sample_2 = None
+        else:
+            sample_2 = samples[1]
+
+        sample_histogram(sample1=samples[0], sample2=sample_2,
                          ax=ax, bins=bins,
                          palette=palette, sample_names=sample_names,
                          var_name=var_name, **kwargs)
         return ax
 
     def visualize_score(self, model1, model2=None, ax=None, palette=None,
-                        **kwargs):
+                        sample_names=None, **kwargs):
         """
         When there is a specific visualization function called plot() for the
         given score type, score_type.plot() is called;
@@ -116,13 +121,16 @@ class two_sample_test(sciunit.Test):
         samples, palette, names = self._create_plotting_samples(model1=model1,
                                                          model2=model2,
                                                          palette=palette)
-        sample_names = ['observation', 'prediction']
+        s_names = ['observation', 'prediction']
         if self.observation is None:
-            sample_names[0] = model1.name
+            s_names[0] = model1.name
             if model2 is not None:
-                sample_names[1] = model2.name
+                s_names[1] = model2.name
         else:
-            sample_names[1] = model1.name
+            s_names[1] = model1.name
+
+        if sample_names is None:
+            sample_names = s_names
 
         kwargs.update(self.params)
         ax = self.score_type.plot(samples[0], samples[1],

@@ -17,17 +17,22 @@ class isi_variation_test(two_sample_test):
             self.params.update(kwargs)
         if 'variation_measure' not in self.params:
             self.params.update(variation_measure = 'lv')
-
-        spiketrains = model.produce_spiketrains(**self.params)
-        isi_list = [isi(st) for st in spiketrains]
-        if self.params['variation_measure'] == 'lv':
-            isi_var = [lv(intervals) for intervals in isi_list]
-        elif self.params['variation_measure'] == 'cv':
-            isi_var = [cv(intervals) for intervals in isi_list]
-        # elif self.params['variation_measure'] == 'cv2':
-        #     isi_var = [cv2(intervals) for intervals in isi_list]
+        if not hasattr(model, 'prediction'):
+            model.prediction = {}
+        if self.test_hash in model.prediction:
+            isi_var = model.prediction[self.test_hash]
         else:
-            raise ValueError, 'Variation measure not known.'
+            spiketrains = model.produce_spiketrains(**self.params)
+            isi_list = [isi(st) for st in spiketrains]
+            if self.params['variation_measure'] == 'lv':
+                isi_var = [lv(intervals) for intervals in isi_list]
+            elif self.params['variation_measure'] == 'cv':
+                isi_var = [cv(intervals) for intervals in isi_list]
+            # elif self.params['variation_measure'] == 'cv2':
+            #     isi_var = [cv2(intervals) for intervals in isi_list]
+            else:
+                raise ValueError, 'Variation measure not known.'
+            model.prediction[self.test_hash] = isi_var
         return isi_var
 
 

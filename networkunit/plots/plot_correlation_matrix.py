@@ -16,18 +16,23 @@ def plot_correlation_matrix(matrix, ax=None, remove_autocorr=True, labels=None,
                             robust=False, annot=None, fmt='.2g',
                             annot_kws=None, linewidths=0, linecolor='white',
                             cbar=True, cbar_kws=None, cbar_ax=None,
-                            square=True, xticklabels='auto',
+                            square=True, xticklabels='auto', limit_to_1=True,
                             yticklabels='auto', mask=None, addkwargs={},
                             **kwargs):
     # if ax is None:
     #     fig, ax = plt.subplots()
 
     pltmatrix = copy(matrix)
+    order = np.arange(len(matrix))
     if sort:
         EWs, EVs = eigh(pltmatrix)
         # _, order = detect_assemblies(EVs, EWs, detect_by='eigenvalues', sort=True)
         order = reorder_matrix(EVs, EWs, alpha=sort_alpha)
         pltmatrix = pltmatrix[order, :][:, order]
+
+    if limit_to_1:
+        if np.max(pltmatrix) > 1:
+            pltmatrix = pltmatrix / np.max(pltmatrix)
 
     if cluster:
         try:
@@ -65,10 +70,8 @@ def plot_correlation_matrix(matrix, ax=None, remove_autocorr=True, labels=None,
                             cbar_kws=cbar_kws, cbar_ax=cbar_ax,
                             xticklabels=labels,
                             yticklabels=labels, mask=mask, **addkwargs)
-    if sort:
+    if sort or cluster:
         return order
-    if cluster:
-        return linkagematrix
 
 
 def reorder_matrix(EVs, EWs, alpha=0.001):

@@ -16,9 +16,15 @@ class correlation_dist_test(correlation_test):
         # and pass the parameters of the test class instance in case the
         if kwargs:
             self.params.update(kwargs)
-        # check is model has already stored prediction
-        spiketrains = model.produce_spiketrains(**self.params)
-        return self.generate_correlations(spiketrains=spiketrains,
-                                          **self.params)
+        if not hasattr(model, 'prediction'):
+            model.prediction = {}
+        if self.test_hash in model.prediction:
+            cc_samples = model.prediction[self.test_hash]
+        else:
+            spiketrains = model.produce_spiketrains(**self.params)
+            cc_samples = self.generate_correlations(spiketrains=spiketrains,
+                                                    **self.params)
+            model.prediction[self.test_hash] = cc_samples
+        return cc_samples
 
 
