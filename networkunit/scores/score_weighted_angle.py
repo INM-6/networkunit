@@ -232,7 +232,7 @@ class weighted_angle(sciunit.Score):
         return self.score
 
     def __str__(self):
-        return "\n\n\033[4mEigenvector Angle Score\033[0m" \
+        return "\n\n\033[4mEigenangle Score\033[0m" \
              + "\n\tdatasize: {} x {}" \
                .format(self.data_size[0], self.data_size[1]) \
              + "\n\tscore = {:.3f} \t pvalue = {}\n\n" \

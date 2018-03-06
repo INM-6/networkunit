@@ -210,7 +210,7 @@ class graph_centrality_helperclass(sciunit.Test):
                     nodes[count] = np.arange(len(samples[count]))
             else:
                 for count, sample in enumerate(samples):
-                    nodes[count] = self.graph['graph_{}'.format(names[count])].nodes
+                    nodes[count] = self.graph['graph_{}'.format(names[count])].nodes.keys()
                     samples[count] = sample[:len(nodes[count])]
 
             for count, sample in enumerate(samples):
@@ -242,7 +242,7 @@ class graph_centrality_helperclass(sciunit.Test):
             plt.legend()
 
         else:
-            super(graph_centrality_helperclass,self).visualize_sample(
+            super(graph_centrality_helperclass,self).visualize_samples(
                                                            model1=model1,
                                                            model2=model2,
                                                            ax=ax,
