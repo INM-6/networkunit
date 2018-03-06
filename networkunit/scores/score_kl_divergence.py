@@ -39,8 +39,8 @@ class kl_divergence(sciunit.Score):
 
         P, edges = np.histogram(sample1, bins=edges, density=True)
         Q, _____ = np.histogram(sample2, bins=edges, density=True)
-        dx = np.diff(edges)[0]
-        edges = edges[:-1]
+        # dx = np.diff(edges)[0]
+        # edges = edges[:-1]
         # P *= dx
         # Q *= dx
 
@@ -62,7 +62,7 @@ class kl_divergence(sciunit.Score):
         self.score = kl_divergence(D_KL)
         self.score.data_size = [len(sample1), len(sample2)]
         self.score.discarded_values = discard
-        self.score.bins = bins
+        self.score.bins = len(edges)-1
         return self.score
 
 

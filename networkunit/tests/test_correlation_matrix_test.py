@@ -51,7 +51,8 @@ class correlation_matrix_test(correlation_test):
                 except Exception as e:
                     print 'Clustering failed!'
                     print e
-            # np.fill_diagonal(cc_matrix, 0.)
+            if 'remove_autocorr' in self.params and self.params['remove_autocorr']:
+                np.fill_diagonal(cc_matrix, 0.)
             model.prediction[self.test_hash] = cc_matrix
         return cc_matrix
 
