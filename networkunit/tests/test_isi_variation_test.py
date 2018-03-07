@@ -1,6 +1,7 @@
 from networkunit.tests.test_two_sample_test import two_sample_test
 from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
 from elephant.statistics import isi, lv, cv #, cv2
+import numpy as np
 from abc import ABCMeta, abstractmethod
 
 
@@ -28,8 +29,8 @@ class isi_variation_test(two_sample_test):
                 isi_var = [lv(intervals) for intervals in isi_list]
             elif self.params['variation_measure'] == 'cv':
                 isi_var = [cv(intervals) for intervals in isi_list]
-            # elif self.params['variation_measure'] == 'cv2':
-            #     isi_var = [cv2(intervals) for intervals in isi_list]
+            elif self.params['variation_measure'] == 'isi':
+                isi_var = [float(item) for sublist in isi_list for item in sublist]
             else:
                 raise ValueError, 'Variation measure not known.'
             model.prediction[self.test_hash] = isi_var

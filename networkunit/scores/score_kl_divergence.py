@@ -27,14 +27,14 @@ class kl_divergence(sciunit.Score):
     score = np.nan
 
     @classmethod
-    def compute(self, data_sample_1, data_sample_2, cc_binsize=0.005, **kwargs):
+    def compute(self, data_sample_1, data_sample_2, kl_binsize=0.005, **kwargs):
         # filtering out nans
         sample1 = np.array(data_sample_1)[np.isfinite(data_sample_1)]
         sample2 = np.array(data_sample_2)[np.isfinite(data_sample_2)]
 
         max_value = max([max(sample1),max(sample2)])
         min_value = min([min(sample1),min(sample2)])
-        bins = (max_value - min_value) / cc_binsize
+        bins = (max_value - min_value) / kl_binsize
         edges = np.linspace(min_value, max_value, bins)
 
         P, edges = np.histogram(sample1, bins=edges, density=True)
@@ -68,7 +68,7 @@ class kl_divergence(sciunit.Score):
 
     @classmethod
     def plot(self, data_sample_1, data_sample_2, ax=None, palette=None,
-             var_name='Measured Parameter', cc_binsize=0.005,
+             var_name='Measured Parameter', kl_binsize=0.005,
              sample_names=['observation', 'prediction'], **kwargs):
         if ax is None:
             fig, ax = plt.subplots()
@@ -82,7 +82,7 @@ class kl_divergence(sciunit.Score):
 
         max_value = max([max(sample1),max(sample2)])
         min_value = min([min(sample1),min(sample2)])
-        bins = (max_value - min_value) / cc_binsize
+        bins = (max_value - min_value) / kl_binsize
         edges = np.linspace(min_value, max_value, bins)
 
         P, edges = np.histogram(sample1, bins=edges, density=True)

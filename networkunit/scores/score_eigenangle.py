@@ -11,7 +11,7 @@ from scipy.integrate import quad
 import scipy.interpolate as interpolate
 
 
-class weighted_angle(sciunit.Score):
+class eigenangle(sciunit.Score):
     """
     Eigenvectors can represent dominant features of a network. Similar networks
     should therefore have similar eigenvectors such that the angle between them
@@ -75,7 +75,7 @@ class weighted_angle(sciunit.Score):
 
         weighted_angle_score = (np.pi/2. - weighted_mean_angle) / (np.pi/2.)
 
-        self.score = weighted_angle(weighted_angle_score)
+        self.score = eigenangle(weighted_angle_score)
         self.score.data_size = (N, N)
         self.score.pvalue = pvalue
         return self.score
