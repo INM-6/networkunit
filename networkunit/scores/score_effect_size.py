@@ -37,11 +37,11 @@ class effect_size(sciunit.Score):
             return 1.96 * np.sqrt(
                 (n + nn) / (n * nn) + es ** 2 / (2. * (n + nn - 2.)))
 
-        es = effect_size(func_effect_size(observation, prediction))
+        es = func_effect_size(observation, prediction)
         ci = CI(observation, prediction)
-        self.score = es
-        self.score.data_size = [len(observation), len(prediction)]
-        self.score.CI = (es - ci, es + ci)
+        self.score = effect_size(es)
+        self.data_size = [len(observation), len(prediction)]
+        self.CI = (es - ci, es + ci)
         return self.score
 
 
@@ -53,5 +53,5 @@ class effect_size(sciunit.Score):
         return "\n\n\033[4mEffect Size\033[0m" \
              + "\n\tdatasize: {} \t {}" \
                .format(self.data_size[0], self.data_size[1]) \
-             + "\n\tEffect Size = {:.3f} \t CI = {:.3f}\n\n" \
-               .format(self.score, self.CI)
+             + "\n\tEffect Size = {:.3f} \t CI = ({:.3f}, {:.3f})\n\n" \
+               .format(self.score, self.CI[0], self.CI[1])
