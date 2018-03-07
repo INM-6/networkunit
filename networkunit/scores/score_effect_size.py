@@ -42,6 +42,7 @@ class effect_size(sciunit.Score):
         self.score = effect_size(es)
         self.data_size = [len(observation), len(prediction)]
         self.CI = (es - ci, es + ci)
+        self.score.CI = (es - ci, es + ci)
         return self.score
 
 
