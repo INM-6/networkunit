@@ -2,17 +2,9 @@ from __future__ import division
 import numpy as np
 import sciunit
 import matplotlib.pyplot as plt
-from matplotlib.transforms import blended_transform_factory
-import matplotlib.ticker as mticker
-import matplotlib.lines as mpllines
-
 
 class effect_size(sciunit.Score):
-    """
-    Baysian Estimation Effect Size according to  Kruschke, J. (2012)
-    'Bayesian estimation supersedes the t-test',
-    Journal of Experimental Psychology
-    """
+
     score = np.nan
 
     @classmethod
@@ -40,8 +32,8 @@ class effect_size(sciunit.Score):
         es = func_effect_size(observation, prediction)
         ci = CI(observation, prediction)
         self.score = effect_size(es)
-        self.data_size = [len(observation), len(prediction)]
-        self.CI = (es - ci, es + ci)
+        self.score.data_size = [len(observation), len(prediction)]
+        # self.CI = (es - ci, es + ci)
         self.score.CI = (es - ci, es + ci)
         return self.score
 

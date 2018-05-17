@@ -18,6 +18,7 @@ def plot_correlation_matrix(matrix, ax=None, remove_autocorr=True, labels=None,
                             cbar=True, cbar_kws=None, cbar_ax=None,
                             square=True, xticklabels='auto', limit_to_1=True,
                             yticklabels='auto', mask=None, addkwargs={},
+                            rasterized=False,
                             **kwargs):
     # if ax is None:
     #     fig, ax = plt.subplots()
@@ -69,9 +70,12 @@ def plot_correlation_matrix(matrix, ax=None, remove_autocorr=True, labels=None,
                             linecolor=linecolor,
                             cbar_kws=cbar_kws, cbar_ax=cbar_ax,
                             xticklabels=labels,
-                            yticklabels=labels, mask=mask, **addkwargs)
+                            yticklabels=labels, mask=mask,
+                            rasterized=rasterized, **addkwargs)
     if sort or cluster:
         return order
+    else:
+        return np.arange(len(pltmatrix))
 
 
 def reorder_matrix(EVs, EWs, alpha=0.001):

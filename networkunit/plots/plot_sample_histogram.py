@@ -5,7 +5,7 @@ import numpy as np
 
 def sample_histogram(sample1, sample2=None, ax=None, bins=100, palette=None,
                      sample_names=['observation', 'prediction'],
-                     var_name='Measured Parameter', **kwargs):
+                     var_name='Measured Parameter', density=True, **kwargs):
     if ax is None:
         fig, ax = plt.subplots()
     if palette is None:
@@ -16,10 +16,13 @@ def sample_histogram(sample1, sample2=None, ax=None, bins=100, palette=None,
     else:
         max_value = max([max(sample1), max(sample2)])
         min_value = min([min(sample1), min(sample2)])
-        edges = np.linspace(float(min_value), float(max_value), bins)
+        if type(bins) == int:
+            edges = np.linspace(float(min_value), float(max_value), bins)
+        else:
+            edges = bins
 
-        P, edges = np.histogram(sample1, bins=edges, density=True)
-        Q, _____ = np.histogram(sample2, bins=edges, density=True)
+        P, edges = np.histogram(sample1, bins=edges, density=density)
+        Q, _____ = np.histogram(sample2, bins=edges, density=density)
 
         ymax = max(max(P), max(Q))
         Q = np.append(np.append(0., Q), 0.)

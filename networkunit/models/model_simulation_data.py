@@ -4,8 +4,6 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 
 class simulation_data(sciunit.Model):
 
-    # __metaclass__ = ABCMeta
-
     @property
     def file_path(self):
         raise NotImplementedError

@@ -60,7 +60,7 @@ class correlation_matrix_test(correlation_test):
                          palette=None, remove_autocorr=True, vmin=None, vmax=None,
                          sample_names=['observation', 'prediction'], sort=False,
                          var_name='Measured Parameter', linkmethod='ward',
-                         cluster=False, cluster_as=None, limit_to_1=True,
+                         cluster=False, cluster_as=None, limit_to_1=True, cbars=[True,True],
                           **kwargs):
 
         matrices, palette, names  = self._create_plotting_samples(model1=model1,
@@ -90,21 +90,28 @@ class correlation_matrix_test(correlation_test):
             else:
                 raise ValueError
 
-
         order = plot_correlation_matrix(matrices[i], ax=ax[i], remove_autocorr=remove_autocorr,
-                                labels=labels, sort=sort, cluster=cluster, limit_to_1=limit_to_1,
+                                labels=labels, sort=sort, cluster=cluster, limit_to_1=limit_to_1, cbar=cbars[0],
                                 linkmethod=linkmethod, dendrogram_args={}, vmin=vmin, vmax=vmax,
                                 **kwargs)
         ax[i].set_title(sample_names[i])
+        if i and not hasattr(model2, 'cluster_order'):
+            model2.cluster_order = order
+        elif not i and not hasattr(model1, 'cluster_order'):
+            model1.cluster_order = order
         if len(matrices) > 1:
             if cluster_as is None:
                 order = np.arange(len(matrices[0]))
             else:
                 cluster = False
-            plot_correlation_matrix(matrices[j][order, :][:, order], ax=ax[j], remove_autocorr=remove_autocorr,
-                                    labels=labels, sort=sort, cluster=cluster, limit_to_1=limit_to_1,
+            order = plot_correlation_matrix(matrices[j][order, :][:, order], ax=ax[j], remove_autocorr=remove_autocorr,
+                                    labels=labels, sort=sort, cluster=cluster, limit_to_1=limit_to_1, cbar=cbars[1],
                                     linkmethod=linkmethod, dendrogram_args={},  vmin=vmin, vmax=vmax,
                                     **kwargs)
+            if j and not hasattr(model2, 'cluster_order'):
+                model2.cluster_order = order
+            elif not j and not hasattr(model1, 'cluster_order'):
+                model1.cluster_order = order
             ax[j].set_title(sample_names[j])
         return ax
 

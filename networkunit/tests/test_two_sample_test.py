@@ -76,7 +76,7 @@ class two_sample_test(sciunit.Test):
         return samples, palette, names
 
     def visualize_samples(self, model1=None, model2=None, ax=None, bins=100,
-                         palette=None,
+                         palette=None, density=True,
                          sample_names=['observation', 'prediction'],
                          var_name='Measured Parameter', **kwargs):
 
@@ -98,7 +98,7 @@ class two_sample_test(sciunit.Test):
         sample_histogram(sample1=samples[0], sample2=sample_2,
                          ax=ax, bins=bins,
                          palette=palette, sample_names=sample_names,
-                         var_name=var_name, **kwargs)
+                         var_name=var_name, density=density, **kwargs)
         return ax
 
     def visualize_score(self, model1, model2=None, ax=None, palette=None,
