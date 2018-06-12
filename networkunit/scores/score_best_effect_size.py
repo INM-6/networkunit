@@ -17,6 +17,18 @@ class best_effect_size(sciunit.Score):
     Baysian Estimation Effect Size according to  Kruschke, J. (2012)
     'Bayesian estimation supersedes the t-test',
     Journal of Experimental Psychology
+
+    Requires the test parameters:
+        mcmc_iter : int (default 110000)
+            Number of iterations of the Marcov-Chain-Monte-Carlo sampling.
+        mcmc_burn : int (default 10000)
+            Number of samples to be discarded to reduce potential
+            correlations in the sampling sequence.
+        effect_size_type : 'mode' (default), 'mean'
+            How to determine an effect size value from the distribution
+        assume_normal : bool
+            If false, an additional 'normality' parameter is fitted to account
+            for non-gaussianity of the data.
     """
     score = np.nan
 

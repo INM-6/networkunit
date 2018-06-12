@@ -8,14 +8,12 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 from copy import copy
-from abc import ABCMeta, abstractmethod
 
 
 class correlation_matrix_test(correlation_test):
     """
-    Test to compare the pairwise correlations of a set of neurons in a network.
+    Abstract test class to compare correlation matrices.
     """
-    # __metaclass__ = ABCMeta
 
     required_capabilities = (ProducesSpikeTrains, )
 

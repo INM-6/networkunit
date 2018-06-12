@@ -1,13 +1,11 @@
 from networkunit.tests.test_correlation_test import correlation_test
 from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
-from abc import ABCMeta, abstractmethod
 
 
 class correlation_dist_test(correlation_test):
     """
-    Test to compare the pairwise correlations of a set of neurons in a network.
+    Abstract test class to compare the distributions of pairwise correlations.
     """
-    # __metaclass__ = ABCMeta
 
     required_capabilities = (ProducesSpikeTrains, )
 

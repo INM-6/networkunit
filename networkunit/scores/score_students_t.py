@@ -9,8 +9,7 @@ from networkunit.scores import to_precision
 
 class students_t(sciunit.Score):
     """
-
-
+    Student's T-test
     The computation is performed by the scipy.stats.ttest_ind() function.
     """
     score = np.nan

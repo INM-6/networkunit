@@ -20,14 +20,11 @@ def plot_correlation_matrix(matrix, ax=None, remove_autocorr=True, labels=None,
                             yticklabels='auto', mask=None, addkwargs={},
                             rasterized=False,
                             **kwargs):
-    # if ax is None:
-    #     fig, ax = plt.subplots()
 
     pltmatrix = copy(matrix)
     order = np.arange(len(matrix))
     if sort:
         EWs, EVs = eigh(pltmatrix)
-        # _, order = detect_assemblies(EVs, EWs, detect_by='eigenvalues', sort=True)
         order = reorder_matrix(EVs, EWs, alpha=sort_alpha)
         pltmatrix = pltmatrix[order, :][:, order]
 

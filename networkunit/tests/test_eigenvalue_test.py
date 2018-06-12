@@ -5,6 +5,9 @@ from scipy.linalg import eigh
 
 
 class eigenvalue_test(correlation_test):
+    """
+    Test to compare the eigenvalues of correlation matrices.
+    """
 
     required_capabilities = (ProducesSpikeTrains, )
 

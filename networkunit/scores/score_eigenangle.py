@@ -13,9 +13,19 @@ import scipy.interpolate as interpolate
 
 class eigenangle(sciunit.Score):
     """
-    Eigenvectors can represent dominant features of a network. Similar networks
-    should therefore have similar eigenvectors such that the angle between them
-    should be small.
+    The eigenangle score evaluates whether two correlation matrices have
+    similar non-random elements by calculating the significance of the angles
+    between the corresponding eigenvectors.
+    Either the binsize or the number of bins must be provides to perform the
+    signficnace test.
+
+    Parameters
+    ----------
+        all_to_all : bool (default False)
+            If False, only the angle between first and first eigenvectors is
+            calculated, second and second, and so on, else all combinations are
+            taken into account.
+
     """
     score = np.nan
 

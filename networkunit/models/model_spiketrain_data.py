@@ -11,10 +11,14 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 
 
 class spiketrain_data(simulation_data, ProducesSpikeTrains):
-
-    # __metaclass__ = ABCMeta
-
-    # Example loading routine for hdf files
+    """
+    Abstract model class for spiking simulations.
+    It has an example loading routine for hdf files, is able to display the
+    corresponding rasterplot with self.show_rasterplot(),
+    and if the self.params contains:
+    align_to_0=True, the spiketrains all start from 0s,
+    max_subsamplesize=x, only the x first spike trains are used.
+    """
     def load(self, file_path, client=None, **kwargs):
         """
         Loads spiketrains from a hdf5 file in the neo data format.
@@ -28,7 +32,7 @@ class spiketrain_data(simulation_data, ProducesSpikeTrains):
             must be provided.
         Returns :
             List of neo.SpikeTrains of length N
-            """
+         """
         if file_path[-2:] != 'h5':
             raise IOError, 'file must be in hdf5 file in Neo format'
 
@@ -62,7 +66,7 @@ class spiketrain_data(simulation_data, ProducesSpikeTrains):
                    align_to_0=True, **kwargs):
         """
         Performs preprocessing on the spiketrain data according to the given
-        parameters which are passed down from the test test parameters.
+        parameters which are passed down from the test parameters.
         """
         if spiketrain_list is not None and max_subsamplesize is not None:
             spiketrains = spiketrain_list[:max_subsamplesize]
@@ -75,7 +79,7 @@ class spiketrain_data(simulation_data, ProducesSpikeTrains):
 
     def produce_spiketrains(self, **kwargs):
         """
-        overwrites function in class ProduceCovariances
+        overwrites function in capability class ProduceSpiketrains
         """
         self.params.update(kwargs)
         self.spiketrains = self.data

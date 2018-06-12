@@ -18,9 +18,20 @@ import numpy as np
 
 class generalized_correlation_matrix_test(correlation_matrix_test):
     """
-    Test to compare the pairwise correlations of a set of neurons in a network.
+    Test to compare the different kinds of correlation matrices.
+
+    Parameters
+        ----------
+        maxlag : int
+            Maximum shift (in number of bins) between spike trains which should
+            still be considered in the calculating the correlation measure.
+        time_reduction: 'sum', 'max', 'threshold x.x'
+            Method how to include lagged correlations between spike trains.
+            sum - calculates the sum of the normalized CCH within +- maxlag
+            max - takes the maximum of the CCH within +- maxlag
+            threshold x.x - sums up the part of the CCH above the threshold x.x
+                            and within +- maxlag
     """
-    # __metaclass__ = ABCMeta
 
     required_capabilities = (ProducesSpikeTrains, )
 

@@ -4,7 +4,6 @@ import numpy as np
 #matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-#==============================================================================
 
 class covar_pdf:
     """

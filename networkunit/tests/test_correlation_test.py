@@ -3,24 +3,18 @@ from elephant.conversion import BinnedSpikeTrain
 import neo
 import numpy as np
 from quantities import ms, quantity
-import seaborn as sns
-import matplotlib.pyplot as plt
 from networkunit.tests.test_two_sample_test import two_sample_test
 from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
 from networkunit.plots import alpha as _alpha
-from abc import ABCMeta, abstractmethod
-
 
 class correlation_test(two_sample_test):
     """
-    Test to compare the pairwise correlations of a set of neurons in a network.
+    Abstract test calss  to compare the pairwise correlations between spike
+    trains of a set of neurons in a network.
+    Requires either 'binsize' or 'num_bins' in self.params.
     """
-    # __metaclass__ = ABCMeta
 
     required_capabilities = (ProducesSpikeTrains, )
-
-    params = {'maxlag': 100, # in bins
-                }
 
     def __init__(self, observation=None, name=None, **params):
         if params is None:
@@ -91,9 +85,6 @@ class correlation_test(two_sample_test):
             of spike trains.
         -------
         """
-        # if spiketrains is None:
-        #     binned_sts = self.robust_BinnedSpikeTrain(self.spiketrains, **kwargs)
-        # else:
         binned_sts = self.robust_BinnedSpikeTrain(spiketrains, **kwargs)
 
         cc_matrix = corrcoef(binned_sts, binary=binary)

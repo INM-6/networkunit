@@ -4,7 +4,6 @@ from numpy import triu_indices
 from quantities import ms
 from networkunit.tests.test_two_sample_test import two_sample_test
 from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
-from abc import ABCMeta, abstractmethod
 
 
 class covariance_test(two_sample_test):
@@ -13,7 +12,6 @@ class covariance_test(two_sample_test):
     The statistical testing method needs to be passed in form of a
     sciunit.Score as score_type on initialization.
     """
-    __metaclass__ = ABCMeta
 
     required_capabilities = (ProducesSpikeTrains, )
 

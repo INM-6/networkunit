@@ -14,9 +14,13 @@ class graph_centrality_helperclass(sciunit.Test):
     """
     Abstract test class to be combined with a test which generates a prediction
     in form of matrix. From this matrix the chosen graph measure is calculated
-    for each node and passed on in matrix form.
+    for each node and passed on in scalar, vector, or matrix form, depending on
+    the measure.
     The executable test has to inherit from the graph_measure_test and the
-    matrix generating test.
+    matrix generating test in the order (TestM2M), graph_centrality_helperclass, matrix_test.
+    Parameters
+        ----------
+        graph_measure:
     """
     __metaclass__ = ABCMeta
 

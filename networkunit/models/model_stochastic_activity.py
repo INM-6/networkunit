@@ -12,6 +12,49 @@ import random
 
 class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
     """
+    Model class which is able to generate stochastic spiking data
+
+    Parameters
+    ----------
+        size : int
+            Number of spike trains
+        t_start : quantity
+            starting time
+        t_stop : quantity
+            ending time
+        rate : quantity
+            average firing rate
+        statistic : 'poisson', 'gamma'(to be implemented)
+        correlation_method: 'CPP', 'spatio-temporal', 'pairwise_equivalent', None
+            CPP - compound Poisson process generating correlated activity of
+                  size 'assembly_sizes' with mean correlation according to
+                  'correlations'.
+            spatio-temporal - generates CPP correlated groups and shifts the
+                              spike trains randomly within +- 0.5*'max_pattern_length'
+                              to create spatio-temporal patterns.
+            pairwise_equivalent - generates pairs of correlated spike trains
+                                  so that the amount of correlation is equivalent
+                                  to a correlated group with parameters
+                                  'assembly_sizes' and 'correlations'
+        expected_binsize : quantity
+            Binsize with which correlations are calculated to be able to
+            generate the pairwise equivalent.
+        correlations : float, list of floats
+            Average correlation for the correlated group(s). Pass a list of
+            floats if there are multiple groups with different correlations.
+            If 0, it generates  homogenous Poisson activity.
+        assembly_sizes : list of ints
+            Size(s) of correlated group(s). Empty list for no correlations.
+        bkgr_correlation : float
+            Background correlation (to be implemented)
+        max_pattern_length : quantity
+            Maximum pattern length for spatio-temporal patterns.
+        shuffle : bool
+            Shuffle the spike trains to separate the correlated groups
+        shuffle_seed : int
+
+    Example
+    ----------
 
     """
     params = {'size': 100,
@@ -184,4 +227,4 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
         return rasterplot(self.spiketrains, **kwargs)
 
 
-# Todo: Handle quantitiy inputs which are not ms or Hz
+# Todo: Handle quantity inputs which are not ms or Hz
