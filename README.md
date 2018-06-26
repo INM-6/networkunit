@@ -18,7 +18,7 @@ to generate a model prediction. The initialized test instance XYTest_paramZ
 makes use of its judge() function to evaluate this model prediction and 
 compute the score TestScore.
 
-<img src="flowchart.png" width="200" />
+<img src="flowchart.png" width="500" />
 
 A showcase example on how to use NetworkUnit can be found [here](https://web.gin.g-node.org/INM-6/network_validation).
 

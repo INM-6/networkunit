@@ -13,7 +13,6 @@ class two_sample_test(sciunit.Test):
     initialization via a data model instead of a direct observation,
     interchangeable test scores, and basic sample visualization.
     """
-    # __metaclass__ = ABCMeta
 
     # required_capabilites = (ProducesSample, ) # Replace by more appropriate
                                               # capability in child class

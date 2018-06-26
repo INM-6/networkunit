@@ -12,15 +12,23 @@ import re
 
 class graph_centrality_helperclass(sciunit.Test):
     """
-    Abstract test class to be combined with a test which generates a prediction
-    in form of matrix. From this matrix the chosen graph measure is calculated
-    for each node and passed on in scalar, vector, or matrix form, depending on
-    the measure.
+    Abstract test class to compare graph centrality measures of a set of
+    spiking neurons in a network. This test needs to be combined with a test
+    which generates a prediction in form of matrix.
+    From this matrix the chosen graph measure is calculated
+    and passed on in scalar, vector, or matrix form, depending on whether the
+    measure is network-wise, node-wise, or node-pair-wise.
     The executable test has to inherit from the graph_measure_test and the
-    matrix generating test in the order (TestM2M), graph_centrality_helperclass, matrix_test.
+    matrix generating test
+    in the order (TestM2M), graph_centrality_helperclass, matrix_test.
+    
     Parameters
         ----------
-        graph_measure:
+        edge_threshold: float (default: 0)
+            Threshold for the matrix values to create the graph.
+        graph_measure: 'degree strength', 'closeness', 'betweenness',
+            'edge betweenness', 'katz', 'clustering coefficient',
+            'transitivity', 'small-worldness'
     """
     __metaclass__ = ABCMeta
 

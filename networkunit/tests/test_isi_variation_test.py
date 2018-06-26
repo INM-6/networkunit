@@ -7,9 +7,15 @@ from abc import ABCMeta, abstractmethod
 
 class isi_variation_test(two_sample_test):
     """
-    Test to compare the firing rates of a set of neurons in a network.
+    Test to compare the firing rates of a set of spiking neurons in a network.
+
+    Parameters (in dict params)
+    ----------
+    variation_measure: 'isi', 'cv', 'lv' (default)
+        'isi' - Compares the inter-spike intervals
+        'cv'  - Compares the coefficients of variation
+        'lv'  - Compares the local coefficients of variation
     """
-    # __metaclass__ = ABCMeta
 
     required_capabilities = (ProducesSpikeTrains, )
 

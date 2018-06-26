@@ -9,9 +9,24 @@ from networkunit.plots import alpha as _alpha
 
 class correlation_test(two_sample_test):
     """
-    Abstract test calss  to compare the pairwise correlations between spike
+    Abstract test class  to compare the pairwise correlations between spike
     trains of a set of neurons in a network.
-    Requires either 'binsize' or 'num_bins' in self.params.
+
+    Parameters (in dict params):
+    ----------
+    binsize: quantity, None (default: 2*ms)
+        Size of bins used to calculate the correlation coefficients.
+    num_bins: int, None (default: None)
+        Number of bins within t_start and t_stop used to calculate
+        the correlation coefficients.
+    t_start: quantity, None
+        Start of time window used to calculate the correlation coefficents.
+    t_stop: quantity, None
+        Stop of time window used to calculate the correlation coefficents.
+    nan_to_num: bool
+        If true, np.nan are set to 0, and np.inf to largest finite float.
+    binary: bool
+        If true, the binned spike trains are set to be binary.
     """
 
     required_capabilities = (ProducesSpikeTrains, )

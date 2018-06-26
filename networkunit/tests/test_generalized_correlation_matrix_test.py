@@ -18,19 +18,46 @@ import numpy as np
 
 class generalized_correlation_matrix_test(correlation_matrix_test):
     """
-    Test to compare the different kinds of correlation matrices.
+    Test to compare the different kinds of correlation matrices of a set of
+    spiking neurons in a network.
+    The statistical testing method needs to be set in form of a
+    sciunit.Score as score_type.
 
-    Parameters
-        ----------
-        maxlag : int
-            Maximum shift (in number of bins) between spike trains which should
-            still be considered in the calculating the correlation measure.
-        time_reduction: 'sum', 'max', 'threshold x.x'
-            Method how to include lagged correlations between spike trains.
-            sum - calculates the sum of the normalized CCH within +- maxlag
-            max - takes the maximum of the CCH within +- maxlag
-            threshold x.x - sums up the part of the CCH above the threshold x.x
-                            and within +- maxlag
+    Parameters (in dict params)
+    ----------
+        binsize: quantity, None (default: 2*ms)
+        Size of bins used to calculate the correlation coefficients.
+    num_bins: int, None (default: None)
+        Number of bins within t_start and t_stop used to calculate
+        the correlation coefficients.
+    t_start: quantity, None
+        Start of time window used to calculate the correlation coefficients.
+    t_stop: quantity, None
+        Stop of time window used to calculate the correlation coefficients.
+    nan_to_num: bool
+        If true, np.nan are set to 0, and np.inf to largest finite float.
+    binary: bool
+        If true, the binned spike trains are set to be binary.
+    cluster_matrix : bool
+        If true, the matrix is clustered by the hierarchical cluster algorithm
+        scipy.cluster.hierachy.linkage() with 'method' determined by the
+        cluster_method.
+    cluster_method : string (default: 'ward')
+        Method for the hierarchical clustering if cluster_matrix=True
+    remove_autocorr: bool
+        If true, the diagonal values of the matrix are set to 0.
+    edge_threshold: float
+        Passed to draw_graph() and determines the threshold above which edges
+        are draw in the graph corresponding to the matrix.
+    maxlag : int
+        Maximum shift (in number of bins) between spike trains which should
+        still be considered in the calculating the correlation measure.
+    time_reduction: 'sum', 'max', 'threshold x.x'
+        Method how to include lagged correlations between spike trains.
+        sum - calculates the sum of the normalized CCH within +- maxlag
+        max - takes the maximum of the CCH within +- maxlag
+        threshold x.x - sums up the part of the CCH above the threshold x.x
+                        and within +- maxlag
     """
 
     required_capabilities = (ProducesSpikeTrains, )
