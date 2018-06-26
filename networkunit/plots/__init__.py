@@ -5,9 +5,8 @@ import glob
 import matplotlib.colors as colors
 
 def alpha(color_inst, a):
-    if type(color_inst) == str:
-        if color_inst[0] == '#':
-            color_inst = colors.hex2color(color_inst)
+    if color_inst[0] == '#':
+        color_inst = colors.hex2color(color_inst)
     return [el + (1. - el) * (1 - a) for el in color_inst]
 
 """
