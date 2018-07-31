@@ -121,7 +121,7 @@ class graph_centrality_helperclass(sciunit.Test):
                     edge_threshold = (np.exp(2. * Z) - 1.) / (np.exp(2. * Z) + 1.)
                     self.params['edge_threshold'] = edge_threshold
                 else:
-                    raise ValueError, 'Not enough information to threshold graph!'
+                    raise ValueError('Not enough information to threshold graph!')
                 non_edges = np.where(weight_matrix <= edge_threshold)
                 weight_matrix[non_edges[0], non_edges[1]] = 0.
                 np.fill_diagonal(weight_matrix, 0)
@@ -175,7 +175,7 @@ class graph_centrality_helperclass(sciunit.Test):
                     edge_threshold = (np.exp(2. * Z) - 1.) / (np.exp(2. * Z) + 1.)
                     self.params['edge_threshold'] = edge_threshold
                 else:
-                    raise ValueError, 'Not enough information to threshold graph!'
+                    raise ValueError('Not enough information to threshold graph!')
                 non_edges = np.where(weight_matrix <= edge_threshold)
                 weight_matrix[non_edges[0], non_edges[1]] = 0.
                 np.fill_diagonal(weight_matrix, 0)
@@ -196,7 +196,7 @@ class graph_centrality_helperclass(sciunit.Test):
                 return (transitivity/transitivity_rand) / (path_length/path_length_rand)
 
             else:
-                raise KeyError, 'Graph measure not know!'
+                raise KeyError('Graph measure not know!')
         else:
             return matrix
 

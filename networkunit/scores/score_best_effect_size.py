@@ -42,7 +42,7 @@ class best_effect_size(sciunit.Score):
                 assume_normal = False,
                 **kwargs):
         if not pymc:
-            raise ImportError, 'Module best or pymc could not be loaded!'
+            raise ImportError('Module best or pymc could not be loaded!')
 
         data_dict = {observation_name:observation, prediction_name:prediction}
         best_model = self.make_model(data_dict, assume_normal)

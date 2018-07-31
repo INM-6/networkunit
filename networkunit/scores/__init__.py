@@ -1,7 +1,5 @@
 """Loads NeuroUnit score classes for NeuronUnit"""
 
-from os.path import dirname, basename, isfile
-import glob
 import math
 
 def to_precision(x,p):
@@ -68,9 +66,12 @@ def to_precision(x,p):
 NOTE: All score files must have a prefix "score_" and extension ".py".
 Only these would be loaded.
 """
-files = glob.glob(dirname(__file__)+"/score_*.py")
-modules = [ basename(f)[:-3] for f in files if isfile(f)]
+import pkgutil
 
-for module in modules:
-    exec("from %s import *" % module)
+__path__ = pkgutil.extend_path(__path__, __name__)
+
+for importer, modname, ispkg in pkgutil.walk_packages(path=__path__, prefix=__name__+'.'):
+    module_type, module_name = str.split(str.split(modname, '.')[-1], '_', 1)
+    if module_type == 'score':
+        exec("from {} import {}".format(modname, module_name))
 

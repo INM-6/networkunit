@@ -24,7 +24,7 @@ A showcase example on how to use NetworkUnit can be found [here](https://web.gin
 
 ### Overview of tests
 
-| Class name | Parents | Prediction measure |
+| Class name | Parent class | Prediction measure |
 | -------- | -------- | -------- | 
 |two_sample_test                    | - | - |
 |correlation_test                   | two_sample_test | - |
@@ -56,7 +56,7 @@ class new_test(sciunit.TestM2M, graph_centrality_helperclass, parent_test_class)
 
 ### Overview of model classes
 
-| Model name | Capability | Parents | Purpose |
+| Model name | Capability | Parent class | Purpose |
 | --------  | -------- | -------- | -------- | 
 |simulation_data | - | sciunit.Model | loading simulated data |
 |spiketrain_data | ProducesSpikeTrains | simulation_data | loading simulated spiking data |

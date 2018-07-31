@@ -1,8 +1,11 @@
 from networkunit.tests.test_correlation_test import correlation_test
 from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
-from networkunit.plots.plot_correlation_matrix import plot_correlation_matrix
+from networkunit.plots.plot_correlation_matrix import correlation_matrix as plot_correlation_matrix
 from scipy.cluster.hierarchy import linkage, dendrogram
-import fastcluster
+try:
+    import fastcluster
+except:
+    fastcluster_pkg = False
 from scipy.spatial.distance import squareform
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -69,16 +72,19 @@ class correlation_matrix_test(correlation_test):
                         linkagematrix = linkage(squareform(1. - cc_matrix),
                                                 method=self.params['cluster_method'])
                     except:
-                        print 'using fastcluster'
-                        linkagematrix = fastcluster.linkage(squareform(1. - cc_matrix),
+                        if fastcluster_pkg:
+                            print('using fastcluster')
+                            linkagematrix = fastcluster.linkage(squareform(1. - cc_matrix),
                                                         method=self.params['cluster_method'])
+                        else:
+                            print('using fastcluster')
                     dendro = dendrogram(linkagematrix, no_plot=True)
                     order = dendro['leaves']
                     model.cluster_order = order
                     cc_matrix = cc_matrix[order, :][:, order]
                 except Exception as e:
-                    print 'Clustering failed!'
-                    print e
+                    print('Clustering failed!')
+                    print(e)
             if 'remove_autocorr' in self.params and self.params['remove_autocorr']:
                 np.fill_diagonal(cc_matrix, 0.)
             model.prediction[self.test_hash] = cc_matrix

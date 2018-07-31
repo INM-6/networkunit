@@ -1,6 +1,6 @@
 from networkunit.tests.test_correlation_matrix_test import correlation_matrix_test
 from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
-from networkunit.plots.plot_correlation_matrix import plot_correlation_matrix
+from networkunit.plots.plot_correlation_matrix import correlation_matrix as plot_correlation_matrix
 from networkunit.plots import alpha as _alpha
 from elephant.spike_train_correlation import corrcoef, cch
 import matplotlib.pyplot as plt
@@ -86,7 +86,7 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
         pairs_idx = np.triu_indices(len(spiketrains), 1)
         pairs = [[i, j] for i, j in zip(pairs_idx[0], pairs_idx[1])]
         if 'time_reduction' not in self.params:
-            raise KeyError, "A method for 'time_reduction' needs to be set!"
+            raise KeyError("A method for 'time_reduction' needs to be set!")
         return self.generalized_cc_matrix(cch_array, pairs,
                                           self.params['time_reduction'])
 
@@ -159,7 +159,7 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
                 comm = MPI.COMM_WORLD
                 rank = comm.Get_rank()
                 Nnodes = comm.Get_size()
-                print 'Using MPI with {} node'.format(Nnodes)
+                print('Using MPI with {} node'.format(Nnodes))
                 comm.Barrier()
                 if rank == 0:
                     split = np.array_split(pairs, Nnodes)
@@ -218,7 +218,7 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
             comm = MPI.COMM_WORLD
             rank = comm.Get_rank()
             Nnodes = comm.Get_size()
-            print 'rank', rank, 'and size (Nnodes)', Nnodes
+            print('rank', rank, 'and size (Nnodes)', Nnodes)
             comm.Barrier()
             if rank == 0:
                 split = np.array_split(squeezed_cch_array, Nnodes)
@@ -286,14 +286,14 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
                 color = palette[colorarray[count]]
             if t < 1:
                 t = 1
-                print 'border value shifted'
+                print('border value shifted')
             elif t == B - 1:
                 t = B - 2
-                print 'border value shifted'
+                print('border value shifted')
             try:
                 ax.plot([j, j], tau[t - 1:t + 1], [i, i], c=color)
             except:
-                print 'value dropped'
+                print('value dropped')
             # expects the outer most values for tau not to be significant
 
         cax = plt.gcf().add_subplot(222, aspect=10, anchor=(1.1, .5))
@@ -302,7 +302,7 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
         cb = colorbar.ColorbarBase(cax, cmap=cmap, orientation='vertical')
         cax.yaxis.set_visible(True)
         cax.yaxis.set_ticks([0,1])
-        print max_cc
+        print(max_cc)
         cax.set_yticklabels(['{:.2f}'.format(threshold), '{:.2f}'.format(max_cc)])
         return ax, palette
 

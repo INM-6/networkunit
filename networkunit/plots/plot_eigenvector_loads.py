@@ -6,7 +6,7 @@ import matplotlib.mlab as mlab
 import seaborn as sns
 
 
-def plot_eigenvector_loads(EVs, color, hatch=None, ax=None,  ordered=False,
+def eigenvector_loads(EVs, color, hatch=None, ax=None,  ordered=False,
                           abs=False,  binsize=.025, scaling=.85, alpha=0.001):
     # plots the loads of as many eigenvectors in EVs as there are colors
 
@@ -50,8 +50,8 @@ def plot_eigenvector_loads(EVs, color, hatch=None, ax=None,  ordered=False,
             ls = '-'
         axhist.plot(load_hist, xvalues, color=color[i], linestyle=ls)
 
-        print "relevant neurons of vector {}:".format(i)
-        print load_significance(vector_loads[i], alpha=alpha)
+        print("relevant neurons of vector {}:".format(i))
+        print(load_significance(vector_loads[i], alpha=alpha))
 
     xvalues = np.linspace(-max_load, max_load, 100)
     normal_dist = mlab.normpdf(xvalues, 0, 1./np.sqrt(len(EVs)))
@@ -60,7 +60,7 @@ def plot_eigenvector_loads(EVs, color, hatch=None, ax=None,  ordered=False,
     sns.despine(ax=ax)
     axhist.axis('off')
     axhist.set_ylim(ax.get_ylim())
-    ax.set_xlim(0,len(EVs.T[0])+1)
+    ax.set_xlim(0, len(EVs.T[0])+1)
     ax.set_ylabel('Vector Load')
     handles, labels = ax.get_legend_handles_labels()
     plt.rcParams['legend.fontsize'] = plt.rcParams['axes.labelsize']+1
