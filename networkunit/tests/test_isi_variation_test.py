@@ -1,8 +1,6 @@
 from networkunit.tests.test_two_sample_test import two_sample_test
 from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
 from elephant.statistics import isi, lv, cv #, cv2
-import numpy as np
-from abc import ABCMeta, abstractmethod
 
 
 class isi_variation_test(two_sample_test):
@@ -26,9 +24,15 @@ class isi_variation_test(two_sample_test):
             spiketrains = model.produce_spiketrains(**self.params)
             isi_list = [isi(st) for st in spiketrains]
             if self.params['variation_measure'] == 'lv':
-                isi_var = [lv(intervals) for intervals in isi_list]
+                isi_var = []
+                for intervals in isi_list:
+                    if intervals.size>2:
+                        isi_var.append(lv(intervals))
             elif self.params['variation_measure'] == 'cv':
-                isi_var = [cv(intervals) for intervals in isi_list]
+                isi_var = []
+                for intervals in isi_list:
+                    if intervals.size>2:
+                        isi_var.append(cv(intervals))
             elif self.params['variation_measure'] == 'isi':
                 isi_var = [float(item) for sublist in isi_list for item in sublist]
             else:
