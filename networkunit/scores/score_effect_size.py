@@ -23,6 +23,9 @@ class effect_size(sciunit.Score):
                                                                        sample2)
 
         def CI(sample1, sample2):
+            """
+            95% confidence interval
+            """
             n = len(sample1)
             nn = len(sample2)
             es = func_effect_size(sample1, sample2)

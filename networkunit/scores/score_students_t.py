@@ -10,6 +10,7 @@ from networkunit.scores import to_precision
 class students_t(sciunit.Score):
     """
     Student's T-test
+    NOTE: should be named ttest only because if equal_var=False -> Welch's t-test
     The computation is performed by the scipy.stats.ttest_ind() function.
     """
     score = np.nan
