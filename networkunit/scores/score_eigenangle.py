@@ -36,7 +36,7 @@ class eigenangle(sciunit.Score):
             if binsize is not None and (t_start is not None and t_stop is not None):
                     bin_num = float((t_stop - t_start) / binsize)
             else:
-                raise ValueError, 'To few parameters to compute bin_num!'
+                raise ValueError('To few parameters to compute bin_num!')
         N = len(matrix_1)
         EWs1, EVs1 = eigh(matrix_1) # returns EWs in ascending order
         EWs2, EVs2 = eigh(matrix_2)
@@ -156,7 +156,7 @@ class eigenangle(sciunit.Score):
             if binsize is not None and (t_start is not None and t_stop is not None):
                     bin_num = float((t_stop - t_start) / binsize)
             else:
-                raise ValueError, 'To few parameters to compute bin_num!'
+                raise ValueError('To few parameters to compute bin_num!')
 
         if ax is None:
             fig, ax = plt.subplots()

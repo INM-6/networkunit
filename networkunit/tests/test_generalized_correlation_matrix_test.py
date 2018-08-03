@@ -1,6 +1,6 @@
 from networkunit.tests.test_correlation_matrix_test import correlation_matrix_test
 from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
-from networkunit.plots.plot_correlation_matrix import plot_correlation_matrix
+from networkunit.plots.plot_correlation_matrix import correlation_matrix as plot_correlation_matrix
 from networkunit.plots import alpha as _alpha
 from elephant.spike_train_correlation import corrcoef, cch
 import matplotlib.pyplot as plt
@@ -18,19 +18,46 @@ import numpy as np
 
 class generalized_correlation_matrix_test(correlation_matrix_test):
     """
-    Test to compare the different kinds of correlation matrices.
+    Test to compare the different kinds of correlation matrices of a set of
+    spiking neurons in a network.
+    The statistical testing method needs to be set in form of a
+    sciunit.Score as score_type.
 
-    Parameters
-        ----------
-        maxlag : int
-            Maximum shift (in number of bins) between spike trains which should
-            still be considered in the calculating the correlation measure.
-        time_reduction: 'sum', 'max', 'threshold x.x'
-            Method how to include lagged correlations between spike trains.
-            sum - calculates the sum of the normalized CCH within +- maxlag
-            max - takes the maximum of the CCH within +- maxlag
-            threshold x.x - sums up the part of the CCH above the threshold x.x
-                            and within +- maxlag
+    Parameters (in dict params)
+    ----------
+        binsize: quantity, None (default: 2*ms)
+        Size of bins used to calculate the correlation coefficients.
+    num_bins: int, None (default: None)
+        Number of bins within t_start and t_stop used to calculate
+        the correlation coefficients.
+    t_start: quantity, None
+        Start of time window used to calculate the correlation coefficients.
+    t_stop: quantity, None
+        Stop of time window used to calculate the correlation coefficients.
+    nan_to_num: bool
+        If true, np.nan are set to 0, and np.inf to largest finite float.
+    binary: bool
+        If true, the binned spike trains are set to be binary.
+    cluster_matrix : bool
+        If true, the matrix is clustered by the hierarchical cluster algorithm
+        scipy.cluster.hierachy.linkage() with 'method' determined by the
+        cluster_method.
+    cluster_method : string (default: 'ward')
+        Method for the hierarchical clustering if cluster_matrix=True
+    remove_autocorr: bool
+        If true, the diagonal values of the matrix are set to 0.
+    edge_threshold: float
+        Passed to draw_graph() and determines the threshold above which edges
+        are draw in the graph corresponding to the matrix.
+    maxlag : int
+        Maximum shift (in number of bins) between spike trains which should
+        still be considered in the calculating the correlation measure.
+    time_reduction: 'sum', 'max', 'threshold x.x'
+        Method how to include lagged correlations between spike trains.
+        sum - calculates the sum of the normalized CCH within +- maxlag
+        max - takes the maximum of the CCH within +- maxlag
+        threshold x.x - sums up the part of the CCH above the threshold x.x
+                        and within +- maxlag
     """
 
     required_capabilities = (ProducesSpikeTrains, )
@@ -59,7 +86,7 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
         pairs_idx = np.triu_indices(len(spiketrains), 1)
         pairs = [[i, j] for i, j in zip(pairs_idx[0], pairs_idx[1])]
         if 'time_reduction' not in self.params:
-            raise KeyError, "A method for 'time_reduction' needs to be set!"
+            raise KeyError("A method for 'time_reduction' needs to be set!")
         return self.generalized_cc_matrix(cch_array, pairs,
                                           self.params['time_reduction'])
 
@@ -132,7 +159,7 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
                 comm = MPI.COMM_WORLD
                 rank = comm.Get_rank()
                 Nnodes = comm.Get_size()
-                print 'Using MPI with {} node'.format(Nnodes)
+                print('Using MPI with {} node'.format(Nnodes))
                 comm.Barrier()
                 if rank == 0:
                     split = np.array_split(pairs, Nnodes)
@@ -191,7 +218,7 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
             comm = MPI.COMM_WORLD
             rank = comm.Get_rank()
             Nnodes = comm.Get_size()
-            print 'rank', rank, 'and size (Nnodes)', Nnodes
+            print('rank', rank, 'and size (Nnodes)', Nnodes)
             comm.Barrier()
             if rank == 0:
                 split = np.array_split(squeezed_cch_array, Nnodes)
@@ -259,14 +286,14 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
                 color = palette[colorarray[count]]
             if t < 1:
                 t = 1
-                print 'border value shifted'
+                print('border value shifted')
             elif t == B - 1:
                 t = B - 2
-                print 'border value shifted'
+                print('border value shifted')
             try:
                 ax.plot([j, j], tau[t - 1:t + 1], [i, i], c=color)
             except:
-                print 'value dropped'
+                print('value dropped')
             # expects the outer most values for tau not to be significant
 
         cax = plt.gcf().add_subplot(222, aspect=10, anchor=(1.1, .5))
@@ -275,7 +302,7 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
         cb = colorbar.ColorbarBase(cax, cmap=cmap, orientation='vertical')
         cax.yaxis.set_visible(True)
         cax.yaxis.set_ticks([0,1])
-        print max_cc
+        print(max_cc)
         cax.set_yticklabels(['{:.2f}'.format(threshold), '{:.2f}'.format(max_cc)])
         return ax, palette
 

@@ -1,8 +1,11 @@
 from networkunit.tests.test_correlation_test import correlation_test
 from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
-from networkunit.plots.plot_correlation_matrix import plot_correlation_matrix
+from networkunit.plots.plot_correlation_matrix import correlation_matrix as plot_correlation_matrix
 from scipy.cluster.hierarchy import linkage, dendrogram
-import fastcluster
+try:
+    import fastcluster
+except:
+    fastcluster_pkg = False
 from scipy.spatial.distance import squareform
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -12,7 +15,37 @@ from copy import copy
 
 class correlation_matrix_test(correlation_test):
     """
-    Abstract test class to compare correlation matrices.
+    Abstract test class to compare correlation matrices of a set of
+    spiking neurons in a network.
+    The statistical testing method needs to be set in form of a
+    sciunit.Score as score_type.
+
+    Parameters (in dict params):
+    ----------
+    binsize: quantity, None (default: 2*ms)
+        Size of bins used to calculate the correlation coefficients.
+    num_bins: int, None (default: None)
+        Number of bins within t_start and t_stop used to calculate
+        the correlation coefficients.
+    t_start: quantity, None
+        Start of time window used to calculate the correlation coefficients.
+    t_stop: quantity, None
+        Stop of time window used to calculate the correlation coefficients.
+    nan_to_num: bool
+        If true, np.nan are set to 0, and np.inf to largest finite float.
+    binary: bool
+        If true, the binned spike trains are set to be binary.
+    cluster_matrix : bool
+        If true, the matrix is clustered by the hierarchical cluster algorithm
+        scipy.cluster.hierachy.linkage() with 'method' determined by the
+        cluster_method.
+    cluster_method : string (default: 'ward')
+        Method for the hierarchical clustering if cluster_matrix=True
+    remove_autocorr: bool
+        If true, the diagonal values of the matrix are set to 0.
+    edge_threshold: float
+        Passed to draw_graph() and determines the threshold above which edges
+        are draw in the graph corresponding to the matrix.
     """
 
     required_capabilities = (ProducesSpikeTrains, )
@@ -39,16 +72,19 @@ class correlation_matrix_test(correlation_test):
                         linkagematrix = linkage(squareform(1. - cc_matrix),
                                                 method=self.params['cluster_method'])
                     except:
-                        print 'using fastcluster'
-                        linkagematrix = fastcluster.linkage(squareform(1. - cc_matrix),
+                        if fastcluster_pkg:
+                            print('using fastcluster')
+                            linkagematrix = fastcluster.linkage(squareform(1. - cc_matrix),
                                                         method=self.params['cluster_method'])
+                        else:
+                            print('using fastcluster')
                     dendro = dendrogram(linkagematrix, no_plot=True)
                     order = dendro['leaves']
                     model.cluster_order = order
                     cc_matrix = cc_matrix[order, :][:, order]
                 except Exception as e:
-                    print 'Clustering failed!'
-                    print e
+                    print('Clustering failed!')
+                    print(e)
             if 'remove_autocorr' in self.params and self.params['remove_autocorr']:
                 np.fill_diagonal(cc_matrix, 0.)
             model.prediction[self.test_hash] = cc_matrix

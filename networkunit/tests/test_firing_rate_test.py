@@ -5,7 +5,9 @@ from elephant.statistics import mean_firing_rate
 
 class firing_rate_test(two_sample_test):
     """
-    Test to compare the firing rates of a set of neurons in a network.
+    Test to compare the firing rates of a set of spiking neurons in a network.
+    The statistical testing method needs to be set in form of a
+    sciunit.Score as score_type.
     """
 
     required_capabilities = (ProducesSpikeTrains, )

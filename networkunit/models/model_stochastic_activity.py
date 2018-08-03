@@ -1,11 +1,11 @@
 import sciunit
-from networkunit.capabilities import ProducesSpikeTrains
+from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
 import numpy as np
 from elephant.spike_train_generation import single_interaction_process as SIP
 from elephant.spike_train_generation import compound_poisson_process as CPP
 from elephant.spike_train_generation import homogeneous_poisson_process as HPP
 from quantities import ms, Hz, quantity
-from networkunit.plots import rasterplot
+from networkunit.plots.plot_rasterplot import rasterplot
 import neo
 import random
 
@@ -106,8 +106,8 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
                 nbr_of_pairs[i] = int(A_size * (A_size - 1) / 2.)
                 new_correlation = new_correlation + [self.correlations[i]]*nbr_of_pairs[i]
             if sum(nbr_of_pairs)*2 > self.size:
-                raise ValueError, 'Assemblies are too large to generate an ' \
-                                  'pairwise equivalent with the network size.'
+                raise ValueError('Assemblies are too large to generate an ' +
+                                 'pairwise equivalent with the network size.')
             self.assembly_sizes = [2] * sum(nbr_of_pairs)
             self.correlations = new_correlation
             self.correlation_method = 'CPP'
@@ -115,7 +115,7 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
         # generate correlated assemblies
         for i, a_size in enumerate(self.assembly_sizes):
             if a_size < 2:
-                raise ValueError, 'An assembly must consists of at least two units.'
+                raise ValueError('An assembly must consists of at least two units.')
             generated_sts = int(np.sum(self.assembly_sizes[:i]))
             spiketrains[generated_sts:generated_sts + a_size] \
                 = self._generate_assembly(correlation=self.correlations[i],

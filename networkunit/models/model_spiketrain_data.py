@@ -34,7 +34,7 @@ class spiketrain_data(simulation_data, ProducesSpikeTrains):
             List of neo.SpikeTrains of length N
          """
         if file_path[-2:] != 'h5':
-            raise IOError, 'file must be in hdf5 file in Neo format'
+            raise IOError('file must be in hdf5 file in Neo format')
 
         if client is None:
             data = NeoHdf5IO(file_path)
@@ -92,7 +92,7 @@ class spiketrain_data(simulation_data, ProducesSpikeTrains):
                 if type(st) == neo.core.spiketrain.SpikeTrain:
                     pass
         else:
-            raise TypeError, 'loaded data is not a list of neo.SpikeTrain'
+            raise TypeError('loaded data is not a list of neo.SpikeTrain')
 
         self.spiketrains = self.preprocess(self.spiketrains, **self.params)
         return self.spiketrains

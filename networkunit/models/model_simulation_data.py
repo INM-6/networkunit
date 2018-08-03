@@ -4,7 +4,7 @@ class simulation_data(sciunit.Model):
     """
     Abstract model class which initializes self.params and loads simulation
     via self.load() into self.data.
-    Child class needs to define load function and file_path.
+    Child class needs to define load() function and file_path.
     """
     @property
     def file_path(self):

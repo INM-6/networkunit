@@ -8,4 +8,4 @@ def rasterplot(spiketrains, **kwargs):
     if viziphant:
         return vizi_rasterplot(spiketrains, **kwargs)
     else:
-        print 'Missing viziphant package'
+        print('Missing viziphant package')

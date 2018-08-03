@@ -5,7 +5,7 @@ import matplotlib.colors as colors
 import seaborn as sns
 
 
-def plot_eigenvalues(EWs, ax=None, bins=50, N=None, B=None,
+def eigenvalues(EWs, ax=None, bins=50, N=None, B=None,
                      spectra_method='SCREE', ylim=None,
                      color=sns.color_palette()[0]):
     if ax is None:

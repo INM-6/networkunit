@@ -2,24 +2,27 @@ import numpy as np
 from scipy.linalg import eigh
 import matplotlib.pyplot as plt
 from scipy.cluster.hierarchy import linkage, fcluster, dendrogram
-import fastcluster
+try:
+    import fastcluster
+except:
+    fastcluster_pkg = False
 from scipy.special import binom
 from scipy.spatial.distance import squareform
 from copy import copy
 from scipy.integrate import quad
 import seaborn as sns
 
-def plot_correlation_matrix(matrix, ax=None, remove_autocorr=True, labels=None,
-                            sort=False, cluster=False, linkmethod='ward',
-                            dendrogram_args={}, sort_alpha=0.001,
-                            vmin=None, vmax=None, cmap=None, center=0.,
-                            robust=False, annot=None, fmt='.2g',
-                            annot_kws=None, linewidths=0, linecolor='white',
-                            cbar=True, cbar_kws=None, cbar_ax=None,
-                            square=True, xticklabels='auto', limit_to_1=True,
-                            yticklabels='auto', mask=None, addkwargs={},
-                            rasterized=False,
-                            **kwargs):
+def correlation_matrix(matrix, ax=None, remove_autocorr=True, labels=None,
+                        sort=False, cluster=False, linkmethod='ward',
+                        dendrogram_args={}, sort_alpha=0.001,
+                        vmin=None, vmax=None, cmap=None, center=0.,
+                        robust=False, annot=None, fmt='.2g',
+                        annot_kws=None, linewidths=0, linecolor='white',
+                        cbar=True, cbar_kws=None, cbar_ax=None,
+                        square=True, xticklabels='auto', limit_to_1=True,
+                        yticklabels='auto', mask=None, addkwargs={},
+                        rasterized=False,
+                        **kwargs):
 
     pltmatrix = copy(matrix)
     order = np.arange(len(matrix))
@@ -39,15 +42,18 @@ def plot_correlation_matrix(matrix, ax=None, remove_autocorr=True, labels=None,
                 linkagematrix = linkage(squareform(1. - pltmatrix),
                                         method=linkmethod)
             except:
-                print 'using fastcluster'
-                linkagematrix = fastcluster.linkage(squareform(1. - pltmatrix),
-                                                    method=linkmethod)
+                if fastcluster_pkg:
+                    print('using fastcluster')
+                    linkagematrix = fastcluster.linkage(squareform(1. - pltmatrix),
+                                                        method=linkmethod)
+                else:
+                    print('Clustering failed')
             dendro = dendrogram(linkagematrix, no_plot=True, **dendrogram_args)
             order = dendro['leaves']
             pltmatrix = pltmatrix[order, :][:, order]
         except Exception as e:
-            print 'Clustering failed'
-            print e
+            print('Clustering failed')
+            print(e)
             linkagematrix = None
 
     if labels is None:
