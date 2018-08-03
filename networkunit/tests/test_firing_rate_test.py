@@ -19,7 +19,7 @@ class firing_rate_test(two_sample_test):
             rates = model.prediction[self.test_hash]
         else:
             spiketrains = model.produce_spiketrains(**self.params)
-            rates = [mean_firing_rate(st) for st in spiketrains]
+            rates = [mean_firing_rate(st).rescale('Hz') for st in spiketrains]
             model.prediction[self.test_hash] = rates
         return rates
 
