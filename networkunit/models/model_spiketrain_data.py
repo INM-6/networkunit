@@ -44,6 +44,10 @@ class spiketrain_data(simulation_data, ProducesSpikeTrains):
             data = NeoHdf5IO(store_path)
 
         spiketrains = data.read_block().list_children_by_class(SpikeTrain)
+    
+        for i in xrange(len(spiketrains)):
+            spiketrains[i] = spiketrains[i].rescale('ms')
+            
         return spiketrains
 
     def _align_to_zero(self, spiketrains=None):
