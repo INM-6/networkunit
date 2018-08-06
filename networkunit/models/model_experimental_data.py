@@ -9,7 +9,7 @@ class experimental_data(sciunit.Model):
     Child class needs to define load function and file_path.
     """
     @property
-    def monkey(self):
+    def datfile(self):
         raise NotImplementedError
 
 
@@ -28,11 +28,11 @@ class experimental_data(sciunit.Model):
             self.params.update(params)
         else:
             self.params = params
-        self.data = self.load(self.monkey, **self.params)
+        self.data = self.load(self.datfile, **self.params)
         super(experimental_data, self).__init__(name=name, **self.params)
 
 
-    def load(self, monkey, **kwargs):
+    def load(self, datfile, **kwargs):
         raise NotImplementedError
 
 
