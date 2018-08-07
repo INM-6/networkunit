@@ -12,11 +12,10 @@ def sample_histogram(sample1, sample2=None, ax=None, bins=100, palette=None,
     if sample2 is None:
         P, edges = np.histogram(sample1, bins=bins, density=True)
     else:
-        if len(bins)==1:
+        if isinstance(bins, int):
             max_value = max([max(sample1), max(sample2)])
             min_value = min([min(sample1), min(sample2)])
             bins = np.linspace(float(min_value), float(max_value), bins)
-
         P, edges1 = np.histogram(sample1, bins=bins, density=True)
         Q, edges2 = np.histogram(sample2, bins=bins, density=True)
 
