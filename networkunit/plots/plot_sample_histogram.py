@@ -4,7 +4,7 @@ import numpy as np
 
 def sample_histogram(sample1, sample2=None, ax=None, bins=100, palette=None,
                      sample_names=['observation', 'prediction'],
-                     var_name='Measured Parameter', barplot=False, **kwargs):
+                     var_name='Measured Parameter', **kwargs):
     if ax is None:
         fig, ax = plt.subplots()
     if palette is None:
@@ -12,24 +12,19 @@ def sample_histogram(sample1, sample2=None, ax=None, bins=100, palette=None,
     if sample2 is None:
         P, edges = np.histogram(sample1, bins=bins, density=True)
     else:
-        max_value = max([max(sample1), max(sample2)])
-        min_value = min([min(sample1), min(sample2)])
-        edges = np.linspace(float(min_value), float(max_value), bins)
+        if len(bins)==1:
+            max_value = max([max(sample1), max(sample2)])
+            min_value = min([min(sample1), min(sample2)])
+            bins = np.linspace(float(min_value), float(max_value), bins)
 
-        P, edges = np.histogram(sample1, bins=edges, density=True)
-        Q, _____ = np.histogram(sample2, bins=edges, density=True)
+        P, edges = np.histogram(sample1, bins=bins, density=True)
+        Q, _____ = np.histogram(sample2, bins=bins, density=True)
 
     dx = np.diff(edges)[0]
     x = edges[:-1] + dx / 2.
-    if barplot:
-        ax.bar(x, P, label=sample_names[0], color=palette[0])
-    else:
-        ax.plot(x, P, label=sample_names[0], color=palette[0])
+    ax.plot(x, P, label=sample_names[0], color=palette[0])
     if sample2 is not None:
-        if barplot:
-            ax.bar(x, Q, label=sample_names[1], color=palette[1])
-        else:
-            ax.plot(x, Q, label=sample_names[1], color=palette[1])
+        ax.plot(x, Q, label=sample_names[1], color=palette[1])
     ax.set_ylabel('p.d.f.')
     ax.set_xlabel(var_name)
     plt.legend()
