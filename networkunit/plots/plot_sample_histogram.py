@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 
+
 def sample_histogram(sample1, sample2=None, ax=None, bins=100, palette=None,
                      sample_names=['observation', 'prediction'],
                      var_name='Measured Parameter', **kwargs):

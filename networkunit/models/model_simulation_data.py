@@ -1,5 +1,6 @@
 import sciunit
 
+
 class simulation_data(sciunit.Model):
     """
     Abstract model class which initializes self.params and loads simulation

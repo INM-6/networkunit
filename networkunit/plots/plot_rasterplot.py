@@ -4,6 +4,7 @@ try:
 except:
     viziphant = False
 
+
 def rasterplot(spiketrains, **kwargs):
     if viziphant:
         return vizi_rasterplot(spiketrains, **kwargs)

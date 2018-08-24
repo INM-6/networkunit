@@ -2,6 +2,7 @@ import sciunit
 import neo
 from networkunit.plots.plot_rasterplot import rasterplot
 
+
 class experimental_data(sciunit.Model):
     """
     Abstract model class which initializes self.params and loads experimental
@@ -11,7 +12,6 @@ class experimental_data(sciunit.Model):
     @property
     def datfile(self):
         raise NotImplementedError
-
 
     def __init__(self, name=None, **params):
         """
@@ -31,10 +31,8 @@ class experimental_data(sciunit.Model):
         self.data = self.load(self.datfile, **self.params)
         super(experimental_data, self).__init__(name=name, **self.params)
 
-
     def load(self, datfile, **kwargs):
         raise NotImplementedError
-
 
     def produce_spiketrains(self, **kwargs):
         """
@@ -47,10 +45,9 @@ class experimental_data(sciunit.Model):
                 if type(st) == neo.core.spiketrain.SpikeTrain:
                     pass
         else:
-            raise TypeError, 'loaded data is not a list of neo.SpikeTrain'
+            raise TypeError('loaded data is not a list of neo.SpikeTrain')
             
         return self.spiketrains
-    
 
     def show_rasterplot(self, **kwargs):
         return rasterplot(self.spiketrains, **kwargs)
