@@ -98,8 +98,8 @@ class correlation_matrix_test(correlation_test):
                           **kwargs):
 
         matrices, palette, names  = self._create_plotting_samples(model1=model1,
-                                                          model2=model2,
-                                                          palette=palette)
+                                                                  model2=model2,
+                                                                  palette=palette)
         if ax is None:
             fig, ax = plt.subplots(ncols=len(matrices))
         if len(matrices) == 1:

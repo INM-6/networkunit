@@ -42,8 +42,8 @@ class eigenvalue_test(correlation_test):
         else:
             spiketrains = model.produce_spiketrains(**self.params)
             cc_matrix = self.generate_cc_matrix(spiketrains=spiketrains,
-                                                    **self.params)
-            ews, _  = eigh(cc_matrix)
+                                                **self.params)
+            ews, _ = eigh(cc_matrix)
             model.prediction[self.test_hash] = ews
         return ews
 

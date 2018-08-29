@@ -56,12 +56,12 @@ def correlation_matrix(matrix, ax=None, remove_autocorr=True, labels=None,
             print(e)
             linkagematrix = None
 
-    if labels is None:
-        labels = matrix.shape[0]/10
-        if labels == 1:
-            labels = 2
-    else:
-        assert len(labels) == len(pltmatrix)
+    # if labels is None:
+    #     labels = matrix.shape[0]/10
+    #     if labels == 1:
+    #         labels = 2
+    # else:
+    #     assert len(labels) == len(pltmatrix)
 
     if remove_autocorr:
         np.fill_diagonal(pltmatrix, 0)
@@ -72,8 +72,8 @@ def correlation_matrix(matrix, ax=None, remove_autocorr=True, labels=None,
                             annot_kws=annot_kws, linewidths=linewidths,
                             linecolor=linecolor,
                             cbar_kws=cbar_kws, cbar_ax=cbar_ax,
-                            xticklabels=labels,
-                            yticklabels=labels, mask=mask,
+                            xticklabels=xticklabels,
+                            yticklabels=yticklabels, mask=mask,
                             rasterized=rasterized, **addkwargs)
     if sort or cluster:
         return order
