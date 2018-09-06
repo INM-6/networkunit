@@ -4,8 +4,6 @@ channels:
   - defaults
 dependencies:
   - rise
-  - elephant
-  - sciunit
   - jupyter
   - tabulate
   - networkx
