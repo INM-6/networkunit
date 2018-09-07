@@ -9,6 +9,7 @@ dependencies:
   - networkx
   - fastcluster
   - seaborn
+  - pyyaml
   - pip:
     - elephant
     - gitpython

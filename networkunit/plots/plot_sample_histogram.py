@@ -28,7 +28,10 @@ def sample_histogram(sample1, sample2=None, ax=None, bins=100, palette=None,
         dx2 = np.diff(edges2)[0]
         x2 = edges2[:-1] + dx2 / 2.
         ax.plot(x2, Q, label=sample_names[1], color=palette[1])
-    ax.set_ylabel('p.d.f.')
+    if density:
+       ax.set_ylabel('p.d.f.')
+    else:
+        ax.set_ylabel('count')
     ax.set_xlabel(var_name)
     plt.legend()
     return ax
