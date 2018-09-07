@@ -14,5 +14,6 @@ dependencies:
     - gitpython
     - neo
     - sciunit
+    - rdflib
 
 
