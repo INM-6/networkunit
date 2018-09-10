@@ -1,9 +1,8 @@
-name: py27
+name: py36
 channels:
   - damianavila82
   - defaults
 dependencies:
-  - python=2.7
   - rise
   - jupyter
   - tabulate
