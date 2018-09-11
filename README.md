@@ -20,7 +20,7 @@ compute the score TestScore.
 
 <img src="./figures/flowchart.png" width="500" />
 
-A showcase example on how to use NetworkUnit can be found [here](https://web.gin.g-node.org/INM-6/network_validation).
+Showcase examples on how to use NetworkUnit can be found [here](https://web.gin.g-node.org/INM-6/network_validation) or via the launch-binder-button at the top.
 
 ### Overview of tests
 
