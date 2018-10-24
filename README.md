@@ -1,4 +1,4 @@
-# NetworkUnit
+# NetworkUnit [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/INM-6/NetworkUnit/interactive_example?filepath=examples%2Findex.ipynb)
 A [SciUnit](https://github.com/scidash/sciunit) library for validation testing of spiking networks.
 
 ### Concept
@@ -18,9 +18,9 @@ to generate a model prediction. The initialized test instance XYTest_paramZ
 makes use of its judge() function to evaluate this model prediction and 
 compute the score TestScore.
 
-<img src="flowchart.png" width="500" />
+<img src="./figures/flowchart.png" width="500" />
 
-A showcase example on how to use NetworkUnit can be found [here](https://web.gin.g-node.org/INM-6/network_validation).
+Showcase examples on how to use NetworkUnit can be found [here](https://web.gin.g-node.org/INM-6/network_validation) or via the launch-binder-button at the top.
 
 ### Overview of tests
 
