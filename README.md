@@ -6,21 +6,26 @@ The NetworkUnit module builds upon the formalized validation scheme of the SciUn
 which enables the validation of *model*s against experimental data (or other models) via *tests*.
 A test is matched to the model by *capabilities* and quantitatively evaluated by a *score*.
 The following figure illustrates a typical test design within NetworkUnit. 
-The blue boxes indicate the components of the implementation of the validation test, 
-i.e. classes and class instances. The red boxes represent the data input, 
-i.e. experimental data and parameter specifications. 
-The relation between the boxes are indicated by annotated arrows. 
-The relevant functionality of some components for the computation of test 
-score is indicated by pseudo-code. The capability class ProduceXY contains 
-the function calc_xy(). The test XYTest has a function generate_prediction() 
-which makes use of this capability, inherited to the model class, 
-to generate a model prediction. The initialized test instance XYTest_paramZ 
-makes use of its judge() function to evaluate this model prediction and 
-compute the score TestScore.
+The blue boxes indicate the components of the implementation of the validation test, i.e., 
+classes, class instances, data sets, and parameters. 
+The relation between the boxes are indicated by annotated arrows.The basic functionality is 
+shown by green arrows.  The difference in the test design for comparing against experimental 
+data (validation) and  another  simulation  (substantiation)  is  indicated  by  yellow  and  
+red  arrows,  respectively.  The  relevant  functionality  of  some  components  for  the  
+computation  of  test  score  is  indicated  by  pseudo-code.  The  capability  
+class `ProducesProperty` contains  the  function `calc_property()`. The test `XYTest` has a function 
+`generate_prediction()` which makes use of this capability, inherited by the model class, 
+to generate a model prediction. The initialized test instance `XYTest_paramZ` makes use of its 
+`judge()` function to evaluate this model prediction and compute the score `TestScore`. 
+The `XYTest` can inherit from multiple abstract test classes (`BaseTest`), 
+which is for example used with the `M2MTest` to add the functionality of evaluating multiple model classes. 
+To make the test executable it has to be linked to a ScoreType and all free parameters need to be set 
+(by a `Params` dict) to ensure a reproducible result.
 
-<img src="./figures/flowchart.png" width="500" />
+<img src="./figures/NetworkUnit_Flowchart_X2M_M2M.png" width="500" />
 
-Showcase examples on how to use NetworkUnit can be found [here](https://web.gin.g-node.org/INM-6/network_validation) or via the launch-binder-button at the top.
+Showcase examples on how to use NetworkUnit can be found [in this repository](https://web.gin.g-node.org/INM-6/network_validation) 
+and interactive reveal.js slides are accessible via the launch-binder button at the top.
 
 ### Overview of tests
 
@@ -39,7 +44,7 @@ Showcase examples on how to use NetworkUnit can be found [here](https://web.gin.
 
 Inheritance order in case of multiple inheritance for derived test classes: 
 ```python 
-class new_test(sciunit.TestM2M, graph_centrality_helperclass, parent_test_class)
+class new_test(sciunit.TestM2M, graph_centrality_helperclass, <base_test_class>)
 ```
 
 ### Overview of scores
