@@ -4,7 +4,7 @@ from setuptools import setup
 import os
 import sys
 
-long_description = open("README.md").read()
+long_description = open("README.rst").read()
 with open('requirements.txt', 'r') as fp:
     install_requires = fp.read()
 extras_require = {}
@@ -41,4 +41,3 @@ setup(
         'Programming Language :: Python :: 3',
         'Topic :: Scientific/Engineering']
 )
-              
