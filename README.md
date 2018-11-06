@@ -1,4 +1,5 @@
 # NetworkUnit [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/INM-6/NetworkUnit/master?filepath=examples%2Findex.ipynb)
+
 A [SciUnit](https://github.com/scidash/sciunit) library for validation testing of spiking networks.
 
 ### Concept

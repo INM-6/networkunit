@@ -1,0 +1,6 @@
+# Include requirements
+include requirement*.txt
+include README.md
+include LICENSE.txt
+include AUTHORS.txt
+
