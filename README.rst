@@ -13,6 +13,13 @@ A SciUnit_ library for validation testing of spiking networks.
 .. role:: py(code)
    :language: python
 
+Installation
+------------
+
+.. code:: bash
+
+    pip install networkunit
+
 Concept
 -------
 The NetworkUnit module builds upon the formalized validation scheme of the SciUnit package,
