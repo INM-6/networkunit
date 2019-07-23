@@ -18,22 +18,15 @@ class eigenangle(sciunit.Score):
     between the corresponding eigenvectors.
     Either the binsize or the number of bins must be provides to perform the
     signficnace test.
-
-    Parameters
-    ----------
-        all_to_all : bool (default False)
-            If False, only the angle between first and first eigenvectors is
-            calculated, second and second, and so on, else all combinations are
-            taken into account.
-
     """
     score = np.nan
 
     @classmethod
-    def compute(self, matrix_1, matrix_2, all_to_all=False, bin_num=None,
+    def compute(self, matrix_1, matrix_2, bin_num=None,
                 binsize=None, t_start=None, t_stop=None, **kwargs):
         if bin_num is None:
-            if binsize is not None and (t_start is not None and t_stop is not None):
+            if binsize is not None
+            and (t_start is not None and t_stop is not None):
                     bin_num = float((t_stop - t_start) / binsize)
             else:
                 raise ValueError('To few parameters to compute bin_num!')
@@ -44,191 +37,146 @@ class eigenangle(sciunit.Score):
         EWs2 = EWs2[::-1]
         EVs1 = EVs1.T[::-1]
         EVs2 = EVs2.T[::-1]
-        for count, ev in enumerate(EVs1):
-            EVs1[count] = ev * np.sign(ev[np.argmax(np.absolute(ev))])
-        for count, ev in enumerate(EVs2):
-            EVs2[count] = ev * np.sign(ev[np.argmax(np.absolute(ev))])
+        for count, (ev1, ev2) in enumerate(zip(EVs1, EVs2):
+            EVs1[count] = ev1 * np.sign(ev1[np.argmax(np.absolute(ev1))])
+            EVs2[count] = ev2 * np.sign(ev2[np.argmax(np.absolute(ev2))])
+            EVs1[count] /= np.linalg.norm(ev1)
+            EVs2[count] /= np.linalg.norm(ev2)
 
         M = np.dot(EVs1, EVs2.T)
         M[np.argwhere(M > 1)] = 1.
 
         if len(M) == 1:
             angles = np.arccos(M[0])
-            angle_nbr = 1
-            weights = np.sqrt((EWs1 ** 2 + EWs2 ** 2) / 2.)
         else:
-            if all_to_all:
-                angles = np.arccos(M.flatten())
-                weights = np.zeros((len(EWs1), len(EWs1)))
-                for count1, ew1 in enumerate(EWs1):
-                    for count2, ew2 in enumerate(EWs2):
-                        weights[count1, count2] = np.sqrt(
-                            (ew1 ** 2 + ew2 ** 2) / 2.)
-                weights = weights.flatten()
-                angle_nbr = N ** 2
-            else:
-                angles = np.arccos(np.diag(M))
-                weights = np.sqrt((EWs1 ** 2 + EWs2 ** 2) / 2.)
-                angle_nbr = N
+            angles = np.arccos(np.diag(M))
 
-        weights = weights / sum(weights)
-        sample_angles = angles * weights * angle_nbr
-        weighted_mean_angle = np.mean(sample_angles)
+        weights = np.sqrt((EWs1 ** 2 + EWs2 ** 2) / 2.)
+        smallness = 1 - angles / (np.pi/2.)
+        weights = weights / sum(weights) * N
+        weighted_smallness = smallness * weights
+        similarity_score = np.mean(weighted_smallness)
 
-        x = np.linspace(0, np.pi, 120)
-        y = self.weighted_angle_distribution(x, N, B=bin_num, use_gaus=all_to_all)
-        norm = np.sum(y) * (x[1] - x[0])
-        y = y / norm
-        sample_std = np.std(self.inverse_transform_sampling(x, y, n_samples=10**6))
-        sigma = sample_std / (2. * np.sqrt(angle_nbr))
-        pvalue = quad(mlab.normpdf, 0., weighted_mean_angle, args=(np.pi/2., sigma))[0]
+        pvalue = quad(self.null_distribution,
+                      similarity_score, np.inf,
+                      args=(N, bin_num))[0]
 
-        weighted_angle_score = (np.pi/2. - weighted_mean_angle) / (np.pi/2.)
-
-        self.score = eigenangle(weighted_angle_score)
+        self.score = eigenangle(similarity_score)
         self.score.data_size = (N, N)
         self.score.pvalue = pvalue
         return self.score
 
     @classmethod
-    def weighted_angle_distribution(self, phi, N, B, use_gaus=False):
+    def null_distribution(self, eta, N, B, return_plotting_dist=False):
         # for weights ~ EW
 
         q = B / float(N)
         assert q >= 1
-        x_min = (1 - np.sqrt(1. / q)) ** 2
-        x_max = (1 + np.sqrt(1. / q)) ** 2
 
-        def wigner_dist(x):
-            y = q / (2 * np.pi) * np.sqrt((x_max - x) * (x - x_min)) / x
+        def marchenko_pastur(x, alpha):
+            assert alpha >= 1
+            x_min = (1 - np.sqrt(1. / alpha)) ** 2
+            x_max = (1 + np.sqrt(1. / alpha)) ** 2
+            y = alpha / (2 * np.pi * x) * np.sqrt((x_max - x) * (x - x_min))
             if np.isnan(y):
                 return 0
             else:
                 return y
 
-        def gaussian(x, mu, sig):
-            return 1./(sig*np.sqrt(2.*np.pi)) * \
-                   np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
+        def weight_dist(x):
+            # ToDo: add alternative distributions for e.g. asymmetric matrices
+            return merchenko_pastur(x)
 
-        def eff_dist(x):
-            if use_gaus:
-                return gaussian(x,1.,np.sqrt(N)/100.)
-            else:
-                return wigner_dist(x)
-
-        y = lambda x: np.sin(x) ** (N - 2)
-        angle_norm = quad(y, 0, np.pi)[0]
-
-        def angle_dist(phi):
-            if phi >= 0 and phi <= np.pi:
-                return y(phi) / angle_norm
+        def angle_smallness_dist(D, N):
+            if D >= -1 and D <= 1:
+                return math.gamma(N/2.) / (np.sqrt(np.pi) \
+                     * math.gamma((N-1)/2)) \
+                     * np.pi/2 * np.cos(D*np.pi/2)**(N-2)
             else:
                 return 0
 
-        def combined_dist_integrand(x, z):
-            return angle_dist(z / float(x)) * eff_dist(x) * 1. / x
+        def weighted_smallness_dist(D, N, alpha):
+            x_min = (1 - np.sqrt(1. / alpha)) ** 2
+            x_max = (1 + np.sqrt(1. / alpha)) ** 2
 
-        def combined_dist(z):
-            return quad(combined_dist_integrand, x_min, x_max, args=(z,))[0]
+            integrand = lambda x, _D, _N, _alpha: \
+                               angle_smallness_dist(_D / float(x), _N) \
+                               * weight_dist(x, _alpha) * 1. / x
+            return sc.integrate.quad(integrand, x_min, x_max,
+                                     args=(D,N,alpha,))[0]
 
-        if type(phi) == list or type(phi) == np.ndarray:
-            return [combined_dist(z) for z in phi]
-            # may has to be normalized
+        def similarity_score_distribution(eta, N, alpha):
+            integrand = lambda x, N_, alpha_:
+                               x**2 * weighted_smallness_dist(x, N_, alpha_)
+            var = sc.integrate.quad(integrand,
+                                    -np.infty, np.infty,
+                                    args=(N,alpha,))[0]
+            sigma = np.sqrt(var/N)
+            return sc.stats.norm.pdf(eta, 0, sigma)
+
+        if return_plotting_dist:
+            return weighted_smallness_dist
         else:
-            return combined_dist(phi)
+            return similarity_score_distribution(eta, N, q)
 
-    @classmethod
-    def inverse_transform_sampling(self, x, y, n_samples=10**6):
-        x = x + np.diff(x)[0] / 2.
-        x = np.append(np.array([0]), x)
-        cum_values = np.zeros(len(x))
-        cum_values[1:] = np.cumsum(y * np.diff(x))
-        inv_cdf = interpolate.interp1d(cum_values, x)
-        r = np.random.rand(n_samples)
-        return inv_cdf(r)
 
     @classmethod
     def plot(self, matrix_1, matrix_2, ax=None, bin_num=None, palette=None,
-             binsize=None, t_start=None, t_stop=None,
-             log=False, all_to_all=False, **kwargs):
+             binsize=None, t_start=None, t_stop=None, log=False, **kwargs):
 
-        if bin_num is None:
-            if binsize is not None and (t_start is not None and t_stop is not None):
-                    bin_num = float((t_stop - t_start) / binsize)
+            if bin_num is None:
+                if binsize is not None
+                and (t_start is not None and t_stop is not None):
+                        bin_num = float((t_stop - t_start) / binsize)
+                else:
+                    raise ValueError('To few parameters to compute bin_num!')
+            N = len(matrix_1)
+            EWs1, EVs1 = eigh(matrix_1) # returns EWs in ascending order
+            EWs2, EVs2 = eigh(matrix_2)
+            EWs1 = EWs1[::-1]
+            EWs2 = EWs2[::-1]
+            EVs1 = EVs1.T[::-1]
+            EVs2 = EVs2.T[::-1]
+            for count, (ev1, ev2) in enumerate(zip(EVs1, EVs2):
+                EVs1[count] = ev1 * np.sign(ev1[np.argmax(np.absolute(ev1))])
+                EVs2[count] = ev2 * np.sign(ev2[np.argmax(np.absolute(ev2))])
+                EVs1[count] /= np.linalg.norm(ev1)
+                EVs2[count] /= np.linalg.norm(ev2)
+
+            M = np.dot(EVs1, EVs2.T)
+            M[np.argwhere(M > 1)] = 1.
+
+            if len(M) == 1:
+                angles = np.arccos(M[0])
             else:
-                raise ValueError('To few parameters to compute bin_num!')
+                angles = np.arccos(np.diag(M))
+
+            weights = np.sqrt((EWs1 ** 2 + EWs2 ** 2) / 2.)
+            smallness = 1 - angles / (np.pi/2.)
+            weights = weights / sum(weights) * N
+            weighted_smallness = smallness * weights
+            similarity_score = np.mean(weighted_smallness)
 
         if ax is None:
             fig, ax = plt.subplots()
-        if palette is None:
-            palette = [sns.color_palette('Set2')[1], sns.color_palette('Set2')[4]]
 
-        N = len(matrix_1)
-        EWs1, EVs1 = eigh(matrix_1)  # returns EWs in ascending order
-        EWs2, EVs2 = eigh(matrix_2)
-        EWs1 = EWs1[::-1]
-        EWs2 = EWs2[::-1]
-        EVs1 = EVs1.T[::-1]
-        EVs2 = EVs2.T[::-1]
-        for count, ev in enumerate(EVs1):
-            EVs1[count] = ev * np.sign(ev[np.argmax(np.absolute(ev))])
-        for count, ev in enumerate(EVs2):
-            EVs2[count] = ev * np.sign(ev[np.argmax(np.absolute(ev))])
+        ax.set_xlabel(r'Weighted Angle-Smallness$')
 
-        M = np.dot(EVs1, EVs2.T)
-        M[np.argwhere(M > 1)] = 1.
+        edges = np.linspace(0, 1, 120)
+        hist, _ = np.histogram(weighted_smallness, bins=edges, density=True)
 
-        if len(M) == 1:
-            angles = np.arccos(M[0])
-            angle_nbr = 1
-            weights = np.sqrt((EWs1 ** 2 + EWs2 ** 2) / 2.)
-        else:
-            if all_to_all:
-                angles = np.arccos(M.flatten())
-                weights = np.zeros((len(EWs1), len(EWs1)))
-                for count1, ew1 in enumerate(EWs1):
-                    for count2, ew2 in enumerate(EWs2):
-                        weights[count1, count2] = np.sqrt(
-                            (ew1 ** 2 + ew2 ** 2) / 2.)
-                weights = weights.flatten()
-                angle_nbr = N ** 2
-            else:
-                angles = np.arccos(np.diag(M))
-                weights = np.sqrt((EWs1 ** 2 + EWs2 ** 2) / 2.)
-                angle_nbr = N
-
-        weights = weights / sum(weights)
-        sample_angles = angles * weights * angle_nbr
-
-        ax.set_xticks(np.array([0, 0.125, .25, .375, .5, .625, .75, .875, 1]) * np.pi)
-        ax.set_xticklabels(['0', r'$\frac{1}{8}\pi$', r'$\frac{1}{4}\pi$',
-                            r'$\frac{3}{8}\pi$', r'$\frac{1}{2}\pi$',
-                            r'$\frac{5}{8}\pi$', r'$\frac{3}{4}\pi$',
-                            r'$\frac{7}{8}\pi$', r'$\pi$'], fontsize=18)
-
-        ax.set_xlabel(r'Weighted Angle$')
-
-        edges = np.linspace(0, np.pi, 120)
-        hist, _ = np.histogram(sample_angles, bins=edges, density=True)
-
-        if all_to_all:
-            label = [r'$w_{ij}\cdot\angle (\mathbf{v}_i,\mathbf{w}_j):$',
-                     '$\mathbf{v}_i,\mathbf{w}_j \in $'+'$R^{}$'.format('{'+str(N)+'}')]
-        else:
-            label = [r'$w_{ii}\cdot\angle (\mathbf{v}_i,\mathbf{w}_i):$',
-                     '$\mathbf{v}_i,\mathbf{w}_i \in $'+'$R^{}$'.format('{'+str(N)+'}')]
         ax.bar(edges[:-1], hist, np.diff(edges)[0] * .99,
-               color=palette[1], edgecolor='w',
-               label='{}'.format(label[0]))
-        ax.bar([0], [0], width=0, color='w', edgecolor='w',
-               label='{}'.format(label[1]))
+               color=palette[1], edgecolor='w')
 
-        x = np.linspace(0, np.pi, 120)
-        y = self.weighted_angle_distribution(x, N, B=bin_num, use_gaus=all_to_all)
-        norm = np.sum(y) * (x[1] - x[0])
+        weighted_smallness_dist = self.null_distribution(eta=0, N=N, B=bin_num,
+                                                    return_plotting_dist=True)
+
+        y = [weighted_smallness_dist(x, N=N, alpha=bin_num/N) for x in edges]
+        norm = np.sum(y) * (edges[1] - edges[0])
         ax.plot(x, np.array(y) / norm, color=palette[0],
-                label='RMT Prediction')
-        ax.axvline(np.mean(sample_angles), color='k', ls='--', label='weighted mean angle')
+                label='Prediction')
+        ax.axvline(np.mean(weighted_smallness), color='k', ls='--',
+                   label='Samples')
 
         ax.set_yticks([])
         plt.legend()
