@@ -12,14 +12,14 @@ from scipy.stats import levene
 
 #==============================================================================
 
-class LeveneScore(sciunit.Score):
+class levene_score(sciunit.Score):
     """
     A Levene Test score.
     Null hypothesis: homogeneity of variance or homoscedasticity
     """
 
 #    _allowed_types = (bool,) ## TODO ## don't know what to set here
-    
+
     _description = ("Levene's test is an inferential statistic used to assess the equality of variances. "
                   + "It tests the null hypothesis that the population variances are equal "
                   + "(called homogeneity of variance or homoscedasticity). "
@@ -32,11 +32,11 @@ class LeveneScore(sciunit.Score):
         """
         Computes p-value of probability that variances are equal.
         """
-        
+
         x = prediction[~np.isnan(prediction)]
         y = observation[~np.isnan(observation)]
         pvalue = levene(x, y).pvalue
-        return LeveneScore(pvalue)
+        return levene_score(pvalue)
 
     @property
     def sort_key(self):

@@ -20,13 +20,11 @@ class power_spectrum_test(two_sample_test):
     required_capabilities = (ProducesSpikeTrains,)
 
     def generate_prediction(self, model, **kwargs):
-        if kwargs:
-            self.params.update(kwargs)
-        if not hasattr(model, 'prediction'):
-            model.prediction = {}
-        if self.test_hash in model.prediction:
-            psd = model.prediction[self.test_hash]
-        else:
+        psd = self.get_prediction(model)
+        if psd is None:
+            if kwargs:
+                self.params.update(kwargs)
+
             spiketrains = model.produce_spiketrains(**self.params)
 
             self._set_default_param('binsze', 10 * pq.ms)
@@ -56,9 +54,10 @@ class power_spectrum_test(two_sample_test):
                                    scaling=self.params['scaling'],
                                    axis=self.params['axis'])
             model.psd_freqs = freqs
-            model.prediction[self.test_hash] = np.squeeze(psd)  # ToDO: PSD samples (ensure same freqs!??)
             # ToDo: How to quantitatively compare PSD distributions ??
-        return np.squeeze(psd)
+            psd = np.squeeze(psd)
+            self.set_prediction(model, psd)
+        return psd
 
     def _set_default_param(self, pname, value):
         if pname not in self.params:

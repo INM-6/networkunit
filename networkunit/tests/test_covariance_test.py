@@ -32,14 +32,17 @@ class covariance_test(two_sample_test):
     def generate_prediction(self, model, **kwargs):
         # call the function of the required capability of the model
         # and pass the parameters of the test class instance in case the
-        if kwargs:
-            self.params.update(kwargs)
-        if 'binsize' not in self.params and 'num_bins' not in self.params:
-            self.params['binsize'] = 2*ms
-
-        self.spiketrains = model.produce_spiketrains(**self.params)
-        return self.generate_covariances(spiketrain_list=self.spiketrains,
-                                         **self.params)
+        covariances = self.get_prediction(model)
+        if covariances is None:
+            if kwargs:
+                self.params.update(kwargs)
+            if 'binsize' not in self.params and 'num_bins' not in self.params:
+                self.params['binsize'] = 2*ms
+            self.spiketrains = model.produce_spiketrains(**self.params)
+            covariances = self.generate_covariances(self.spiketrains,
+                                                    **self.params)
+            self.set_prediction(model, covariances)
+        return covariances
 
     def validate_observation(self, observation):
         # ToDo: Check if observation values are legit (non nan, positive, ...)

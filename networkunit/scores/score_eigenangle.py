@@ -25,7 +25,7 @@ class eigenangle(sciunit.Score):
     def compute(self, matrix_1, matrix_2, bin_num=None,
                 binsize=None, t_start=None, t_stop=None, **kwargs):
         if bin_num is None:
-            if binsize is not None
+            if binsize is not None \
             and (t_start is not None and t_stop is not None):
                     bin_num = float((t_stop - t_start) / binsize)
             else:
@@ -37,7 +37,7 @@ class eigenangle(sciunit.Score):
         EWs2 = EWs2[::-1]
         EVs1 = EVs1.T[::-1]
         EVs2 = EVs2.T[::-1]
-        for count, (ev1, ev2) in enumerate(zip(EVs1, EVs2):
+        for count, (ev1, ev2) in enumerate(zip(EVs1, EVs2)):
             EVs1[count] = ev1 * np.sign(ev1[np.argmax(np.absolute(ev1))])
             EVs2[count] = ev2 * np.sign(ev2[np.argmax(np.absolute(ev2))])
             EVs1[count] /= np.linalg.norm(ev1)
@@ -106,7 +106,7 @@ class eigenangle(sciunit.Score):
                                      args=(D,N,alpha,))[0]
 
         def similarity_score_distribution(eta, N, alpha):
-            integrand = lambda x, N_, alpha_:
+            integrand = lambda x, N_, alpha_: \
                                x**2 * weighted_smallness_dist(x, N_, alpha_)
             var = sc.integrate.quad(integrand,
                                     -np.infty, np.infty,
@@ -124,44 +124,43 @@ class eigenangle(sciunit.Score):
     def plot(self, matrix_1, matrix_2, ax=None, bin_num=None, palette=None,
              binsize=None, t_start=None, t_stop=None, log=False, **kwargs):
 
-            if bin_num is None:
-                if binsize is not None
-                and (t_start is not None and t_stop is not None):
-                        bin_num = float((t_stop - t_start) / binsize)
-                else:
-                    raise ValueError('To few parameters to compute bin_num!')
-            N = len(matrix_1)
-            EWs1, EVs1 = eigh(matrix_1) # returns EWs in ascending order
-            EWs2, EVs2 = eigh(matrix_2)
-            EWs1 = EWs1[::-1]
-            EWs2 = EWs2[::-1]
-            EVs1 = EVs1.T[::-1]
-            EVs2 = EVs2.T[::-1]
-            for count, (ev1, ev2) in enumerate(zip(EVs1, EVs2):
-                EVs1[count] = ev1 * np.sign(ev1[np.argmax(np.absolute(ev1))])
-                EVs2[count] = ev2 * np.sign(ev2[np.argmax(np.absolute(ev2))])
-                EVs1[count] /= np.linalg.norm(ev1)
-                EVs2[count] /= np.linalg.norm(ev2)
-
-            M = np.dot(EVs1, EVs2.T)
-            M[np.argwhere(M > 1)] = 1.
-
-            if len(M) == 1:
-                angles = np.arccos(M[0])
+        if bin_num is None:
+            if binsize is not None \
+            and (t_start is not None and t_stop is not None):
+                    bin_num = float((t_stop - t_start) / binsize)
             else:
-                angles = np.arccos(np.diag(M))
+                raise ValueError('To few parameters to compute bin_num!')
+        N = len(matrix_1)
+        EWs1, EVs1 = eigh(matrix_1) # returns EWs in ascending order
+        EWs2, EVs2 = eigh(matrix_2)
+        EWs1 = EWs1[::-1]
+        EWs2 = EWs2[::-1]
+        EVs1 = EVs1.T[::-1]
+        EVs2 = EVs2.T[::-1]
+        for count, (ev1, ev2) in enumerate(zip(EVs1, EVs2)):
+            EVs1[count] = ev1 * np.sign(ev1[np.argmax(np.absolute(ev1))])
+            EVs2[count] = ev2 * np.sign(ev2[np.argmax(np.absolute(ev2))])
+            EVs1[count] /= np.linalg.norm(ev1)
+            EVs2[count] /= np.linalg.norm(ev2)
 
-            weights = np.sqrt((EWs1 ** 2 + EWs2 ** 2) / 2.)
-            smallness = 1 - angles / (np.pi/2.)
-            weights = weights / sum(weights) * N
-            weighted_smallness = smallness * weights
-            similarity_score = np.mean(weighted_smallness)
+        M = np.dot(EVs1, EVs2.T)
+        M[np.argwhere(M > 1)] = 1.
 
+        if len(M) == 1:
+            angles = np.arccos(M[0])
+        else:
+            angles = np.arccos(np.diag(M))
+
+        weights = np.sqrt((EWs1 ** 2 + EWs2 ** 2) / 2.)
+        smallness = 1 - angles / (np.pi/2.)
+        weights = weights / sum(weights) * N
+        weighted_smallness = smallness * weights
+        similarity_score = np.mean(weighted_smallness)
+        
         if ax is None:
             fig, ax = plt.subplots()
 
         ax.set_xlabel(r'Weighted Angle-Smallness$')
-
         edges = np.linspace(0, 1, 120)
         hist, _ = np.histogram(weighted_smallness, bins=edges, density=True)
 

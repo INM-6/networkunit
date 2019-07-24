@@ -23,17 +23,40 @@ class two_sample_test(sciunit.Test):
 
     def generate_prediction(self, model, **kwargs):
         """
-        To be overwritten by child class
+        To be overwritten in child class. The following example code
+        should be reused to enable cache storage and prevent multiple
+        calculation.
         """
-        self.params.update(kwargs)
-        try:
-            return model.produce_sample(**self.params)
-        except:
+        if kwargs:
+            self.params.update(kwargs)
+        prediction = self.get_prediction(model)
+        if prediction is None:
+            #############################
+            # calculate prediction here #
             raise NotImplementedError("")
+            #############################
+            self.set_prediction(model, prediction)
+        return prediction
 
     def compute_score(self, observation, prediction):
         score = self.score_type.compute(observation, prediction, **self.params)
         return score
+
+    def get_prediction(self, model, key=self.test_hash):
+        prediction = None
+        if hasattr(model, 'backend'):
+            if model._backend.use_memory_cache:
+                prediction = model._backend.get_memory_cache(key=key)
+            if model._backend.use_disk_cache:
+                prediction = model._backend.get_disk_cache(key=key)
+        return prediction
+
+    def set_prediction(self, model, prediction, key=self.test_hash):
+        if hasattr(model, 'backend'):
+            if model._backend.use_memory_cache:
+                model._backend.set_memory_cache(prediction, key=key)
+            if model._backend.use_disk_cache:
+                model._backend.set_disk_cache(prediction, key=key)
 
     def _create_plotting_samples(self, model1=None, model2=None, palette=None):
         samples = []
@@ -139,4 +162,3 @@ class two_sample_test(sciunit.Test):
         #     self.visualize_sample(model=model, ax=ax, palette=palette)
 
         return ax
-

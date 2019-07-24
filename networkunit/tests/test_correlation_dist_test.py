@@ -31,17 +31,12 @@ class correlation_dist_test(correlation_test):
     def generate_prediction(self, model, **kwargs):
         # call the function of the required capability of the model
         # and pass the parameters of the test class instance in case the
-        if kwargs:
-            self.params.update(kwargs)
-        if not hasattr(model, 'prediction'):
-            model.prediction = {}
-        if self.test_hash in model.prediction:
-            cc_samples = model.prediction[self.test_hash]
-        else:
+        cc_samples = self.get_prediction(model)
+        if cc_samples is None:
+            if kwargs:
+                self.params.update(kwargs)
             spiketrains = model.produce_spiketrains(**self.params)
             cc_samples = self.generate_correlations(spiketrains=spiketrains,
                                                     **self.params)
-            model.prediction[self.test_hash] = cc_samples
+            self.set_prediction(model, cc_samples)
         return cc_samples
-
-

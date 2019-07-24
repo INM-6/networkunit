@@ -53,11 +53,8 @@ class correlation_matrix_test(correlation_test):
     def generate_prediction(self, model, **kwargs):
         # call the function of the required capability of the model
         # and pass the parameters of the test class instance in case the
-        if not hasattr(model, 'prediction'):
-            model.prediction = {}
-        if self.test_hash in model.prediction:
-            cc_matrix = model.prediction[self.test_hash]
-        else:
+        cc_matrix = self.get_prediction(model)
+        if cc_matrix is None:
             if kwargs:
                 self.params.update(kwargs)
             spiketrains = model.produce_spiketrains(**self.params)
@@ -87,7 +84,7 @@ class correlation_matrix_test(correlation_test):
                     print(e)
             if 'remove_autocorr' in self.params and self.params['remove_autocorr']:
                 np.fill_diagonal(cc_matrix, 0.)
-            model.prediction[self.test_hash] = cc_matrix
+            self.set_prediction(model, cc_matrix)
         return cc_matrix
 
     def visualize_samples(self, model1=None, model2=None, ax=None, labels=None,
