@@ -40,5 +40,5 @@ class isi_variation_test(two_sample_test):
                 isi_var = [float(item) for sublist in isi_list for item in sublist]
             else:
                 raise ValueError('Variation measure not known.')
-            self.set_prediction(model, rates)
+            self.set_prediction(model, isi_var)
         return isi_var

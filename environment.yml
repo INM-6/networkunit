@@ -16,8 +16,10 @@ dependencies:
     - cython==0.29
     - numpy==1.15.4
     - scipy==1.2.1
-    - elephant==0.6.0
+    - elephant==0.6.2
     - gitpython==2.1.11
     - neo==0.7.1
-    - sciunit==0.2.0.2
+    - sciunit==0.2.1
     - rdflib==4.2.2
+    - odml==1.4.2
+    - git+git://github.com/INM-6/NetworkUnit.git

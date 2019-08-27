@@ -35,7 +35,7 @@ class graph_centrality_helperclass(sciunit.Test):
         if prediction is None:
             if kwargs:
                 self.params.update(kwargs)
-            if 'graph_measure' not self.params:
+            if 'graph_measure' not in self.params:
                 raise ValueError('No graph_measure set!')
             matrix = super(graph_centrality_helperclass, self).\
                                         generate_prediction(model, **kwargs)

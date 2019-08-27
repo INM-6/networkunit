@@ -42,7 +42,9 @@ class two_sample_test(sciunit.Test):
         score = self.score_type.compute(observation, prediction, **self.params)
         return score
 
-    def get_prediction(self, model, key=self.test_hash):
+    def get_prediction(self, model, key=None):
+        if key is None:
+            key = self.test_hash
         prediction = None
         if hasattr(model, 'backend'):
             if model._backend.use_memory_cache:
@@ -51,7 +53,9 @@ class two_sample_test(sciunit.Test):
                 prediction = model._backend.get_disk_cache(key=key)
         return prediction
 
-    def set_prediction(self, model, prediction, key=self.test_hash):
+    def set_prediction(self, model, prediction, key=None):
+        if key is None:
+            key = self.test_hash
         if hasattr(model, 'backend'):
             if model._backend.use_memory_cache:
                 model._backend.set_memory_cache(prediction, key=key)
