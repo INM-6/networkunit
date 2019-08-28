@@ -19,6 +19,8 @@ class two_sample_test(sciunit.Test):
 
     def __init__(self, observation=None, name=None, **params):
         self.test_hash = uuid4().hex
+        if hasattr(self, 'params'):
+            self.default_params = self.params
         super(two_sample_test,self).__init__(observation, name=name, **params)
 
     def generate_prediction(self, model, **kwargs):
