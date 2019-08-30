@@ -65,10 +65,8 @@ class loaded_data(sciunit.Model):
             self._backend = available_backends[name]()
         elif name is None:
             # The base class should not be called.
-            raise Exception(("A backend (e.g. 'jNeuroML' or 'NEURON') "
-                             "must be selected"))
+            raise Exception(("A backend must be selected"))
         else:
-            raise Exception("Backend %s not found in backends.py"
-                            % name)
+            raise Exception("Backend %s not found in backends" % name)
         self._backend.model = self
         self._backend.init_backend(*args, **kwargs)

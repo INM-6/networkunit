@@ -85,7 +85,7 @@ students_t          Student't test                      sample mean
 ks_distance         Kolmogorov-Smirnov test             sample distribution
 kl_divergence       Kullback-Leibler divergence         sample entropy
 mwu_statistic       Mann-Whitney U test                 rank sum
-LeveneScore         Levene's test                       sample variance
+levene_score        Levene's test                       sample variance
 effect_size         Effect size                         standardized mean
 best_effect_size    Bayesian estimation effect size     standardized mean
 ================    ===============================     ===================
@@ -96,7 +96,7 @@ Overview of model classes
 ===================     ===================     ===============     ==================================
 Model name              Capability              Parent class        Purpose
 ===================     ===================     ===============     ==================================
-simulation_data         \-                      sciunit.Model       loading simulated data
+loaded_data         \-                      sciunit.Model       loading simulated data
 spiketrain_data         ProducesSpikeTrains     simulation_data     loading simulated spiking data
 stochastic_activity     ProducesSpikeTrains     sciunit.Model       generating stochastic spiking data
 ===================     ===================     ===============     ==================================
