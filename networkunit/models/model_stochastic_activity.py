@@ -71,14 +71,15 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
               'shuffle': False,
               'shuffle_seed': None}
 
-    def __init__(self, name=None, **params):
+    def __init__(self, name=None, backend='storage', **params):
         self.params.update(params)
         # updating params is only for testing reasons
         # for usage in the validation framework, the params need to be fixed!
         self.__dict__.update(self.params)
         self.check_input()
         super(stochastic_activity, self).__init__(name=name, **self.params)
-        self.spiketrains = self.generate_spiketrains()
+        if backend is not None:
+            self.set_backend(backend)
 
     def check_input(self):
         if not type(self.correlations) == list:
@@ -93,6 +94,23 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
         if not self.spiketrains:
             self.spiketrains = self.generate_spiketrains(**kwargs)
         return self.spiketrains
+
+    def get_backend(self):
+        """Return the simulation backend."""
+        return self._backend
+
+    def set_backend(self, backend):
+        """Set the simulation backend."""
+        if isinstance(backend, str) and backend in available_backends:
+            self.backend = backend
+            self._backend = available_backends[backend]()
+        elif backend is None:
+            # The base class should not be called.
+            raise Exception(("A backend must be selected"))
+        else:
+            raise Exception("Backend %s not found in backends" % name)
+        self._backend.model = self
+        self._backend.init_backend(*args, **kwargs)
 
     def generate_spiketrains(self, **kwargs):
         spiketrains = [None] * self.size
