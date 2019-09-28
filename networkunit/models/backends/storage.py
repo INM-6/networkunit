@@ -20,6 +20,6 @@ class storage(Backend):
 
     def _backend_run(self):
         if not os.path.exists(self.model.file_path):
-            raise NotImplementedError('The model class must specify a \
-            file_path from which the simulation results can be loaded.')
+            raise NotImplementedError("The model class must specify a \
+            file_path from which the simulation results can be loaded with the model's load() function.")
         return self.model.load()
