@@ -96,7 +96,7 @@ Overview of model classes
 ===================     ===================     ===============     ==================================
 Model name              Capability              Parent class        Purpose
 ===================     ===================     ===============     ==================================
-loaded_data         \-                      sciunit.Model       loading simulated data
+loaded_data             \-                      sciunit.Model       loading simulated data
 spiketrain_data         ProducesSpikeTrains     simulation_data     loading simulated spiking data
 stochastic_activity     ProducesSpikeTrains     sciunit.Model       generating stochastic spiking data
 ===================     ===================     ===============     ==================================
