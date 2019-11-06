@@ -1,4 +1,5 @@
 import sciunit
+import nest
 import quantities as pq
 from .backends import available_backends
 
@@ -15,13 +16,9 @@ class nest_simulaton(sciunit.models.RunnableModel):
         if model_params is not None:
             self.model_params.update(model_params)
 
-
-        # ToDo: define general defaults, use Nest's own defaults when given
         default_run_params = {"resolution"     : 1*pq.ms,
                               "print_time"     : True,
                               "overwrite_files": True,
-                              "grng_seed"      : 0000,
-                              "rng_seeds"      : [seed*42],
                               "simtime"        : 1000*pq.ms}
 
         set_default_run_params(self, **default_run_params)
@@ -31,14 +28,10 @@ class nest_simulaton(sciunit.models.RunnableModel):
     def init_simulation(self):
         """Initializes the Nest simulation with the run_params.
         Is called from self.backend._backend_run()."""
-
         nest.ResetKernel()
-        # ToDo: add all possible settings, and define defaults
-        nest.SetKernelStatus({"resolution"     : self.run_params['resolution'],
-                              "print_time"     : self.run_params['print_time'],
-                              "overwrite_files": self.run_params['overwrite_files'],
-                              "grng_seed"      : self.run_params['grng_seed'],
-                              "rng_seeds"      : self.run_params['rng_seeds']})
+        kernel_params = nest.GetKernelStatus()
+        kernel_params.update(self.run_params)
+        nest.SetKernelStatus(kernel_params)
         return None
 
 

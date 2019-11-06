@@ -14,7 +14,7 @@ class NestBackend(Backend):
               .format(kwargs.get('use_disk_cache', True)))
         super(NestBackend, self).init_backend(**kwargs)
         return None
-        
+
 
     def _backend_run(self):
         """Run the model via the backend."""
@@ -30,11 +30,14 @@ class NestBackend(Backend):
 
         ## Run Simulation
         starttime = time.time()
-        nest.Simulate(self.model.run_params['simtime'])
+        if callable(getattr(model, 'simulate', None)):
+            results = model.simulate(self.model.run_params['simtime'])
+        else:
+            results = nest.Simulate(self.model.run_params['simtime'])
         endtime = time.time()
         print("Simulation time  : {:.2} s".format(endtime-starttime))
+        return results
 
-        return None
 
     def save_results(self, path='.'):
         # ToDo: use NixIO or similar
