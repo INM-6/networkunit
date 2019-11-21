@@ -1,6 +1,10 @@
 from sciunit.models.backends import Backend
 import os
-import nest
+try:
+    import nest
+    nest_available = True
+except:
+    nest_available = False
 
 class NestBackend(Backend):
     name = 'Nest'

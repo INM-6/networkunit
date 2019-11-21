@@ -1,6 +1,6 @@
 from networkunit.tests.test_two_sample_test import two_sample_test
 from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
-from elephant.statistics import isi, lv, cv #, cv2
+from elephant.statistics import isi, lv, cv2
 
 
 class isi_variation_test(two_sample_test):
@@ -17,7 +17,7 @@ class isi_variation_test(two_sample_test):
 
     required_capabilities = (ProducesSpikeTrains, )
 
-    def generate_prediction(self, model, **kwargs):
+    def generate_prediction(self, model, with_nan=True, **kwargs):
         isi_var = self.get_prediction(model)
         if isi_var is None:
             if kwargs:
@@ -29,13 +29,11 @@ class isi_variation_test(two_sample_test):
             if self.params['variation_measure'] == 'lv':
                 isi_var = []
                 for intervals in isi_list:
-                    if intervals.size > 2:
-                        isi_var.append(lv(intervals))
+                    isi_var.append(lv(intervals, with_nan=with_nan))
             elif self.params['variation_measure'] == 'cv':
                 isi_var = []
                 for intervals in isi_list:
-                    if intervals.size > 2:
-                        isi_var.append(cv(intervals))
+                    isi_var.append(cv2(intervals, with_nan=with_nan))
             elif self.params['variation_measure'] == 'isi':
                 isi_var = [float(item) for sublist in isi_list for item in sublist]
             else:

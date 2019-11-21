@@ -1,9 +1,13 @@
 import sciunit
-import nest
+try:
+    import nest
+    nest_available = True
+except:
+    nest_available = False
 import quantities as pq
 from .backends import available_backends
 
-class nest_simulaton(sciunit.models.RunnableModel):
+class nest_simulation(sciunit.models.RunnableModel):
     # ToDo: How to use attrs?
 
     def __init__(name, backend='Nest', attrs=None, model_params=None):

@@ -8,6 +8,7 @@ from quantities import ms, Hz, quantity
 from networkunit.plots.plot_rasterplot import rasterplot
 import neo
 import random
+from .backends import available_backends
 
 
 class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
@@ -91,7 +92,7 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
         pass
 
     def produce_spiketrains(self, **kwargs):
-        if not self.spiketrains:
+        if not hasattr(self, 'spiketrains'):
             self.spiketrains = self.generate_spiketrains(**kwargs)
         return self.spiketrains
 
@@ -101,10 +102,28 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
 
     def set_backend(self, backend):
         """Set the simulation backend."""
-        if isinstance(backend, str) and backend in available_backends:
-            self.backend = backend
-            self._backend = available_backends[backend]()
-        elif backend is None:
+        if isinstance(backend, str):
+            name = backend
+            args = []
+            kwargs = {}
+        elif isinstance(backend, (tuple, list)):
+            name = ''
+            args = []
+            kwargs = {}
+            for i in range(len(backend)):
+                if i == 0:
+                    name = backend[i]
+                else:
+                    if isinstance(backend[i], dict):
+                        kwargs.update(backend[i])
+                    else:
+                        args += backend[i]
+        else:
+            raise TypeError("Backend must be string, tuple, or list")
+        if name in available_backends:
+            self.backend = name
+            self._backend = available_backends[name]()
+        elif name is None:
             # The base class should not be called.
             raise Exception(("A backend must be selected"))
         else:
