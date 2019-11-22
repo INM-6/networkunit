@@ -21,10 +21,10 @@ class nest_simulation(sciunit.models.RunnableModel):
         if model_params is not None:
             self.model_params.update(model_params)
 
-        default_run_params = {"resolution"     : 1*pq.ms,
-                              "print_time"     : True,
+        default_run_params = {"resolution": 1*pq.ms,
+                              "print_time": True,
                               "overwrite_files": True,
-                              "simtime"        : 1000*pq.ms}
+                              "simtime": 1000*pq.ms}
 
         self.set_default_run_params(**default_run_params)
         return None
