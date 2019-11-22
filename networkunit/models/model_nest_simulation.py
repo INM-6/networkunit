@@ -7,6 +7,7 @@ except:
 import quantities as pq
 from .backends import available_backends
 
+
 class nest_simulation(sciunit.models.RunnableModel):
     # ToDo: How to use attrs?
 
@@ -28,7 +29,6 @@ class nest_simulation(sciunit.models.RunnableModel):
         set_default_run_params(self, **default_run_params)
         return None
 
-
     def init_simulation(self):
         """Initializes the Nest simulation with the run_params.
         Is called from self.backend._backend_run()."""
@@ -37,7 +37,6 @@ class nest_simulation(sciunit.models.RunnableModel):
         kernel_params.update(self.run_params)
         nest.SetKernelStatus(kernel_params)
         return None
-
 
     def init_model(self):
         """Setups and connects the network model with model_params.
@@ -53,7 +52,6 @@ class nest_simulation(sciunit.models.RunnableModel):
         self.get_status()
         return None
 
-
     def setup_network(self):
         """
         Set up the network.
@@ -61,7 +59,6 @@ class nest_simulation(sciunit.models.RunnableModel):
         using self.model_params
         """
         raise NotImplementedError("")
-
 
     def connect_network(self):
         """
@@ -71,7 +68,6 @@ class nest_simulation(sciunit.models.RunnableModel):
         """
         raise NotImplementedError("")
 
-
     def get_status(self):
         """
         Return and print the properties of the build network.
@@ -79,7 +75,6 @@ class nest_simulation(sciunit.models.RunnableModel):
         using self.model_params
         """
         raise NotImplementedError("")
-
 
     def check_run_params(self):
         """Check if the parameters are appropriate for the model"""
