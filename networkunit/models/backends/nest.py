@@ -3,22 +3,25 @@ import os
 try:
     import nest
     nest_available = True
-except:
+except ImportError:
     nest_available = False
+    nest = None
 
 class NestBackend(Backend):
     name = 'Nest'
 
     def init_backend(self, **kwargs):
-        print("Initialize {} backend".format(self.name))
-        print("Nest version: {}".format(nest.__version__))
-        print("Use memory chache: {}"\
-              .format(kwargs.get('use_memory_cache', True)))
-        print("Use disk chache: {}"\
-              .format(kwargs.get('use_disk_cache', True)))
-        super(NestBackend, self).init_backend(**kwargs)
-        return None
-
+        if nest_available:
+            print("Initialize {} backend".format(self.name))
+            print("Nest version: {}".format(nest.__version__))
+            print("Use memory chache: {}"\
+                  .format(kwargs.get('use_memory_cache', True)))
+            print("Use disk chache: {}"\
+                  .format(kwargs.get('use_disk_cache', True)))
+            super(NestBackend, self).init_backend(**kwargs)
+            return None
+        else:
+            raise ImportError('Nest not found!')
 
     def _backend_run(self):
         """Run the model via the backend."""

@@ -13,6 +13,19 @@ class joint_test(two_sample_test):
     (needs to be equal for all tests).
     The joint test can only be paired with a score_type which can compare
     multidimensional distributions, e.g. kl_divergence, wasserstein_distance.
+
+    Example:
+    ```
+    class fr_lv_jtest(tests.TestM2M, tests.joint_test):
+        score_type = scores.kl_divergence
+        params = {}
+        test_list = [tests.firing_rate_test,
+                     tests.isi_variation_test,
+                     tests.isi_variation_test]
+        test_params = [{},
+                       {'variation_measure': 'lv'},
+                       {'variation_measure': 'cv'}]
+    ```
     """
 
     @property

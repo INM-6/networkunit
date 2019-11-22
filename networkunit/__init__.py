@@ -8,4 +8,4 @@ NetworkUnit is a SciUnit library for validation testing of neural network models
 
 from . import tests, models, capabilities, scores, plots
 
-__version__ = "0.1.0"
+__version__ = "0.2"

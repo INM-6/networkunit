@@ -1,17 +1,18 @@
 import sciunit
+import quantities as pq
+from .backends import available_backends
 try:
     import nest
     nest_available = True
-except:
+except ImportError:
     nest_available = False
-import quantities as pq
-from .backends import available_backends
+    nest = None
 
 class nest_simulation(sciunit.models.RunnableModel):
     # ToDo: How to use attrs?
 
-    def __init__(name, backend='Nest', attrs=None, model_params=None):
-        super(nest_simulaton, self).__init__(name=name,
+    def __init__(self, name, backend='Nest', attrs=None, model_params=None):
+        super(nest_simulation, self).__init__(name=name,
                                              backend=backend,
                                              attrs=attrs)
 
