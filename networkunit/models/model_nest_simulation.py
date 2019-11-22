@@ -8,27 +8,27 @@ except ImportError:
     nest_available = False
     nest = None
 
+
 class nest_simulation(sciunit.models.RunnableModel):
     # ToDo: How to use attrs?
 
     def __init__(self, name, backend='Nest', attrs=None, model_params=None):
         super(nest_simulation, self).__init__(name=name,
-                                             backend=backend,
-                                             attrs=attrs)
+                                              backend=backend,
+                                              attrs=attrs)
 
         if not hasattr(self, model_params):
             self.model_params = {}
         if model_params is not None:
             self.model_params.update(model_params)
 
-        default_run_params = {"resolution"     : 1*pq.ms,
-                              "print_time"     : True,
+        default_run_params = {"resolution": 1*pq.ms,
+                              "print_time": True,
                               "overwrite_files": True,
-                              "simtime"        : 1000*pq.ms}
+                              "simtime": 1000*pq.ms}
 
-        set_default_run_params(self, **default_run_params)
+        self.set_default_run_params(**default_run_params)
         return None
-
 
     def init_simulation(self):
         """Initializes the Nest simulation with the run_params.
@@ -38,7 +38,6 @@ class nest_simulation(sciunit.models.RunnableModel):
         kernel_params.update(self.run_params)
         nest.SetKernelStatus(kernel_params)
         return None
-
 
     def init_model(self):
         """Setups and connects the network model with model_params.
@@ -54,7 +53,6 @@ class nest_simulation(sciunit.models.RunnableModel):
         self.get_status()
         return None
 
-
     def setup_network(self):
         """
         Set up the network.
@@ -62,7 +60,6 @@ class nest_simulation(sciunit.models.RunnableModel):
         using self.model_params
         """
         raise NotImplementedError("")
-
 
     def connect_network(self):
         """
@@ -72,7 +69,6 @@ class nest_simulation(sciunit.models.RunnableModel):
         """
         raise NotImplementedError("")
 
-
     def get_status(self):
         """
         Return and print the properties of the build network.
@@ -80,7 +76,6 @@ class nest_simulation(sciunit.models.RunnableModel):
         using self.model_params
         """
         raise NotImplementedError("")
-
 
     def check_run_params(self):
         """Check if the parameters are appropriate for the model"""
