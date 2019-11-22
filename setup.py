@@ -11,11 +11,12 @@ extras_require = {}
 
 setup(
     name="networkunit",
-    version='0.1.1',
+    version='0.2',
     packages=['networkunit', 'figures', 'examples'],
     package_data={'networkunit':[
         os.path.join('tests','*.py'),
         os.path.join('models','*.py'),
+        os.path.join('models/backends','*.py'),
         os.path.join('capabilities','*.py'),
         os.path.join('scores','*.py'),
         os.path.join('plots','*.py')],
