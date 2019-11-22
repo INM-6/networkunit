@@ -12,9 +12,9 @@ class nest_simulation(sciunit.models.RunnableModel):
     # ToDo: How to use attrs?
 
     def __init__(name, backend='Nest', attrs=None, model_params=None):
-        super(nest_simulaton, self).__init__(name=name,
-                                             backend=backend,
-                                             attrs=attrs)
+        super(nest_simulation, self).__init__(name=name,
+                                              backend=backend,
+                                              attrs=attrs)
 
         if not hasattr(self, model_params):
             self.model_params = {}
