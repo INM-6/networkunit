@@ -26,7 +26,7 @@ class nest_simulation(sciunit.models.RunnableModel):
                               "overwrite_files": True,
                               "simtime"        : 1000*pq.ms}
 
-        set_default_run_params(self, **default_run_params)
+        self.set_default_run_params(**default_run_params)
         return None
 
     def init_simulation(self):
