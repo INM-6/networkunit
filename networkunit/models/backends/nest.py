@@ -37,7 +37,7 @@ class NestBackend(Backend):
 
         ## Run Simulation
         starttime = time.time()
-        if callable(getattr(model, 'simulate', None)):
+        if callable(getattr(self.model, 'simulate', None)):
             results = model.simulate(self.model.run_params['simtime'])
         else:
             results = nest.Simulate(self.model.run_params['simtime'])
