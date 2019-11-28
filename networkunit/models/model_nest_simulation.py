@@ -20,7 +20,7 @@ class nest_simulation(sciunit.models.RunnableModel):
                                               backend=backend,
                                               attrs=attrs)
 
-        if not hasattr(self, model_params):
+        if not hasattr(self, 'model_params'):
             self.model_params = {}
         if model_params is not None:
             self.model_params.update(model_params)
