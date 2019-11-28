@@ -73,13 +73,16 @@ class nest_simulation(sciunit.models.RunnableModel):
         return None
 
     def init_simulation(self):
-        """Initializes the Nest simulation with the run_params.
-        Is called from self.backend._backend_run()."""
-        nest.ResetKernel()
-        kernel_params = nest.GetKernelStatus()
+        """
+        Initialize the Nest simulation with the run_params.
+
+        Is called from self.backend._backend_run().
+        """
+        kernel_params = self.default_run_params
         kernel_params.update(self.run_params)
+        nest.ResetKernel()
         nest.SetKernelStatus(kernel_params)
-        return None
+        pass
 
     def init_model(self):
         """Setups and connects the network model with model_params.
