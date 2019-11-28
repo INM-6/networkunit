@@ -11,7 +11,11 @@ except ImportError:
 class nest_simulation(sciunit.models.RunnableModel):
     # ToDo: How to use attrs?
 
-    def __init__(self, name, backend='Nest', attrs=None, model_params=None):
+    def __init__(self, name,
+                 backend='Nest',
+                 attrs=None,
+                 model_params=None):
+
         super(nest_simulation, self).__init__(name=name,
                                               backend=backend,
                                               attrs=attrs)
@@ -56,8 +60,11 @@ class nest_simulation(sciunit.models.RunnableModel):
         pass
 
     def init_model(self):
-        """Setups and connects the network model with model_params.
-        Is called from self.backend._backend_run()."""
+        """
+        Set up and connect the network model with model_params.
+
+        Is called from self.backend._backend_run().
+        """
 
         # setup network
         self.setup_network()
