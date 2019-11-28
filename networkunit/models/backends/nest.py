@@ -13,7 +13,7 @@ class NestBackend(Backend):
     def init_backend(self, **kwargs):
         if nest_available:
             print("Initialize {} backend".format(self.name))
-            print("Nest version: {}".format(nest.__version__))
+            print("Nest version: {}".format(nest.version()))
             print("Use memory chache: {}"\
                   .format(kwargs.get('use_memory_cache', True)))
             print("Use disk chache: {}"\
