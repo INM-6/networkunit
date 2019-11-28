@@ -1,5 +1,6 @@
 from sciunit.models.backends import Backend
 import os
+import time
 try:
     import nest
     nest_available = True
