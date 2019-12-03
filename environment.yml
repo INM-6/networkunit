@@ -22,4 +22,4 @@ dependencies:
     - sciunit==0.2.1
     - rdflib==4.2.2
     - odml==1.4.2.1
-    - git+git://github.com/INM-6/NetworkUnit.git
+    - networkunit==0.1.1
