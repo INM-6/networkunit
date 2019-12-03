@@ -1,0 +1,28 @@
+from __future__ import division
+import numpy as np
+import sciunit
+
+class wasserstein_distance(sciunit.Score):
+
+    score = np.nan
+
+    @classmethod
+    def compute(self, observation, prediction, **kwargs):
+
+        self.score = effect_size(es)
+        self.score.data_size = [len(observation), len(prediction)]
+        # self.CI = (es - ci, es + ci)
+        self.score.CI = (es - ci, es + ci)
+        return self.score
+
+
+    @property
+    def sort_key(self):
+        return self.score
+
+    def __str__(self):
+        return "\n\n\033[4mEffect Size\033[0m" \
+             + "\n\tdatasize: {} \t {}" \
+               .format(self.data_size[0], self.data_size[1]) \
+             + "\n\tEffect Size = {:.3f} \t CI = ({:.3f}, {:.3f})\n\n" \
+               .format(self.score, self.CI[0], self.CI[1])
