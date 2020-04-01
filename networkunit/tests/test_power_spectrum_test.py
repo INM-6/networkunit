@@ -4,9 +4,7 @@ from elephant.statistics import time_histogram
 from elephant.spectral import welch_psd
 from networkunit.plots.plot_power_spectral_density import power_spectral_density
 import numpy as np
-
-from elephant.statistics import time_histogram
-from elephant.spectral import welch_psd
+import quantities as pq
 
 
 class power_spectrum_test(two_sample_test):
