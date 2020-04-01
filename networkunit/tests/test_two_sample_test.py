@@ -1,7 +1,5 @@
 import sciunit
-import matplotlib.pyplot as plt
 import seaborn as sns
-import numpy as np
 from uuid import uuid4
 from networkunit.plots.plot_sample_histogram import sample_histogram
 

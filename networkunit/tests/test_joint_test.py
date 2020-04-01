@@ -44,7 +44,7 @@ class joint_test(two_sample_test):
         if not hasattr(self, 'test_list') or isinstance(self.test_list, list):
             raise AttributeError("Joint test doesn't define a test_list!")
         if not hasattr(self, 'test_params') or isinstance(self.test_params, list):
-                raise AttributeError("Joint test doesn't define a test_params list!")
+            raise AttributeError("Joint test doesn't define a test_params list!")
         if len(self.test_list) - len(self.test_params):
             raise AttributeError("test_list and test_params are not of same length!")
         for test, params in zip(self.test_list, self.test_params):
