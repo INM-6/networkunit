@@ -35,7 +35,8 @@ class isi_variation_test(two_sample_test):
                 for intervals in isi_list:
                     isi_var.append(cv2(intervals, with_nan=with_nan))
             elif self.params['variation_measure'] == 'isi':
-                isi_var = [float(item) for sublist in isi_list for item in sublist]
+                isi_var = [float(item) for sublist in isi_list
+                           for item in sublist]
             else:
                 raise ValueError('Variation measure not known.')
             self.set_prediction(model, isi_var)

@@ -88,15 +88,18 @@ class correlation_matrix_test(correlation_test):
         return cc_matrix
 
     def visualize_samples(self, model1=None, model2=None, ax=None, labels=None,
-                         palette=None, remove_autocorr=True, vmin=None, vmax=None,
-                         sample_names=['observation', 'prediction'], sort=False,
-                         var_name='Measured Parameter', linkmethod='ward',
-                         cluster=False, cluster_as=None, limit_to_1=True, cbars=[True,True],
+                          palette=None, remove_autocorr=True,
+                          vmin=None, vmax=None,
+                          sample_names=['observation', 'prediction'],
+                          sort=False,
+                          var_name='Measured Parameter', linkmethod='ward',
+                          cluster=False, cluster_as=None, limit_to_1=True,
+                          cbars=[True, True],
                           **kwargs):
 
-        matrices, palette, names  = self._create_plotting_samples(model1=model1,
-                                                                  model2=model2,
-                                                                  palette=palette)
+        matrices, palette, names = self._create_plotting_samples(model1=model1,
+                                                                 model2=model2,
+                                                                 palette=palette)
         if ax is None:
             fig, ax = plt.subplots(ncols=len(matrices))
         if len(matrices) == 1:
@@ -121,10 +124,16 @@ class correlation_matrix_test(correlation_test):
             else:
                 raise ValueError
 
-        order = plot_correlation_matrix(matrices[i], ax=ax[i], remove_autocorr=remove_autocorr,
-                                labels=labels, sort=sort, cluster=cluster, limit_to_1=limit_to_1, cbar=cbars[0],
-                                linkmethod=linkmethod, dendrogram_args={}, vmin=vmin, vmax=vmax,
-                                **kwargs)
+        order = plot_correlation_matrix(matrices[i], ax=ax[i],
+                                        remove_autocorr=remove_autocorr,
+                                        labels=labels, sort=sort,
+                                        cluster=cluster,
+                                        limit_to_1=limit_to_1,
+                                        cbar=cbars[0],
+                                        linkmethod=linkmethod,
+                                        dendrogram_args={},
+                                        vmin=vmin, vmax=vmax,
+                                        **kwargs)
         ax[i].set_title(sample_names[i])
         if i and not hasattr(model2, 'cluster_order'):
             model2.cluster_order = order
@@ -135,10 +144,17 @@ class correlation_matrix_test(correlation_test):
                 order = np.arange(len(matrices[0]))
             else:
                 cluster = False
-            order = plot_correlation_matrix(matrices[j][order, :][:, order], ax=ax[j], remove_autocorr=remove_autocorr,
-                                    labels=labels, sort=sort, cluster=cluster, limit_to_1=limit_to_1, cbar=cbars[1],
-                                    linkmethod=linkmethod, dendrogram_args={},  vmin=vmin, vmax=vmax,
-                                    **kwargs)
+            order = plot_correlation_matrix(matrices[j][order, :][:, order],
+                                            ax=ax[j],
+                                            remove_autocorr=remove_autocorr,
+                                            labels=labels, sort=sort,
+                                            cluster=cluster,
+                                            limit_to_1=limit_to_1,
+                                            cbar=cbars[1],
+                                            linkmethod=linkmethod,
+                                            dendrogram_args={},
+                                            vmin=vmin, vmax=vmax,
+                                            **kwargs)
             if j and not hasattr(model2, 'cluster_order'):
                 model2.cluster_order = order
             elif not j and not hasattr(model1, 'cluster_order'):
@@ -152,7 +168,8 @@ class correlation_matrix_test(correlation_test):
             G = self.graph['graph_{}'.format(model.name)]
         else:
             spiketrains = model.produce_spiketrains(**self.params)
-            matrix = self.generate_cc_matrix(spiketrains=spiketrains, **self.params)
+            matrix = self.generate_cc_matrix(spiketrains=spiketrains,
+                                             **self.params)
             weight_matrix = copy(matrix)
             if draw_edge_threshold is None:
                 if 'edge_threshold' in self.params:
@@ -165,9 +182,9 @@ class correlation_matrix_test(correlation_test):
             np.fill_diagonal(weight_matrix, 0)
             N = len(matrix)
             triu_idx = np.triu_indices(N, 1)
-            weight_list = weight_matrix[triu_idx[0],triu_idx[1]]
-            graph_list = [(i,j,w) for i,j,w in
-                          zip(triu_idx[0],triu_idx[1],weight_list) if w]
+            weight_list = weight_matrix[triu_idx[0], triu_idx[1]]
+            graph_list = [(i, j, w) for i, j, w in
+                          zip(triu_idx[0], triu_idx[1], weight_list) if w]
             G = nx.Graph()
             G.add_weighted_edges_from(graph_list)
             if draw_edge_threshold is None:
@@ -181,11 +198,12 @@ class correlation_matrix_test(correlation_test):
             node_measure = test_measure
         else:
             node_measure = np.ones(len(G.nodes))
-        if False: #len(np.shape(test_measure)) == 2:
+        if False:  # len(np.shape(test_measure)) == 2:
             edge_measure = test_measure
         else:
             weight_dict = nx.get_edge_attributes(G, 'weight')
             edge_measure = [weight_dict[edge] for edge in weight_dict.keys()]
-        nx.draw_networkx(G, edge_color=edge_measure, node_size=node_measure*300., **kwargs)
+        nx.draw_networkx(G, edge_color=edge_measure,
+                         node_size=node_measure*300., **kwargs)
         plt.gca().set_title(model.name)
         return plt.gca()

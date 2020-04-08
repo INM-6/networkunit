@@ -1,13 +1,11 @@
 import sciunit
 import networkx as nx
-from networkunit.tests.test_correlation_matrix_test import correlation_matrix_test
-from networkunit.tests.test_two_sample_test import two_sample_test
 import matplotlib.pyplot as plt
 import seaborn as sns
-from quantities import ms
 import numpy as np
 from copy import copy
 import re
+
 
 class graph_centrality_helperclass(sciunit.Test):
     """
@@ -38,7 +36,7 @@ class graph_centrality_helperclass(sciunit.Test):
             if 'graph_measure' not in self.params:
                 raise ValueError('No graph_measure set!')
             matrix = super(graph_centrality_helperclass, self).\
-                                        generate_prediction(model, **kwargs)
+                generate_prediction(model, **kwargs)
             self.prediction_dim = 2
             N = len(matrix)
 
@@ -88,25 +86,29 @@ class graph_centrality_helperclass(sciunit.Test):
         weight_sum = float(np.sum(np.array([weight_dict[edge]
                                             for edge in weight_dict.keys()])))
         for edge in G.edges:
-            G.edges[edge].update(distance = G.edges[edge]['weight'] / weight_sum)
+            G.edges[edge].update(distance=G.edges[edge]['weight'] / weight_sum)
         closeness = nx.closeness_centrality(G, distance='distance')
         self.prediction_dim = 1
-        closeness_array =  np.array([closeness[i] for i in closeness.keys()])
+        closeness_array = np.array([closeness[i] for i in closeness.keys()])
         return np.append(closeness_array, np.zeros(N-len(closeness_array)))
 
     def betweenness(self, G, N):
-        betweenness = nx.betweenness_centrality(G, weight='weight', normalized=True)
+        betweenness = nx.betweenness_centrality(G, weight='weight',
+                                                normalized=True)
         self.prediction_dim = 1
-        betweenness_array = np.array([betweenness[i] for i in betweenness.keys()])
-        return np.append(betweenness_array, np.zeros(N - len(betweenness_array)))
+        betweenness_array = np.array([betweenness[i]
+                                      for i in betweenness.keys()])
+        return np.append(betweenness_array,
+                         np.zeros(N - len(betweenness_array)))
 
     def edge_betweenness(self, G, N):
-        edge_betweenness = nx.edge_betweenness_centrality(G, weight='weight', normalized=True)
+        edge_betweenness = nx.edge_betweenness_centrality(G, weight='weight',
+                                                          normalized=True)
         N = max(G.nodes) + 1
         betweenness_matrix = np.zeros((N, N))
         for edge in edge_betweenness:
             betweenness_matrix[edge] = edge_betweenness[edge]
-            betweenness_matrix[edge[1],edge[0]] = edge_betweenness[edge]
+            betweenness_matrix[edge[1], edge[0]] = edge_betweenness[edge]
         return betweenness_matrix
 
     def katz(self, G, N):
@@ -117,7 +119,7 @@ class graph_centrality_helperclass(sciunit.Test):
     def clustering_coefficent(self, G, N):
         clustering = nx.clustering(G, weight='weight')
         self.prediction_dim = 1
-        cc_array =  np.array([clustering[i] for i in clustering.keys()])
+        cc_array = np.array([clustering[i] for i in clustering.keys()])
         return np.append(cc_array, np.zeros(N-len(cc_array)))
 
     def transitivity(self, G, N, matrix):
@@ -126,7 +128,8 @@ class graph_centrality_helperclass(sciunit.Test):
             B = self.params['bin_num']
         elif 'binsize' in self.params:
             if 't_start' in self.params and 't_stop' in self.params:
-                B = float((self.params['t_stop']-self.params['t_start'])/self.params['binsize'])
+                B = float((self.params['t_stop']-self.params['t_start']) /
+                          self.params['binsize'])
         if 'edge_threshold' in self.params:
             edge_threshold = self.params['edge_threshold']
         elif B is not None:
@@ -160,7 +163,8 @@ class graph_centrality_helperclass(sciunit.Test):
         for count, e in enumerate(G_rand.edges()):
             G_rand[e[0]][e[1]]['weight'] = rand_weights[count]
 
-        path_length_rand = nx.average_shortest_path_length(G_rand, weight='weight')
+        path_length_rand = nx.average_shortest_path_length(G_rand,
+                                                           weight='weight')
 
         # transitivity
         transitivity = self.transitivity(G, N, matrix)
@@ -169,10 +173,12 @@ class graph_centrality_helperclass(sciunit.Test):
         G_rand2 = nx.gnm_random_graph(G.number_of_nodes(), G.number_of_edges())
         transitivity_rand = nx.transitivity(G_rand2)
         self.prediction_dim = 0
-        return (transitivity/transitivity_rand) / (path_length/path_length_rand)
+        return (transitivity/transitivity_rand) / \
+               (path_length/path_length_rand)
 
     def build_graph(self, matrix):
         weight_matrix = copy(matrix)
+        N = len(matrix)
         if 'edge_threshold' in self.params:
             edge_threshold = self.params['edge_threshold']
         else:
@@ -181,24 +187,25 @@ class graph_centrality_helperclass(sciunit.Test):
         weight_matrix[non_edges[0], non_edges[1]] = 0.
         np.fill_diagonal(weight_matrix, 0)
         triu_idx = np.triu_indices(N, 1)
-        weight_list = weight_matrix[triu_idx[0],triu_idx[1]]
-        graph_list = [(i,j,w) for i,j,w in
-                      zip(triu_idx[0],triu_idx[1],weight_list) if w]
+        weight_list = weight_matrix[triu_idx[0], triu_idx[1]]
+        graph_list = [(i, j, w) for i, j, w in
+                      zip(triu_idx[0], triu_idx[1], weight_list) if w]
         G = nx.Graph()
         G.add_weighted_edges_from(graph_list)
         return G
 
     def visualize_samples(self, model1=None, model2=None, ax=None,
-                         palette=None, remove_autocorr=True,
-                         sample_names=['observation', 'prediction'],
-                         var_name='Measured Parameter', sort=False, **kwargs):
+                          palette=None, remove_autocorr=True,
+                          sample_names=['observation', 'prediction'],
+                          var_name='Measured Parameter', sort=False, **kwargs):
 
         if hasattr(self, 'prediction_dim') and self.prediction_dim == 1:
             if ax is None:
                 fig, new_ax = plt.subplots()
             else:
                 new_ax = ax
-            samples, palette, names = super(graph_centrality_helperclass, self)._create_plotting_samples(
+            samples, palette, names = super(graph_centrality_helperclass,
+                                            self)._create_plotting_samples(
                                                           model1=model1,
                                                           model2=model2,
                                                           palette=palette)
@@ -241,12 +248,12 @@ class graph_centrality_helperclass(sciunit.Test):
             plt.legend()
 
         else:
-            super(graph_centrality_helperclass,self).visualize_samples(
-                                                           model1=model1,
-                                                           model2=model2,
-                                                           ax=ax,
-                                                           palette=palette,
-                                                           remove_autocorr=remove_autocorr,
-                                                           sample_names=sample_names,
-                                                           var_name=var_name,
-                                                           **kwargs)
+            super(graph_centrality_helperclass, self).visualize_samples(
+                                               model1=model1,
+                                               model2=model2,
+                                               ax=ax,
+                                               palette=palette,
+                                               remove_autocorr=remove_autocorr,
+                                               sample_names=sample_names,
+                                               var_name=var_name,
+                                               **kwargs)

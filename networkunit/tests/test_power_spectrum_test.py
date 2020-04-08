@@ -4,14 +4,13 @@ from elephant.statistics import time_histogram
 from elephant.spectral import welch_psd
 from networkunit.plots.plot_power_spectral_density import power_spectral_density
 import numpy as np
-
-from elephant.statistics import time_histogram
-from elephant.spectral import welch_psd
+import quantities as pq
 
 
 class power_spectrum_test(two_sample_test):
     """
-    Test to compare the power spectral density of a set of spiking neurons in a network.
+    Test to compare the power spectral density of a set of spiking neurons
+    in a network.
     The statistical testing method needs to be set in form of a
     sciunit.Score as score_type.
     Parameters are passed on to elephant.spectral.welch_psd
@@ -40,19 +39,21 @@ class power_spectrum_test(two_sample_test):
             self._set_default_param('scaling', 'density')
             self._set_default_param('axis', -1)
 
-            asignal = time_histogram(spiketrains, binsize=self.params['binsize'])
-            freqs, psd = welch_psd(asignal,
-                                   num_seg=self.params['num_seg'],
-                                   len_seg=self.params['len_seg'],
-                                   freq_res=self.params['freq_res'],
-                                   overlap=self.params['overlap'],
-                                   fs=self.params['fs'],
-                                   window=self.params['window'],
-                                   nfft=self.params['nfft'],
-                                   detrend=self.params['detrend'],
-                                   return_onesided=self.params['return_onesided'],
-                                   scaling=self.params['scaling'],
-                                   axis=self.params['axis'])
+            asignal = time_histogram(spiketrains,
+                                     binsize=self.params['binsize'])
+            freqs, psd = welch_psd(
+                asignal,
+                num_seg=self.params['num_seg'],
+                len_seg=self.params['len_seg'],
+                freq_res=self.params['freq_res'],
+                overlap=self.params['overlap'],
+                fs=self.params['fs'],
+                window=self.params['window'],
+                nfft=self.params['nfft'],
+                detrend=self.params['detrend'],
+                return_onesided=self.params['return_onesided'],
+                scaling=self.params['scaling'],
+                axis=self.params['axis'])
             model.psd_freqs = freqs
             # ToDo: How to quantitatively compare PSD distributions ??
             psd = np.squeeze(psd)
@@ -90,5 +91,6 @@ class power_spectrum_test(two_sample_test):
 
         power_spectral_density(sample1=samples[0], freqs1=freqs1,
                                sample2=sample_2, freqs2=freqs2, ax=ax,
-                               palette=palette, sample_names=sample_names, **kwargs)
+                               palette=palette, sample_names=sample_names,
+                               **kwargs)
         return ax
