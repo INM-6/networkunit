@@ -1,5 +1,6 @@
 from sciunit.models.backends import Backend
-import os
+import time
+import pickle
 try:
     import nest
     nest_available = True
@@ -37,14 +38,13 @@ class NestBackend(Backend):
 
         ## Run Simulation
         starttime = time.time()
-        if callable(getattr(model, 'simulate', None)):
-            results = model.simulate(self.model.run_params['simtime'])
+        if callable(getattr(self.model, 'simulate', None)):
+            results = self.model.simulate(self.model.run_params['simtime'])
         else:
             results = nest.Simulate(self.model.run_params['simtime'])
         endtime = time.time()
         print("Simulation time  : {:.2} s".format(endtime-starttime))
         return results
-
 
     def save_results(self, path='.'):
         # ToDo: use NixIO or similar
