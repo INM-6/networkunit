@@ -41,15 +41,20 @@ class joint_test(two_sample_test):
         pass
 
     def check_tests(self):
-        if not hasattr(self, 'test_list') or isinstance(self.test_list, list):
+        if not hasattr(self, 'test_list') or not isinstance(self.test_list, list):
             raise AttributeError("Joint test doesn't define a test_list!")
+<<<<<<< HEAD
+        if not hasattr(self, 'test_params') or not isinstance(self.test_params, list):
+                raise AttributeError("Joint test doesn't define a test_params list!")
+=======
         if not hasattr(self, 'test_params') or isinstance(self.test_params, list):
             raise AttributeError("Joint test doesn't define a test_params list!")
+>>>>>>> d45a471eadde31a275ffa953714b39e1aa6a6b97
         if len(self.test_list) - len(self.test_params):
             raise AttributeError("test_list and test_params are not of same length!")
         for test, params in zip(self.test_list, self.test_params):
             if not isinstance(test, type):
-                raise TypeError("{} not a legit model class!".format(test))
+                raise TypeError("{} not a legit test class!".format(test))
             if not isinstance(params, dict):
                 raise TypeError("{} doesn't have legit params dict!".format(test))
         pass
