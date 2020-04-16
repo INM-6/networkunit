@@ -44,7 +44,7 @@ class NestBackend(Backend):
             results = nest.Simulate(self.model.run_params['simtime'])
         endtime = time.time()
         print("Simulation time  : {:.2} s".format(endtime-starttime))
-        return results
+        return nest
 
     def save_results(self, path='.'):
         # ToDo: use NixIO or similar
