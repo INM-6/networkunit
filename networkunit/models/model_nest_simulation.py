@@ -1,5 +1,6 @@
 import sciunit
 import quantities as pq
+from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
 from .backends import available_backends
 try:
     import nest
@@ -9,7 +10,7 @@ except ImportError:
     nest = None
 
 
-class nest_simulation(sciunit.models.RunnableModel):
+class nest_simulation(sciunit.models.RunnableModel, ProducesSpikeTrains):
     # ToDo: How to use attrs?
 
     def __init__(self, name, backend='Nest', attrs=None, model_params=None):
