@@ -20,6 +20,7 @@ class timescale_test(two_sample_test):
         Maximal integration time of the auto-correlation function.
     """
 
+    name = 'Timescale'
     required_capabilities = (ProducesSpikeTrains, )
 
     def generate_prediction(self, model, **kwargs):
@@ -32,8 +33,8 @@ class timescale_test(two_sample_test):
             if 'tau_max' not in self.params:
                 self.params['tau_max'] = 100*ms
             spiketrains = model.produce_spiketrains(**self.params)
-            binned_sts = BinnedSpikeTrain(spiketrains,
-                                          binsize=self.params['binsize'])
+            binned_sts = [BinnedSpikeTrain(st, binsize=self.params['binsize'])
+                          for st in spiketrains]
             tau_list = [timescale(st, self.params['tau_max']).rescale('ms')
                         for st in binned_sts]
             self.set_prediction(model, tau_list)
