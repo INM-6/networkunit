@@ -2,31 +2,27 @@ from sciunit.models.backends import Backend
 import time
 import os
 import sys
-try:
-    import nest
-    nest_available = True
-except ImportError:
-    nest_available = False
-    nest = None
+
 
 class NestBackend(Backend):
     name = 'Nest'
+    nest_instance = None
 
     def init_backend(self, **kwargs):
-        if nest_available:
-            print("Initialize {} backend".format(self.name))
-            print("Nest version: {}".format(nest.version()))
-            print("Use memory chache: {}"\
-                  .format(kwargs.get('use_memory_cache', True)))
-            print("Use disk chache: {}"\
-                  .format(kwargs.get('use_disk_cache', False)))
-            super(NestBackend, self).init_backend(**kwargs)
-            return None
-        else:
-            raise ImportError('Nest not found!')
+        print("Initialize {} backend".format(self.name))
+        # print("Nest version: {}".format(nest.version()))
+        print("Use memory chache: {}"\
+              .format(kwargs.get('use_memory_cache', True)))
+        print("Use disk chache: {}"\
+              .format(kwargs.get('use_disk_cache', False)))
+        super(NestBackend, self).init_backend(**kwargs)
+        return None
 
     def _backend_run(self):
         """Run the model via the backend."""
+        if self.nest_instance is None:
+            raise AttributeError("You need to set the nest instance explicitly. "\
+                               + "model._backend.nest_instance = nest")
 
         ## Init Nest
         self.model.init_simulation()
@@ -39,13 +35,13 @@ class NestBackend(Backend):
 
         ## Run Simulation
         starttime = time.time()
-        if callable(getattr(model, 'simulate', None)):
-            model.simulate(self.model.run_params['simtime'])
+        if callable(getattr(self.model, 'simulate', None)):
+            self.model.simulate(self.model.run_params['simtime'])
         else:
-            nest.Simulate(self.model.run_params['simtime'])
+            self.nest_instance.Simulate(self.model.run_params['simtime'])
         endtime = time.time()
         print("Simulation time  : {:.2} s".format(endtime-starttime))
-        return nest
+        return self.nest_instance
 
 
     def save_results(self, path='.'):

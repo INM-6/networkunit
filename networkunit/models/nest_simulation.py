@@ -1,23 +1,25 @@
 import sciunit
 import quantities as pq
-from .backends import available_backends
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 import sys
-try:
-    import nest
-    nest_available = True
-except ImportError:
-    nest_available = False
-    nest = None
 
 
 class nest_simulation(sciunit.models.RunnableModel, ProducesSpikeTrains):
     # ToDo: How to use attrs?
-    def __init__(self, name, backend='Nest', attrs=None, model_params=None):
-        print('in nest simulation')
+    nest_instance = None
+
+    def __init__(self, name, nest_instance=None, attrs=None, model_params=None):
+        if nest_instance is None:
+            import nest
+            self.nest_instance = nest
+        else:
+            self.nest_instance = nest_instance
+
         super(nest_simulation, self).__init__(name=name,
-                                              backend=backend,
+                                              backend='Nest',
                                               attrs=attrs)
+
+        self._backend.nest_instance = self.nest_instance
 
         if not hasattr(self, 'model_params'):
             self.model_params = {}
@@ -35,10 +37,10 @@ class nest_simulation(sciunit.models.RunnableModel, ProducesSpikeTrains):
     def init_simulation(self):
         """Initializes the Nest simulation with the run_params.
         Is called from self.backend._backend_run()."""
-        nest.ResetKernel()
-        kernel_params = nest.GetKernelStatus()
+        self.nest_instance.ResetKernel()
+        kernel_params = self.nest_instance.GetKernelStatus()
         kernel_params.update(self.run_params)
-        nest.SetKernelStatus(kernel_params)
+        self.nest_instance.SetKernelStatus(kernel_params)
         return None
 
     def init_model(self):
@@ -84,6 +86,3 @@ class nest_simulation(sciunit.models.RunnableModel, ProducesSpikeTrains):
         if False:
             raise sciunit.BadParameterValueError
         pass
-
-    # def produce_spiketrains(self):
-        # transform self.results (=nest.GetStatus) to list of neo.Spiketrains
