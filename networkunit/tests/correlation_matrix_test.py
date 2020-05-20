@@ -1,6 +1,6 @@
-from networkunit.tests.test_correlation_test import correlation_test
-from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
-from networkunit.plots.plot_correlation_matrix import correlation_matrix as plot_correlation_matrix
+from networkunit.tests.correlation_test import correlation_test
+from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
+from networkunit.plots.correlation_matrix import correlation_matrix as plot_correlation_matrix
 from scipy.cluster.hierarchy import linkage, dendrogram
 try:
     import fastcluster

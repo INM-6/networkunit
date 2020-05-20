@@ -1,8 +1,8 @@
-from networkunit.tests.test_two_sample_test import two_sample_test
-from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
+from networkunit.tests.two_sample_test import two_sample_test
+from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 from elephant.statistics import time_histogram
 from elephant.spectral import welch_psd
-from networkunit.plots.plot_power_spectral_density import power_spectral_density
+from networkunit.plots.power_spectral_density import power_spectral_density
 import numpy as np
 import quantities as pq
 

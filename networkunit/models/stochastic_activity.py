@@ -1,11 +1,11 @@
 import sciunit
-from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
+from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 import numpy as np
 from elephant.spike_train_generation import single_interaction_process as SIP
 from elephant.spike_train_generation import compound_poisson_process as CPP
 from elephant.spike_train_generation import homogeneous_poisson_process as HPP
 from quantities import ms, Hz, quantity
-from networkunit.plots.plot_rasterplot import rasterplot
+from networkunit.plots.rasterplot import rasterplot
 import neo
 import random
 from .backends import available_backends

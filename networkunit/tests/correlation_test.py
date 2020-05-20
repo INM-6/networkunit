@@ -3,8 +3,8 @@ from elephant.conversion import BinnedSpikeTrain
 import neo
 import numpy as np
 from quantities import ms
-from networkunit.tests.test_two_sample_test import two_sample_test
-from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
+from networkunit.tests.two_sample_test import two_sample_test
+from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 
 
 class correlation_test(two_sample_test):

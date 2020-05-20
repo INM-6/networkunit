@@ -1,7 +1,7 @@
 import sciunit
 import seaborn as sns
 from uuid import uuid4
-from networkunit.plots.plot_sample_histogram import sample_histogram
+from networkunit.plots.sample_histogram import sample_histogram
 
 
 class two_sample_test(sciunit.Test):

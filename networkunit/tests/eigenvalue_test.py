@@ -1,6 +1,5 @@
-from networkunit.tests.test_correlation_test import correlation_test
-from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
-from abc import ABCMeta, abstractmethod
+from networkunit.tests.correlation_test import correlation_test
+from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 from scipy.linalg import eigh
 
 

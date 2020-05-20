@@ -10,25 +10,25 @@ class wasserstein_distance(sciunit.Score):
 
     @classmethod
     def compute(self, observation, prediction, **kwargs):
-        if observation.shape[1] == prediction.shape[1]:
-            ndim = observation.shape[1]
+        if observation.shape[0] == prediction.shape[0]:
+            ndim = observation.shape[0]
         else:
             raise ValueError("Observation and prediction are not of the same "\
                            + "dimensionality!")
 
         disttype = DIST_L2
-        N = observation.shape[0]  # number of observation neurons
-        M = prediction.shape[0]  # number of prediciton neurons
-        obsv_weights = np.ones((N, 1), dtype=np.float32)
-        pred_weights = np.ones((M, 1), dtype=np.float32)
+        N = observation.shape[1]  # number of observation neurons
+        M = prediction.shape[1]  # number of prediciton neurons
+        obsv_weights = np.ones(N, dtype=np.float32)
+        pred_weights = np.ones(M, dtype=np.float32)
 
-        observation_sig = np.append(obsv_weights,
-                                    observation.astype(np.float32), axis=1)
-        prediction_sig  = np.append(pred_weights,
-                                    prediction.astype(np.float32), axis=1)
+        observation_sig = np.append(obsv_weights[np.newaxis,:],
+                                    observation.astype(np.float32), axis=0)
+        prediction_sig  = np.append(pred_weights[np.newaxis,:],
+                                    prediction.astype(np.float32), axis=0)
 
-        ws_distance, _, _ = EMD(observation_sig, # array
-                                prediction_sig, # array
+        ws_distance, _, _ = EMD(observation_sig.T, # array
+                                prediction_sig.T, # array
                                 distType=disttype, # int
                                 # cost = noArray(), # array
                                 # lowerBound = 0, # float

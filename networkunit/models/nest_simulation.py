@@ -1,6 +1,8 @@
 import sciunit
 import quantities as pq
 from .backends import available_backends
+from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
+import sys
 try:
     import nest
     nest_available = True
@@ -9,10 +11,10 @@ except ImportError:
     nest = None
 
 
-class nest_simulation(sciunit.models.RunnableModel):
+class nest_simulation(sciunit.models.RunnableModel, ProducesSpikeTrains):
     # ToDo: How to use attrs?
-
     def __init__(self, name, backend='Nest', attrs=None, model_params=None):
+        print('in nest simulation')
         super(nest_simulation, self).__init__(name=name,
                                               backend=backend,
                                               attrs=attrs)
@@ -82,3 +84,6 @@ class nest_simulation(sciunit.models.RunnableModel):
         if False:
             raise sciunit.BadParameterValueError
         pass
+
+    # def produce_spiketrains(self):
+        # transform self.results (=nest.GetStatus) to list of neo.Spiketrains

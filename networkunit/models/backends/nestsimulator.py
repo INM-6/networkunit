@@ -1,5 +1,7 @@
 from sciunit.models.backends import Backend
+import time
 import os
+import sys
 try:
     import nest
     nest_available = True
@@ -38,12 +40,12 @@ class NestBackend(Backend):
         ## Run Simulation
         starttime = time.time()
         if callable(getattr(model, 'simulate', None)):
-            results = model.simulate(self.model.run_params['simtime'])
+            model.simulate(self.model.run_params['simtime'])
         else:
-            results = nest.Simulate(self.model.run_params['simtime'])
+            nest.Simulate(self.model.run_params['simtime'])
         endtime = time.time()
         print("Simulation time  : {:.2} s".format(endtime-starttime))
-        return results
+        return nest
 
 
     def save_results(self, path='.'):

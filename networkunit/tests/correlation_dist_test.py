@@ -1,5 +1,5 @@
-from networkunit.tests.test_correlation_test import correlation_test
-from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
+from networkunit.tests.correlation_test import correlation_test
+from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 
 
 class correlation_dist_test(correlation_test):

@@ -1,12 +1,11 @@
-from networkunit.tests.test_correlation_matrix_test import correlation_matrix_test
-from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
+from networkunit.tests.correlation_matrix_test import correlation_matrix_test
+from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 from networkunit.plots import alpha as _alpha
 from elephant.spike_train_correlation import cch
 import matplotlib.pyplot as plt
 # from matplotlib import colors, colorbar
 import seaborn as sns
 from copy import copy
-from abc import ABCMeta, abstractmethod
 
 from quantities import ms, Quantity
 import numpy as np

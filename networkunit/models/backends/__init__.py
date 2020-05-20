@@ -6,9 +6,9 @@ try:
 except ImportError:
     storage_backend = None
     print('Could not load storage backend')
-    
+
 try:
-    from .nest import NestBackend
+    from .nestsimulator import NestBackend
 except ImportError:
     nest_backend = None
     print('Could not load Nest backend')
