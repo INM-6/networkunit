@@ -18,3 +18,4 @@ from .firing_rate_test import firing_rate_test
 from .generalized_correlation_matrix_test import generalized_correlation_matrix_test
 from .isi_variation_test import isi_variation_test
 from .power_spectrum_test import power_spectrum_test
+from .timescale_test import timescale_test

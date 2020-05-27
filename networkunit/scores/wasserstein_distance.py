@@ -4,6 +4,7 @@ import sciunit
 import networkx as nx
 from cv2 import EMD, DIST_L2
 
+
 class wasserstein_distance(sciunit.Score):
 
     score = np.nan
@@ -13,8 +14,8 @@ class wasserstein_distance(sciunit.Score):
         if observation.shape[0] == prediction.shape[0]:
             ndim = observation.shape[0]
         else:
-            raise ValueError("Observation and prediction are not of the same "\
-                           + "dimensionality!")
+            raise ValueError("Observation and prediction are not of the same "
+                             + "dimensionality!")
 
         disttype = DIST_L2
         N = observation.shape[1]  # number of observation neurons
@@ -22,14 +23,14 @@ class wasserstein_distance(sciunit.Score):
         obsv_weights = np.ones(N, dtype=np.float32)
         pred_weights = np.ones(M, dtype=np.float32)
 
-        observation_sig = np.append(obsv_weights[np.newaxis,:],
+        observation_sig = np.append(obsv_weights[np.newaxis, :],
                                     observation.astype(np.float32), axis=0)
-        prediction_sig  = np.append(pred_weights[np.newaxis,:],
-                                    prediction.astype(np.float32), axis=0)
+        prediction_sig = np.append(pred_weights[np.newaxis, :],
+                                   prediction.astype(np.float32), axis=0)
 
-        ws_distance, _, _ = EMD(observation_sig.T, # array
-                                prediction_sig.T, # array
-                                distType=disttype, # int
+        ws_distance, _, _ = EMD(observation_sig.T,  # array
+                                prediction_sig.T,  # array
+                                distType=disttype,  # int
                                 # cost = noArray(), # array
                                 # lowerBound = 0, # float
                                 )
@@ -40,7 +41,6 @@ class wasserstein_distance(sciunit.Score):
         self.score.pred_samples = M
         self.score.disttype = disttype
         return self.score
-
 
     @property
     def sort_key(self):
