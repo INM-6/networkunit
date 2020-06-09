@@ -85,6 +85,7 @@ class correlation_matrix_test(correlation_test):
             if 'remove_autocorr' in self.params and self.params['remove_autocorr']:
                 np.fill_diagonal(cc_matrix, 0.)
             self.set_prediction(model, cc_matrix)
+            model.cc_matrix = cc_matrix
         return cc_matrix
 
     def visualize_samples(self, model1=None, model2=None, ax=None, labels=None,

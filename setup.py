@@ -21,7 +21,8 @@ setup(
         os.path.join('scores','*.py'),
         os.path.join('plots','*.py')],
         'figures':['*.png'],
-        'examples':['*.py', '*.ipynb']
+        'examples':['*.py', '*.ipynb'],
+        'VERSION'
         },
     install_requires=install_requires,
     extras_require=extras_require,

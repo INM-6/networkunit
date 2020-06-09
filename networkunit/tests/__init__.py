@@ -11,7 +11,7 @@ from .joint_test import joint_test
 
 # Test Classes
 from .correlation_dist_test import correlation_dist_test
-from .correlation_matrix_test import correlation_test
+from .correlation_matrix_test import correlation_matrix_test
 from .covariance_test import covariance_test
 from .eigenvalue_test import eigenvalue_test
 from .firing_rate_test import firing_rate_test

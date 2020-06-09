@@ -41,32 +41,32 @@ class graph_centrality_helperclass(sciunit.Test):
             N = len(matrix)
 
             G = self.get_prediction(model, key=self.test_hash + '_graph')
-            if G in None:
+            if G is None:
                 G = self.build_graph(matrix)
                 self.set_prediction(model, G, key=self.test_hash + '_graph')
 
             if self.params['graph_measure'] == 'degree strength':
                 prediction = self.degree_strength(G, N)
 
-            if self.params['graph_measure'] == 'closeness':
+            elif self.params['graph_measure'] == 'closeness':
                 prediction = self.closeness(G, N)
 
-            if self.params['graph_measure'] == 'betweenness':
+            elif self.params['graph_measure'] == 'betweenness':
                 prediction = self.betweenness(G, N)
 
-            if self.params['graph_measure'] == 'edge betweenness':
+            elif self.params['graph_measure'] == 'edge betweenness':
                 prediction = self.edge_betweenness(G, N)
 
-            if self.params['graph_measure'] == 'katz':
+            elif self.params['graph_measure'] == 'katz':
                 prediction = self.katz(G, N)
 
-            if self.params['graph_measure'] == 'clustering coefficient':
+            elif self.params['graph_measure'] == 'clustering coefficient':
                 prediction = self.clustering_coefficent(G, N)
 
-            if self.params['graph_measure'] == 'transitivity':
+            elif self.params['graph_measure'] == 'transitivity':
                 prediction = self.transitivity(G, N, matrix)
 
-            if self.params['graph_measure'] == 'small-worldness':
+            elif self.params['graph_measure'] == 'small-worldness':
                 prediction = self.small_worldness(G, N)
 
             else:
