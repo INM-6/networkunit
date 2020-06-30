@@ -1,13 +1,15 @@
 from __future__ import division
 import numpy as np
 import sciunit
+from scipy.stats import zscore
 import networkx as nx
 from cv2 import EMD, DIST_L2
 
 
 class wasserstein_distance(sciunit.Score):
-
     score = np.nan
+    _best = 0.
+    _worst = np.inf
 
     @classmethod
     def compute(self, observation, prediction, **kwargs):
@@ -17,11 +19,23 @@ class wasserstein_distance(sciunit.Score):
             raise ValueError("Observation and prediction are not of the same "
                              + "dimensionality!")
 
+        # Filter NaNs
+        observation_mask = np.all(np.isfinite(observation), axis=0)
+        observation = observation[:, observation_mask]
+        prediction_mask = np.all(np.isfinite(prediction), axis=0)
+        prediction = prediction[:, prediction_mask]
+
         disttype = DIST_L2
         N = observation.shape[1]  # number of observation neurons
         M = prediction.shape[1]  # number of prediciton neurons
-        obsv_weights = np.ones(N, dtype=np.float32)
-        pred_weights = np.ones(M, dtype=np.float32)
+
+        # Normalize
+        obsv_pred = np.concatenate((observation, prediction), axis=1)
+        obsv_pred = zscore(obsv_pred, axis=1, nan_policy='omit')
+        observation, prediction = obsv_pred[:, :N], obsv_pred[:, N:]
+
+        obsv_weights = M * np.ones(N, dtype=np.float32)
+        pred_weights = N * np.ones(M, dtype=np.float32)
 
         observation_sig = np.append(obsv_weights[np.newaxis, :],
                                     observation.astype(np.float32), axis=0)
@@ -39,6 +53,8 @@ class wasserstein_distance(sciunit.Score):
         self.score.ndim = ndim
         self.score.obsv_samples = N
         self.score.pred_samples = M
+        self.score.obsv_silent_ratio = np.sum(~observation_mask)/len(observation_mask)
+        self.score.pred_silent_ratio = np.sum(~prediction_mask)/len(prediction_mask)
         self.score.disttype = disttype
         return self.score
 

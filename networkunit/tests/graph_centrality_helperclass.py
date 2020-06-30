@@ -23,8 +23,8 @@ class graph_centrality_helperclass(sciunit.Test):
         ----------
         edge_threshold: float (default: 0)
             Threshold for the matrix values to create the graph.
-        graph_measure: 'degree strength', 'closeness', 'betweenness',
-            'edge betweenness', 'katz', 'clustering coefficient',
+        graph_measure: 'degree_strength', 'closeness', 'betweenness',
+            'edge_betweenness', 'katz', 'clustering_coefficient',
             'transitivity', 'small-worldness'
     """
 
@@ -45,7 +45,7 @@ class graph_centrality_helperclass(sciunit.Test):
                 G = self.build_graph(matrix)
                 self.set_prediction(model, G, key=self.test_hash + '_graph')
 
-            if self.params['graph_measure'] == 'degree strength':
+            if self.params['graph_measure'] == 'degree_strength':
                 prediction = self.degree_strength(G, N)
 
             elif self.params['graph_measure'] == 'closeness':
@@ -54,20 +54,20 @@ class graph_centrality_helperclass(sciunit.Test):
             elif self.params['graph_measure'] == 'betweenness':
                 prediction = self.betweenness(G, N)
 
-            elif self.params['graph_measure'] == 'edge betweenness':
+            elif self.params['graph_measure'] == 'edge_betweenness':
                 prediction = self.edge_betweenness(G, N)
 
             elif self.params['graph_measure'] == 'katz':
                 prediction = self.katz(G, N)
 
-            elif self.params['graph_measure'] == 'clustering coefficient':
+            elif self.params['graph_measure'] == 'clustering_coefficient':
                 prediction = self.clustering_coefficent(G, N)
 
             elif self.params['graph_measure'] == 'transitivity':
                 prediction = self.transitivity(G, N, matrix)
 
             elif self.params['graph_measure'] == 'small-worldness':
-                prediction = self.small_worldness(G, N)
+                prediction = self.small_worldness(G, N, matrix)
 
             else:
                 raise KeyError('Graph measure not know!')
@@ -86,7 +86,9 @@ class graph_centrality_helperclass(sciunit.Test):
         weight_sum = float(np.sum(np.array([weight_dict[edge]
                                             for edge in weight_dict.keys()])))
         for edge in G.edges:
-            G.edges[edge].update(distance=G.edges[edge]['weight'] / weight_sum)
+            distance = G.edges[edge]['weight'] / weight_sum
+            G.edges[edge].update(distance=distance)
+        breakpoint()
         closeness = nx.closeness_centrality(G, distance='distance')
         self.prediction_dim = 1
         closeness_array = np.array([closeness[i] for i in closeness.keys()])

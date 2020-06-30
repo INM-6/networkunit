@@ -19,3 +19,4 @@ from .generalized_correlation_matrix_test import generalized_correlation_matrix_
 from .isi_variation_test import isi_variation_test
 from .power_spectrum_test import power_spectrum_test
 from .timescale_test import timescale_test
+from .average_correlation_test import average_correlation_test
