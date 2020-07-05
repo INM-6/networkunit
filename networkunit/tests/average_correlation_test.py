@@ -36,16 +36,23 @@ class average_correlation_test(correlation_test):
         if avg_correlations is None:
             if kwargs:
                 self.params.update(kwargs)
-            lists_of_spiketrains = model.produce_lists_of_spiketrains(**self.params)
+            lists_of_spiketrains = model.produce_lists_of_spiketrains(
+                **self.params)
             avg_correlations = np.array([])
 
-            for spiketrains in lists_of_spiketrains:
-                cc_matrix = self.generate_cc_matrix(spiketrains=spiketrains,
-                                                    model=model, **self.params)
-                np.fill_diagonal(cc_matrix, 0.)
+            for sts in lists_of_spiketrains:
+                if len(sts) == 1:
+                    correlation_averages = np.array([np.nan])
+                else:
+                    cc_matrix = self.generate_cc_matrix(spiketrains=sts,
+                                                        model=model,
+                                                        **self.params)
+                    np.fill_diagonal(cc_matrix, 0.)
 
-                correlation_averages = np.nansum(cc_matrix, axis=0) / len(spiketrains)
-                avg_correlations = np.append(avg_correlations, correlation_averages)
+                    correlation_averages = np.nansum(cc_matrix,
+                                                     axis=0) / len(sts)
+                avg_correlations = np.append(avg_correlations,
+                                             correlation_averages)
 
             if self.params['nan_to_num']:
                 avg_correlations = np.nan_to_num(avg_correlations)
