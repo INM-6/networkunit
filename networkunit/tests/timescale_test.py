@@ -35,7 +35,12 @@ class timescale_test(two_sample_test):
             spiketrains = model.produce_spiketrains(**self.params)
             binned_sts = [BinnedSpikeTrain(st, binsize=self.params['binsize'])
                           for st in spiketrains]
-            tau_list = [timescale(st, self.params['tau_max']).rescale('ms')
-                        for st in binned_sts]
+            tau_list = []
+            for st in binned_sts:
+                tau = timescale(st, self.params['tau_max'])
+                if tau != tau:
+                    tau_list.append(tau)
+                else:
+                    tau_list.append(tau.rescale('ms'))
             self.set_prediction(model, tau_list)
         return tau_list
