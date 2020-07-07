@@ -19,10 +19,10 @@ setup(
         os.path.join('models/backends','*.py'),
         os.path.join('capabilities','*.py'),
         os.path.join('scores','*.py'),
-        os.path.join('plots','*.py')],
+        os.path.join('plots','*.py'),
+        'VERSION'],
         'figures':['*.png'],
-        'examples':['*.py', '*.ipynb'],
-        'VERSION'
+        'examples':['*.py', '*.ipynb']
         },
     install_requires=install_requires,
     extras_require=extras_require,
