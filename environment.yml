@@ -23,3 +23,4 @@ dependencies:
     - rdflib==4.2.2
     - odml==1.4.2.1
     - networkunit==0.1.1
+    - opencv-python
