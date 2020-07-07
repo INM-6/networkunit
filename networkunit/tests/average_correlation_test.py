@@ -1,5 +1,5 @@
 from networkunit.tests.correlation_test import correlation_test
-from networkunit.capabilities.ProducesListsOfSpikeTrains import ProducesListsOfSpikeTrains
+from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 import numpy as np
 
 
@@ -27,7 +27,7 @@ class average_correlation_test(correlation_test):
         If true, the binned spike trains are set to be binary.
     """
 
-    required_capabilities = (ProducesListsOfSpikeTrains, )
+    required_capabilities = (ProducesSpikeTrains, )
 
     def generate_prediction(self, model, **kwargs):
         # call the function of the required capability of the model
@@ -36,8 +36,7 @@ class average_correlation_test(correlation_test):
         if avg_correlations is None:
             if kwargs:
                 self.params.update(kwargs)
-            lists_of_spiketrains = model.produce_lists_of_spiketrains(
-                **self.params)
+            lists_of_spiketrains = model.produce_grouped_spiketrains(**self.params)
             avg_correlations = np.array([])
 
             for sts in lists_of_spiketrains:

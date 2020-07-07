@@ -6,3 +6,6 @@ class ProducesSpikeTrains(sciunit.Capability):
     """
     def produce_spiketrains(self, **kwargs):
         self.unimplemented()
+
+    def produce_grouped_spiketrains(self, **kwargs):
+        return list(self.produce_spiketrains(**kwargs))
