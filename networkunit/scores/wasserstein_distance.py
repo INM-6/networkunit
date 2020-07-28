@@ -9,7 +9,7 @@ from cv2 import EMD, DIST_L2
 class wasserstein_distance(sciunit.Score):
     score = np.nan
     _best = 0.
-    _worst = np.inf
+    _worst = np.nan_to_num(np.inf)
 
     @classmethod
     def compute(self, observation, prediction, **kwargs):
@@ -29,25 +29,31 @@ class wasserstein_distance(sciunit.Score):
         N = observation.shape[1]  # number of observation neurons
         M = prediction.shape[1]  # number of prediciton neurons
 
-        # Normalize
-        obsv_pred = np.concatenate((observation, prediction), axis=1)
-        obsv_pred = zscore(obsv_pred, axis=1, nan_policy='omit')
-        observation, prediction = obsv_pred[:, :N], obsv_pred[:, N:]
+        if N and M:
+            # Normalize
+            obsv_pred = np.concatenate((observation, prediction), axis=1)
+            obsv_pred = zscore(obsv_pred, axis=1, nan_policy='omit')
+            observation, prediction = obsv_pred[:, :N], obsv_pred[:, N:]
 
-        obsv_weights = M * np.ones(N, dtype=np.float32)
-        pred_weights = N * np.ones(M, dtype=np.float32)
+            obsv_weights = M * np.ones(N, dtype=np.float32)
+            pred_weights = N * np.ones(M, dtype=np.float32)
 
-        observation_sig = np.append(obsv_weights[np.newaxis, :],
-                                    observation.astype(np.float32), axis=0)
-        prediction_sig = np.append(pred_weights[np.newaxis, :],
-                                   prediction.astype(np.float32), axis=0)
+            observation_sig = np.append(obsv_weights[np.newaxis, :],
+                                        observation.astype(np.float32), axis=0)
+            prediction_sig = np.append(pred_weights[np.newaxis, :],
+                                       prediction.astype(np.float32), axis=0)
 
-        ws_distance, _, _ = EMD(observation_sig.T,  # array
-                                prediction_sig.T,  # array
-                                distType=disttype,  # int
-                                # cost = noArray(), # array
-                                # lowerBound = 0, # float
-                                )
+            ws_distance, _, _ = EMD(observation_sig.T,  # array
+                                    prediction_sig.T,  # array
+                                    distType=disttype,  # int
+                                    # cost = noArray(), # array
+                                    # lowerBound = 0, # float
+                                    )
+        else:
+            print("Warning (scores.wasserstein_distance): ",
+                  "Predictions or observations are empty! Returning maximum value.")
+            ws_distance = self._worst
+
 
         self.score = wasserstein_distance(ws_distance)
         self.score.ndim = ndim

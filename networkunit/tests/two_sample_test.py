@@ -61,6 +61,7 @@ class two_sample_test(sciunit.Test):
                 model._backend.set_memory_cache(prediction, key=key)
             if model._backend.use_disk_cache:
                 model._backend.set_disk_cache(prediction, key=key)
+        return None
 
     def _create_plotting_samples(self, model1=None, model2=None, palette=None):
         samples = []
