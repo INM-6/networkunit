@@ -1,7 +1,7 @@
 from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 from elephant.statistics import isi, lv, cv2
-import numpy as np
+
 
 class isi_variation_test(two_sample_test):
     """
@@ -29,11 +29,11 @@ class isi_variation_test(two_sample_test):
             if self.params['variation_measure'] == 'lv':
                 isi_var = []
                 for intervals in isi_list:
-                    isi_var.append(lv(np.squeeze(intervals), with_nan=with_nan))
+                    isi_var.append(lv(intervals, with_nan=with_nan))
             elif self.params['variation_measure'] == 'cv':
                 isi_var = []
                 for intervals in isi_list:
-                    isi_var.append(cv2(np.squeeze(intervals), with_nan=with_nan))
+                    isi_var.append(cv2(intervals, with_nan=with_nan))
             elif self.params['variation_measure'] == 'isi':
                 isi_var = [float(item) for sublist in isi_list
                            for item in sublist]
