@@ -51,9 +51,9 @@ class wasserstein_distance(sciunit.Score):
                                     )
         else:
             print("Warning (scores.wasserstein_distance): ",
-                  "Predictions or observations are empty! Returning maximum value.")
+                  "Predictions or observations are empty! ",
+                  "Returning maximum value.")
             ws_distance = self._worst
-
 
         self.score = wasserstein_distance(ws_distance)
         self.score.ndim = ndim
