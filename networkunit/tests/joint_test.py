@@ -66,7 +66,8 @@ class joint_test(two_sample_test):
             for test_class, params in zip(self.test_list, self.test_params):
                 self.params.update(params)
                 self.test_inst.append(test_class(observation=self.observation,
-                                                 name=self.name, **self.params))
+                                                 name=test_class.name,
+                                                 **self.params))
 
             # ToDO: to parallize!
             for test in self.test_inst:
