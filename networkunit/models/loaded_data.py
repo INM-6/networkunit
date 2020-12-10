@@ -6,9 +6,9 @@ class loaded_data(sciunit.Model):
     Abstract model class which initializes self.params.
     Child classes need to define a load() function and a file_path.
     """
-    @property
-    def file_path(self):
-        raise NotImplementedError
+    # @property
+    # def file_path(self):
+    #     raise NotImplementedError
 
     def __init__(self, name=None, backend='storage', **params):
         """
