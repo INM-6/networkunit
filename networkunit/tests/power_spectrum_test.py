@@ -2,10 +2,11 @@ from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 from elephant.statistics import time_histogram
 from elephant.spectral import welch_psd
+from elephant.signal_processing import zscore
 from networkunit.plots.power_spectral_density import power_spectral_density
 import numpy as np
 import quantities as pq
-
+from inspect import signature
 
 class power_spectrum_test(two_sample_test):
     """
@@ -18,79 +19,36 @@ class power_spectrum_test(two_sample_test):
 
     required_capabilities = (ProducesSpikeTrains,)
 
+    name = 'Power-Spectrum Test'
+    default_params = {'freq_res': 1,
+                      'binszie': 5*pq.ms,
+                      'psd_precision': 0.0001
+                      }
+
     def generate_prediction(self, model, **kwargs):
-        psd = self.get_prediction(model)
-        if psd is None:
+        psd_samples = self.get_prediction(model)
+        if psd_samples is None:
             if kwargs:
                 self.params.update(kwargs)
 
+            # calculating population activity
             spiketrains = model.produce_spiketrains(**self.params)
-
-            self._set_default_param('binsze', 10 * pq.ms)
-            self._set_default_param('num_seg', None)
-            self._set_default_param('len_seg', None)
-            self._set_default_param('freq_res', 1.)
-            self._set_default_param('overlap', 0.5)
-            self._set_default_param('fs', 100)
-            self._set_default_param('window', 'hanning')
-            self._set_default_param('nfft', None)
-            self._set_default_param('detrend', 'constant')
-            self._set_default_param('return_onesided', True)
-            self._set_default_param('scaling', 'density')
-            self._set_default_param('axis', -1)
-
             asignal = time_histogram(spiketrains,
                                      binsize=self.params['binsize'])
-            freqs, psd = welch_psd(
-                asignal,
-                num_seg=self.params['num_seg'],
-                len_seg=self.params['len_seg'],
-                freq_res=self.params['freq_res'],
-                overlap=self.params['overlap'],
-                fs=self.params['fs'],
-                window=self.params['window'],
-                nfft=self.params['nfft'],
-                detrend=self.params['detrend'],
-                return_onesided=self.params['return_onesided'],
-                scaling=self.params['scaling'],
-                axis=self.params['axis'])
-            model.psd_freqs = freqs
-            # ToDo: How to quantitatively compare PSD distributions ??
-            psd = np.squeeze(psd)
-            self.set_prediction(model, psd)
-        return psd
+            zscore(asignal, inplace=True)
 
-    def _set_default_param(self, pname, value):
-        if pname not in self.params:
-            self.params[pname] = value
-        return None
+            # calculating power spectrum with params
+            psd_sig = signature(welch_psd)[0]
+            psd_params = dict((k, self.params[k]) for k in
+                              psd_sig.parameters.keys() if k in self.params)
+            freqs, psd = welch_psd(asignal, **psd_params)
+            psd /= (np.mean(psd)*len(freqs))
+            breakpoint()
 
-    def visualize_samples(self, model1=None, model2=None, ax=None,
-                          palette=None, sample_names=['observation', 'prediction'],
-                          **kwargs):
+            # PSD values -> PSD samples
+            factor = 1/self.params['psd_precision']
+            psd_samples = np.array(([f]*int(np.round(p*factor))
+                                    for f,p in zip(freqs, psd))).flatten()
 
-        samples, palette, names = self._create_plotting_samples(model1=model1,
-                                                                model2=model2,
-                                                                palette=palette)
-        if self.observation is None:
-            sample_names[0] = model1.name
-            freqs1 = model1.psd_freqs
-            freqs2 = None
-            if model2 is not None:
-                sample_names[1] = model2.name
-                freqs2 = model2.psd_freqs
-        else:
-            sample_names[1] = model1.name
-            freqs1 = model1.psd_freqs
-            freqs2 = model1.psd_freqs
-
-        if len(samples) == 1:
-            sample_2 = None
-        else:
-            sample_2 = samples[1]
-
-        power_spectral_density(sample1=samples[0], freqs1=freqs1,
-                               sample2=sample_2, freqs2=freqs2, ax=ax,
-                               palette=palette, sample_names=sample_names,
-                               **kwargs)
-        return ax
+            self.set_prediction(model, psd_samples)
+        return psd_samples
