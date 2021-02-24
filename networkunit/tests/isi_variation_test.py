@@ -1,6 +1,6 @@
 from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
-from elephant.statistics import isi, lv, cv2
+from elephant.statistics import isi, lv, cv2, lvr
 
 
 class isi_variation_test(two_sample_test):
@@ -13,6 +13,7 @@ class isi_variation_test(two_sample_test):
         'isi' - Compares the inter-spike intervals
         'cv'  - Compares the coefficients of variation
         'lv'  - Compares the local coefficients of variation
+        'lvr'  - Compares the revised local coefficients of variation
     """
 
     required_capabilities = (ProducesSpikeTrains, )
@@ -37,6 +38,10 @@ class isi_variation_test(two_sample_test):
             elif self.params['variation_measure'] == 'isi':
                 isi_var = [float(item) for sublist in isi_list
                            for item in sublist]
+            elif self.params['variation_measure'] == 'lvr':
+                isi_var = []
+                for intervals in isi_list:
+                    isi_var.append(lvr(intervals, with_nan=with_nan, **kwargs))
             else:
                 raise ValueError('Variation measure not known.')
             self.set_prediction(model, isi_var)

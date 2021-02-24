@@ -19,7 +19,7 @@ class two_sample_test(sciunit.Test):
         self.test_hash = uuid4().hex
         if hasattr(self, 'params'):
             self.default_params = self.params
-        super(two_sample_test,self).__init__(observation, name=name, **params)
+        super(two_sample_test, self).__init__(observation, name=name, **params)
 
     def generate_prediction(self, model, **kwargs):
         """
@@ -102,9 +102,9 @@ class two_sample_test(sciunit.Test):
         return samples, palette, names
 
     def visualize_samples(self, model1=None, model2=None, ax=None, bins=100,
-                         palette=None, density=True,
-                         sample_names=['observation', 'prediction'],
-                         var_name='Measured Parameter', **kwargs):
+                          palette=None, density=True,
+                          sample_names=['observation', 'prediction'],
+                          var_name='Measured Parameter', **kwargs):
 
         samples, palette, names = self._create_plotting_samples(model1=model1,
                                                          model2=model2,
