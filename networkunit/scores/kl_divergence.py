@@ -88,7 +88,7 @@ class kl_divergence(sciunit.Score):
         max_value = max([max(sample1),max(sample2)])
         min_value = min([min(sample1),min(sample2)])
         bins = (max_value - min_value) / kl_binsize
-        edges = np.linspace(min_value, max_value, bins)
+        edges = np.linspace(min_value, max_value, int(bins))
 
         P, edges = np.histogram(sample1, bins=edges, density=True)
         Q, _____ = np.histogram(sample2, bins=edges, density=True)

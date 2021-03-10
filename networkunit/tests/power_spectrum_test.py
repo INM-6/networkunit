@@ -34,7 +34,7 @@ class power_spectrum_test(two_sample_test):
             psd_samples = []
 
             for spiketrains in spiketrains_list:
-                psd = self.spiketrain_psd(spiketrains)
+                psd = self.spiketrains_psd(spiketrains)
                 psd_samples.append(self.psd_to_samples(freqs, psd))
 
             self.set_prediction(model, psd_samples)
