@@ -32,11 +32,19 @@ class power_spectrum_test(two_sample_test):
                 self.params.update(kwargs)
 
             spiketrains_list = model.produce_grouped_spiketrains(**self.params)
-            psd_samples = []
+            # psd_samples = []
+            psd_lst = []
 
             for spiketrains in spiketrains_list:
                 freqs, psd = self.spiketrains_psd(spiketrains)
-                psd_samples.append(self.psd_to_samples(freqs, psd))
+                psd_lst.append(psd)
+                # psd_samples.append(self.psd_to_samples(freqs, psd))
+
+            psd_arr = np.stack(psd_lst, axis=-1)
+            mean_psd = np.mean(psd_arr, axis=-1)
+            # std_psd = np.std(psd_arr, axis=-1)
+
+            psd_samples = self.psd_to_samples(freqs, mean_psd)
 
             self.set_prediction(model, psd_samples)
         return psd_samples
