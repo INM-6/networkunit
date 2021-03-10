@@ -7,6 +7,7 @@ from elephant.signal_processing import zscore
 import numpy as np
 import quantities as pq
 from inspect import signature
+import neo
 
 
 class power_spectrum_test(two_sample_test):
@@ -19,7 +20,7 @@ class power_spectrum_test(two_sample_test):
 
     required_capabilities = (ProducesSpikeTrains,)
 
-    default_params = {'frequency_resolution': 2.5,
+    default_params = {'frequency_resolution': 2.5*pq.Hz,
                       'binsize': 10*pq.ms,
                       'psd_precision': 0.0001
                       }
@@ -34,30 +35,35 @@ class power_spectrum_test(two_sample_test):
             psd_samples = []
 
             for spiketrains in spiketrains_list:
-                psd = self.spiketrains_psd(spiketrains)
+                freqs, psd = self.spiketrains_psd(spiketrains)
                 psd_samples.append(self.psd_to_samples(freqs, psd))
 
             self.set_prediction(model, psd_samples)
         return psd_samples
 
-
     def spiketrains_psd(self, spiketrains):
         if not (type(spiketrains) == list) \
-        or not type(spiketrains[0]) == neo.SpikeTrain:
+          or not type(spiketrains[0]) == neo.SpikeTrain:
             raise TypeError("Input must be a list of neo.Spiketrain obejects.")
 
         asignal = time_histogram(spiketrains,
                                  binsize=self.params['binsize'])
         zscore(asignal, inplace=True)
 
-        psd_sig = signature(welch_psd)[0]
+        psd_sig = signature(welch_psd)
         psd_params = dict((k, self.params[k]) for k in
                           psd_sig.parameters.keys() if k in self.params)
         freqs, psd = welch_psd(asignal, **psd_params)
-        # Adjust so the integral over f is 1
-        psd /= (np.mean(psd)*self.params['frequency_resolution'])
-        return psd
+        # Enforce single dimension shape, since
+        # asignal will always be one-dimensional in this case
+        psd = psd[0, :].magnitude
 
+        # If there are nonzero values in the psd, avoid division by 0
+        if psd.any():
+            # Adjust so the integral over f is 1
+            psd /= (np.nanmean(psd)*self.params['frequency_resolution'])
+
+        return freqs, psd
 
     def psd_to_samples(self, freqs, psd):
         factor = 1/self.params['psd_precision']
