@@ -40,7 +40,7 @@ class joint_test(two_sample_test):
         """parameters (list of dicts) to be passed to the tests"""
         pass
 
-    def check_tests(self):
+    def check_tests(self, model):
         if not hasattr(self, 'test_list') or not isinstance(self.test_list, list):
             raise AttributeError("Joint test doesn't define a test_list!")
         if not hasattr(self, 'test_params') or not isinstance(self.test_params, list):
@@ -52,10 +52,20 @@ class joint_test(two_sample_test):
                 raise TypeError("{} not a legit test class!".format(test))
             if not isinstance(params, dict):
                 raise TypeError("{} doesn't have legit params dict!".format(test))
+
+        sts = model.produce_spiketrains()
+        grouped_sts = model.produce_grouped_spiketrains()
+        flat_sts = [st for st_list in grouped_sts for st in st_list]
+        for st1, st2 in zip(sts, flat_sts):
+            if not np.allclose(st1.times, st2.times):
+                raise ValueError('flattened grouped spiketrains and spiketrains must have the same ordering!')
+        del grouped_sts
+        del flat_sts
+        del sts
         pass
 
     def generate_prediction(self, model, **kwargs):
-        self.check_tests()
+        self.check_tests(model)
         if kwargs:
             self.params.update(kwargs)
         prediction = self.get_prediction(model)
