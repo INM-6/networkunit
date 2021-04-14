@@ -46,12 +46,10 @@ class average_correlation_test(correlation_test):
                     cc_matrix = self.generate_cc_matrix(spiketrains=sts,
                                                         model=model,
                                                         **self.params)
-                    np.fill_diagonal(cc_matrix, 0.)
+                    np.fill_diagonal(cc_matrix, np.nan)
 
-                    correlation_averages = np.nansum(cc_matrix,
-                                                     axis=0) / len(sts)
-                avg_correlations = np.append(avg_correlations,
-                                             correlation_averages)
+                    correlation_averages = np.nansum(cc_matrix, axis=0) / len(sts)
+                avg_correlations = np.append(avg_correlations, correlation_averages)
 
             if self.params['nan_to_num']:
                 avg_correlations = np.nan_to_num(avg_correlations)
