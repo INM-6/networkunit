@@ -16,6 +16,7 @@ setup(
     package_data={'networkunit':[
         os.path.join('tests','*.py'),
         os.path.join('models','*.py'),
+        os.path.join('models/backends','*.py'),
         os.path.join('capabilities','*.py'),
         os.path.join('scores','*.py'),
         os.path.join('plots','*.py')],
