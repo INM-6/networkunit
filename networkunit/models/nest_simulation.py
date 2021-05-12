@@ -1,7 +1,6 @@
 import sciunit
 import quantities as pq
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
-import sys
 
 
 class nest_simulation(sciunit.models.RunnableModel, ProducesSpikeTrains):

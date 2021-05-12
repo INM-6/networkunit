@@ -1,7 +1,6 @@
-import sciunit
 import numpy as np
 from networkunit.tests.two_sample_test import two_sample_test
-from abc import ABCMeta, abstractmethod
+from abc import abstractmethod
 
 
 class joint_test(two_sample_test):
