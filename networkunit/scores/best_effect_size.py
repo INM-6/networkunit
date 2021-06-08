@@ -12,6 +12,7 @@ try:
 except:
     pymc = False
 
+
 class best_effect_size(sciunit.Score):
     """
     Baysian Estimation Effect Size according to  Kruschke, J. (2012)
@@ -38,13 +39,14 @@ class best_effect_size(sciunit.Score):
                 prediction_name='prediction',
                 mcmc_iter=110000,
                 mcmc_burn=10000,
-                effect_size_type='mode', # 'mean'
-                assume_normal = False,
+                effect_size_type='mode',  # 'mean'
+                assume_normal=False,
                 **kwargs):
         if not pymc:
             raise ImportError('Module best or pymc could not be loaded!')
 
-        data_dict = {observation_name:observation, prediction_name:prediction}
+        data_dict = {observation_name: observation,
+                     prediction_name: prediction}
         best_model = self.make_model(data_dict, assume_normal)
         M = MCMC(best_model)
         M.sample(iter=mcmc_iter, burn=mcmc_burn)
@@ -63,7 +65,7 @@ class best_effect_size(sciunit.Score):
         posterior_std2 = M.trace('group2_std')[:]
 
         pooled_var = ((N1 - 1) * posterior_std1 ** 2
-                   + (N2 - 1) * posterior_std2 ** 2) / (N1 + N2 - 2)
+                      + (N2 - 1) * posterior_std2 ** 2) / (N1 + N2 - 2)
 
         self.effect_size = diff_means / np.sqrt(pooled_var)
 
@@ -155,12 +157,12 @@ class best_effect_size(sciunit.Score):
                 verticalalignment='bottom',
                 )
 
-        ax.spines['bottom'].set_position(('outward',2))
-        for loc in ['left','top','right']:
-            ax.spines[loc].set_color('none') # don't draw
+        ax.spines['bottom'].set_position(('outward', 2))
+        for loc in ['left', 'top', 'right']:
+            ax.spines[loc].set_color('none')  # don't draw
         ax.xaxis.set_ticks_position('bottom')
-        ax.yaxis.set_ticks([]) # don't draw
-        ax.xaxis.set_major_locator( mticker.MaxNLocator(nbins=4) )
+        ax.yaxis.set_ticks([])  # don't draw
+        ax.xaxis.set_major_locator(mticker.MaxNLocator(nbins=4))
         for line in ax.get_xticklines():
             line.set_marker(mpllines.TICKDOWN)
         ax.set_xlabel('Effect Size')

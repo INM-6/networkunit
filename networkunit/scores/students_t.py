@@ -1,8 +1,5 @@
 import numpy as np
 from scipy.stats import ttest_ind
-import matplotlib.pyplot as plt
-import matplotlib.colors as colors
-import seaborn as sns
 import sciunit
 from networkunit.scores import to_precision
 
@@ -37,7 +34,6 @@ class students_t(sciunit.Score):
         score.pvalue = pvalue
         score.data_size = [len(sample1), len(sample2)]
         return score
-
 
     @property
     def sort_key(self):

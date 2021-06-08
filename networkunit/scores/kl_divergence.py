@@ -1,7 +1,6 @@
 import numpy as np
 from scipy.stats import entropy
 import matplotlib.pyplot as plt
-import matplotlib.colors as colors
 import seaborn as sns
 import sciunit
 
