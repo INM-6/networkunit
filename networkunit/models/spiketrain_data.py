@@ -5,7 +5,6 @@ from neo.core import SpikeTrain
 from neo.io import NeoHdf5IO
 from copy import copy
 import numpy as np
-import os
 import neo
 
 
