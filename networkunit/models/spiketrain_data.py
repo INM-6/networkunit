@@ -2,7 +2,6 @@ from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 from networkunit.models.loaded_data import loaded_data
 from networkunit.plots.rasterplot import rasterplot
 from neo.core import SpikeTrain
-from neo.io import NeoHdf5IO
 from copy import copy
 import numpy as np
 import neo
@@ -19,12 +18,12 @@ class spiketrain_data(loaded_data, ProducesSpikeTrains):
     """
     def load(self, file_path=None, client=None, **kwargs):
         """
-        Loads spiketrains from a hdf5 file in the neo data format.
+        Loads spiketrains from a .nix file in the neo data format.
 
         Parameters
         ----------
         file_path : string
-            Path to file
+            Path to ''.nix' file
         client :
             When file is loaded from a collab storage a appropriate client
             must be provided.
@@ -33,17 +32,19 @@ class spiketrain_data(loaded_data, ProducesSpikeTrains):
          """
         if file_path is None:
             file_path = self.file_path
-        if file_path[-2:] != 'h5':
-            raise IOError('file must be in hdf5 file in Neo format')
+        if file_path[-2:] != 'nix':
+            raise IOError('file must be in .NIX format')
 
         if client is None:
-            data = NeoHdf5IO(file_path)
+            with neo.NixIO(file_path) as nio:
+                block = nio.read_block()
         else:
             store_path = './' + file_path.split('/')[-1]
             client.download_file(file_path, store_path)
-            data = NeoHdf5IO(store_path)
+            with neo.NixIO(store_path) as nio:
+                block = nio.read_block()
 
-        spiketrains = data.read_block().list_children_by_class(SpikeTrain)
+        spiketrains = block.list_children_by_class(SpikeTrain)
 
         for i in xrange(len(spiketrains)):
             spiketrains[i] = spiketrains[i].rescale('ms')
