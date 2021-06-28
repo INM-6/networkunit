@@ -12,7 +12,22 @@ class wasserstein_distance(sciunit.Score):
     _worst = np.nan_to_num(np.inf)
 
     @classmethod
-    def compute(self, observation, prediction, **kwargs):
+    def compute(self, observation, prediction, norm='obsv', **kwargs):
+        """
+        Calculates the Wasserstein distance (Earth mover's distance) between
+        two point clouds. Uses the opencv implementation in the backend and can
+        handle any dimensionality. The observation and prediction must have the
+        same dimensionality.
+
+        norm : string
+            Determines normalization of the input data.
+            * If 'obsv', then all data are normalized based on the observation
+            mean and standard deviation (default)
+            * If 'pred', then the prediction mean and std are used
+            * If 'both', then the observation and prediction are concatenated
+            and the mean and std of the full array are used for normalization.
+
+        """
         if observation.shape[0] == prediction.shape[0]:
             ndim = observation.shape[0]
         else:
@@ -31,9 +46,18 @@ class wasserstein_distance(sciunit.Score):
 
         if N and M:
             # Normalize
-            obsv_pred = np.concatenate((observation, prediction), axis=1)
-            obsv_pred = zscore(obsv_pred, axis=1, nan_policy='omit')
-            observation, prediction = obsv_pred[:, :N], obsv_pred[:, N:]
+            if norm == 'obsv':
+                avg = observation.mean(axis=1).reshape(ndim, 1)
+                std = observation.mean(axis=1).reshape(ndim, 1)
+            elif norm == 'pred':
+                avg = prediction.mean(axis=1).reshape(ndim, 1)
+                std = prediction.mean(axis=1).reshape(ndim, 1)
+            elif norm == 'both':
+                obsv_pred = np.concatenate((observation, prediction), axis=1)
+                avg = obsv_pred.mean(axis=1).reshape(ndim, 1)
+                std = obsv_pred.mean(axis=1).reshape(ndim, 1)
+            observation = (observation - avg) / std
+            prediction = (prediction - avg) / std
 
             obsv_weights = M * np.ones(N, dtype=np.float32)
             pred_weights = N * np.ones(M, dtype=np.float32)
