@@ -48,14 +48,14 @@ class wasserstein_distance(sciunit.Score):
             # Normalize
             if norm == 'obsv':
                 avg = observation.mean(axis=1).reshape(ndim, 1)
-                std = observation.mean(axis=1).reshape(ndim, 1)
+                std = observation.std(axis=1).reshape(ndim, 1)
             elif norm == 'pred':
                 avg = prediction.mean(axis=1).reshape(ndim, 1)
-                std = prediction.mean(axis=1).reshape(ndim, 1)
+                std = prediction.std(axis=1).reshape(ndim, 1)
             elif norm == 'both':
                 obsv_pred = np.concatenate((observation, prediction), axis=1)
                 avg = obsv_pred.mean(axis=1).reshape(ndim, 1)
-                std = obsv_pred.mean(axis=1).reshape(ndim, 1)
+                std = obsv_pred.std(axis=1).reshape(ndim, 1)
             observation = (observation - avg) / std
             prediction = (prediction - avg) / std
 
