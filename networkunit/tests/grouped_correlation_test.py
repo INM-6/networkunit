@@ -35,8 +35,8 @@ class grouped_correlation_test(correlation_test):
     def generate_prediction(self, model, **kwargs):
         # call the function of the required capability of the model
         # and pass the parameters of the test class instance in case the
-        avg_correlations = self.get_prediction(model)
-        if avg_correlations is None:
+        preds = self.get_prediction(model)
+        if preds is None:
             if kwargs:
                 self.params.update(kwargs)
             lists_of_spiketrains = model.produce_grouped_spiketrains(**self.params)

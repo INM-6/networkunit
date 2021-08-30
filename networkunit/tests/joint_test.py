@@ -1,7 +1,6 @@
 import numpy as np
 from networkunit.tests.two_sample_test import two_sample_test
 
-
 class joint_test(two_sample_test):
     """
     Test class which enables the joint evaluation of features from other tests.
@@ -62,13 +61,14 @@ class joint_test(two_sample_test):
             self.test_inst = []
 
             for test_class, params in zip(self.test_list, self.test_params):
-                self.params.update(params)
-                if 'name' in self.params.keys():
-                    test_class.name = self.params.pop('name')
+                if not hasattr(test_class, 'params'):
+                    test_class.params = {}
+                test_class.params.update(params)
+                if 'name' in test_class.params.keys():
+                    test_class.name = test_class.params.pop('name')
                 self.test_inst.append(
                     test_class(observation=self.observation,
-                               name=test_class.name,
-                               **self.params))
+                               name=test_class.name))
 
             # ToDO: consider parallelization
             for test in self.test_inst:
