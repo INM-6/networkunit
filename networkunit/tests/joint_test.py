@@ -1,6 +1,5 @@
 import numpy as np
 from networkunit.tests.two_sample_test import two_sample_test
-from abc import abstractmethod
 
 
 class joint_test(two_sample_test):
@@ -26,18 +25,6 @@ class joint_test(two_sample_test):
                        {'variation_measure': 'cv'}]
     ```
     """
-
-    @property
-    @abstractmethod
-    def test_list(self):
-        """list of test classes to combine"""
-        pass
-
-    @property
-    @abstractmethod
-    def test_params(self):
-        """parameters (list of dicts) to be passed to the tests"""
-        pass
 
     def check_tests(self, model):
         if not hasattr(self, 'test_list') or not isinstance(self.test_list, list):
@@ -76,15 +63,19 @@ class joint_test(two_sample_test):
                 self.params.update(params)
                 if 'name' in self.params.keys():
                     test_class.name = self.params.pop('name')
-
                 self.test_inst.append(
                     test_class(observation=self.observation,
                                name=test_class.name,
                                **self.params))
 
-            # ToDO: to parallize!
+            # ToDO: consider parallelization
             for test in self.test_inst:
-                prediction.append(test.generate_prediction(model))
+                pred = np.array(test.generate_prediction(model))
+                if len(pred.shape) > 1:
+                    for i in range(pred.shape[-1]):
+                        prediction.append(pred[:, i])
+                else:
+                    prediction.append(pred)
 
             it = iter(prediction)
             the_len = len(next(it))
