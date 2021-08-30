@@ -52,6 +52,8 @@ class joint_test(two_sample_test):
 
     def generate_prediction(self, model, **kwargs):
         self.check_tests(model)
+        if not hasattr(self, params):
+            self.params = {}
         if kwargs:
             self.params.update(kwargs)
         prediction = self.get_prediction(model)
