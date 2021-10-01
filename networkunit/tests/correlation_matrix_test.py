@@ -50,6 +50,7 @@ class correlation_matrix_test(correlation_test):
     """
 
     required_capabilities = (ProducesSpikeTrains, )
+    default_params = {'cluster_method': 'ward'}
 
     @generate_prediction_wrapper
     def generate_prediction(self, model, **params):
@@ -58,8 +59,6 @@ class correlation_matrix_test(correlation_test):
                                             model=model, **params)
         if 'cluster_matrix' in params and params['cluster_matrix']:
             np.fill_diagonal(cc_matrix, 1.)
-            if 'cluster_method' not in params:
-                params.update(cluster_method='ward')
             try:
                 try:
                     linkagematrix = linkage(squareform(1. - cc_matrix),
