@@ -1,7 +1,7 @@
 from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 from elephant.statistics import isi, lv, cv2, lvr
-from networkunit.utils import generate_prediction_wrapper
+from networkunit.utils import generate_prediction_wrapper, filter_params
 
 
 class isi_variation_test(two_sample_test):
@@ -10,7 +10,7 @@ class isi_variation_test(two_sample_test):
 
     Parameters (in dict params)
     ----------
-    variation_measure: 'isi', 'cv', 'lv' (default)
+    variation_measure: 'isi', 'cv', 'lv', 'lvr' (default)
         'isi' - Compares the inter-spike intervals
         'cv'  - Compares the coefficients of variation
         'lv'  - Compares the local coefficients of variation
@@ -28,19 +28,22 @@ class isi_variation_test(two_sample_test):
         measure = params.pop('variation_measure')
         if measure == 'lv':
             isi_var = []
-            for intervals in isi_list:
-                isi_var.append(lv(intervals, **params))
+            with filter_params(lv) as _lv:
+                for intervals in isi_list:
+                    isi_var.append(_lv(intervals, **params))
         elif measure == 'cv':
             isi_var = []
-            for intervals in isi_list:
-                isi_var.append(cv2(intervals, **params))
+            with filter_params(cv2) as _cv2:
+                for intervals in isi_list:
+                    isi_var.append(_cv2(intervals, **params))
         elif measure == 'isi':
             isi_var = [float(item) for sublist in isi_list
                        for item in sublist]
         elif measure == 'lvr':
             isi_var = []
-            for intervals in isi_list:
-                isi_var.append(lvr(intervals, **params))
+            with filter_params(lvr) as _lvr:
+                for intervals in isi_list:
+                    isi_var.append(_lvr(intervals, **params))
         else:
             raise ValueError('Variation measure not known.')
 

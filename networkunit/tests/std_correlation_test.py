@@ -31,7 +31,7 @@ class std_correlation_test(correlation_test):
 
     @generate_prediction_wrapper
     def generate_prediction(self, model, **params):
-        lists_of_spiketrains = model.produce_grouped_spiketrains(**self.params)
+        lists_of_spiketrains = model.produce_grouped_spiketrains(**params)
         std_correlations = np.array([])
 
         for sts in lists_of_spiketrains:
@@ -40,14 +40,14 @@ class std_correlation_test(correlation_test):
             else:
                 cc_matrix = self.generate_cc_matrix(spiketrains=sts,
                                                     model=model,
-                                                    **self.params)
+                                                    **params)
                 np.fill_diagonal(cc_matrix, 0.)
 
                 correlation_stds = np.nanstd(cc_matrix, axis=0)
             std_correlations = np.append(std_correlations,
                                          correlation_stds)
 
-        if self.params['nan_to_num']:
+        if params['nan_to_num']:
             std_correlations = np.nan_to_num(std_correlations)
 
         return std_correlations

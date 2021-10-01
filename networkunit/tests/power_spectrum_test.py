@@ -1,6 +1,6 @@
 from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
-from networkunit.utils import generate_prediction_wrapper
+from networkunit.utils import generate_prediction_wrapper, filter_params
 from elephant.statistics import time_histogram
 from elephant.spectral import welch_psd
 from elephant.signal_processing import zscore
@@ -39,23 +39,23 @@ class power_spectrum_test(two_sample_test):
         mean_psd = np.mean(psd_arr, axis=-1)
         # std_psd = np.std(psd_arr, axis=-1)
 
-        psd_samples = self.psd_to_samples(freqs, mean_psd)
+        psd_samples = self.psd_to_samples(freqs, mean_psd,
+                                          params['psd_precision'])
 
         return psd_samples
 
-    def spiketrains_psd(self, spiketrains):
+    def spiketrains_psd(self, spiketrains, **params):
         if not (type(spiketrains) == list) \
           or not type(spiketrains[0]) == neo.SpikeTrain:
             raise TypeError("Input must be a list of neo.Spiketrain obejects.")
 
         asignal = time_histogram(spiketrains,
-                                 bin_size=self.params['bin_size'])
+                                 bin_size=params['bin_size'])
         zscore(asignal, inplace=True)
 
-        psd_sig = signature(welch_psd)
-        psd_params = dict((k, self.params[k]) for k in
-                          psd_sig.parameters.keys() if k in self.params)
-        freqs, psd = welch_psd(asignal, **psd_params)
+        with filter_params(welch_psd) as _welch_psd:
+            freqs, psd = _welch_psd(asignal, **params)
+
         # Enforce single dimension shape, since
         # asignal will always be one-dimensional in this case
         psd = psd[0, :].magnitude
@@ -63,11 +63,11 @@ class power_spectrum_test(two_sample_test):
         # If there are nonzero values in the psd, avoid division by 0
         if psd.any():
             # Adjust so the integral over f is 1
-            psd /= (np.nanmean(psd)*self.params['frequency_resolution'])
+            psd /= (np.nanmean(psd)*params['frequency_resolution'])
 
         return freqs, psd
 
-    def psd_to_samples(self, freqs, psd):
-        factor = 1/self.params['psd_precision']
+    def psd_to_samples(self, freqs, psd, precision):
+        factor = 1 / precision
         psd_factors = np.round(psd*factor).astype(int)
         return np.repeat(freqs, psd_factors)

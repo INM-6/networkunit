@@ -31,7 +31,7 @@ class freqband_power_test(power_spectrum_test):
         band_powers = []
 
         for spiketrains in spiketrains_list:
-            freqs, psd = self.spiketrains_psd(spiketrains)
+            freqs, psd = self.spiketrains_psd(spiketrains, **params)
             f0 = np.argmax(freqs >= params['highpass_freq'])
             f1 = np.argmax(freqs >= params['lowpass_freq'])
             band_powers.append(np.mean(psd[f0:f1]))
