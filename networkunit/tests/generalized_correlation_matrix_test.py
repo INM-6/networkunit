@@ -57,10 +57,10 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
 
     required_capabilities = (ProducesSpikeTrains, )
 
-    params = {'maxlag': 100,  # in bins
-              'binsize': 2*ms,
-              'time_reduction': 'threshold 0.13'
-              }
+    default_params = {'maxlag': 100,  # in bins
+                      'binsize': 2*ms,
+                      'time_reduction': 'threshold 0.13'
+                      }
 
     def generate_cc_matrix(self, spiketrains, binary=False, model=None,
                            **kwargs):

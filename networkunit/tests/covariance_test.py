@@ -28,6 +28,7 @@ class covariance_test(two_sample_test):
     """
 
     required_capabilities = (ProducesSpikeTrains, )
+    default_params = {'binsize': 2*ms}
 
     def generate_prediction(self, model, **kwargs):
         # call the function of the required capability of the model
@@ -36,8 +37,6 @@ class covariance_test(two_sample_test):
         if covariances is None:
             if kwargs:
                 self.params.update(kwargs)
-            if 'binsize' not in self.params and 'num_bins' not in self.params:
-                self.params['binsize'] = 2*ms
             self.spiketrains = model.produce_spiketrains(**self.params)
             covariances = self.generate_covariances(self.spiketrains,
                                                     **self.params)

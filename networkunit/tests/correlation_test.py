@@ -31,15 +31,6 @@ class correlation_test(two_sample_test):
 
     required_capabilities = (ProducesSpikeTrains, )
 
-    def __init__(self, observation=None, name=None, **params):
-        if params is None:
-            params = {}
-        self.params.update(params)
-        if 'binsize' not in self.params and 'num_bins' not in self.params:
-            self.params['binsize'] = 2*ms
-        super(correlation_test, self).__init__(observation=observation,
-                                               name=name, **self.params)
-
     def validate_observation(self, observation):
         # ToDo: Check if observation values are legit (non nan, positive, ...)
         pass

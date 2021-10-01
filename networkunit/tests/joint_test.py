@@ -51,8 +51,6 @@ class joint_test(two_sample_test):
 
     def generate_prediction(self, model, **kwargs):
         self.check_tests(model)
-        if not hasattr(self, 'params'):
-            self.params = {}
         if kwargs:
             self.params.update(kwargs)
         prediction = self.get_prediction(model)
@@ -60,15 +58,15 @@ class joint_test(two_sample_test):
             prediction = []
             self.test_inst = []
 
-            for test_class, params in zip(self.test_list, self.test_params):
-                if not hasattr(test_class, 'params'):
-                    test_class.params = {}
-                test_class.params.update(params)
-                if 'name' in test_class.params.keys():
-                    test_class.name = test_class.params.pop('name')
+            for test_class, test_params in zip(self.test_list, self.test_params):
+                if 'name' in test_params.keys():
+                    test_name = test_params.pop('name')
+                else:
+                    test_name = None
                 self.test_inst.append(
                     test_class(observation=self.observation,
-                               name=test_class.name))
+                               name=test_name,
+                               **test_params))
 
             # ToDO: consider parallelization
             for test in self.test_inst:
