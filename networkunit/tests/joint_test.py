@@ -1,5 +1,6 @@
 import numpy as np
 from networkunit.tests.two_sample_test import two_sample_test
+from networkunit.utils import generate_prediction_wrapper
 
 class joint_test(two_sample_test):
     """
@@ -49,39 +50,36 @@ class joint_test(two_sample_test):
         del sts
         pass
 
-    def generate_prediction(self, model, **kwargs):
+    @generate_prediction_wrapper
+    def generate_prediction(self, model, **params):
         self.check_tests(model)
-        if kwargs:
-            self.params.update(kwargs)
-        prediction = self.get_prediction(model)
-        if prediction is None:
-            prediction = []
-            self.test_inst = []
 
-            for test_class, test_params in zip(self.test_list, self.test_params):
-                if 'name' in test_params.keys():
-                    test_name = test_params.pop('name')
-                else:
-                    test_name = None
-                self.test_inst.append(
-                    test_class(observation=self.observation,
-                               name=test_name,
-                               **test_params))
+        prediction = []
+        self.test_inst = []
 
-            # ToDO: consider parallelization
-            for test in self.test_inst:
-                pred = np.array(test.generate_prediction(model))
-                if len(pred.shape) > 1:
-                    for i in range(pred.shape[-1]):
-                        prediction.append(pred[:, i])
-                else:
-                    prediction.append(pred)
+        for test_class, test_params in zip(self.test_list, self.test_params):
+            if 'name' in test_params.keys():
+                test_name = test_params.pop('name')
+            else:
+                test_name = None
+            self.test_inst.append(
+                test_class(observation=self.observation,
+                           name=test_name,
+                           **test_params))
 
-            it = iter(prediction)
-            the_len = len(next(it))
-            if not all(len(l) == the_len for l in it):
-                raise ValueError('Not all predictions have the same length!')
-            prediction = np.array(prediction, dtype=float)
+        # ToDO: consider parallelization
+        for test in self.test_inst:
+            pred = np.array(test.generate_prediction(model))
+            if len(pred.shape) > 1:
+                for i in range(pred.shape[-1]):
+                    prediction.append(pred[:, i])
+            else:
+                prediction.append(pred)
 
-            self.set_prediction(model, prediction)
+        it = iter(prediction)
+        the_len = len(next(it))
+        if not all(len(l) == the_len for l in it):
+            raise ValueError('Not all predictions have the same length!')
+        prediction = np.array(prediction, dtype=float)
+
         return prediction

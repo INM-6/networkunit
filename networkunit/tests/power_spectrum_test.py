@@ -1,14 +1,13 @@
 from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
+from networkunit.utils import generate_prediction_wrapper
 from elephant.statistics import time_histogram
 from elephant.spectral import welch_psd
 from elephant.signal_processing import zscore
-# from networkunit.plots.power_spectral_density import power_spectral_density
 import numpy as np
 import quantities as pq
 from inspect import signature
 import neo
-
 
 class power_spectrum_test(two_sample_test):
     """
@@ -25,28 +24,23 @@ class power_spectrum_test(two_sample_test):
                       'psd_precision': 0.0001
                       }
 
-    def generate_prediction(self, model, **kwargs):
-        psd_samples = self.get_prediction(model)
-        if psd_samples is None:
-            if kwargs:
-                self.params.update(kwargs)
+    @generate_prediction_wrapper
+    def generate_prediction(self, model, **params):
+        spiketrains_list = model.produce_grouped_spiketrains(**params)
+        # psd_samples = []
+        psd_lst = []
 
-            spiketrains_list = model.produce_grouped_spiketrains(**self.params)
-            # psd_samples = []
-            psd_lst = []
+        for spiketrains in spiketrains_list:
+            freqs, psd = self.spiketrains_psd(spiketrains)
+            psd_lst.append(psd)
+            # psd_samples.append(self.psd_to_samples(freqs, psd))
 
-            for spiketrains in spiketrains_list:
-                freqs, psd = self.spiketrains_psd(spiketrains)
-                psd_lst.append(psd)
-                # psd_samples.append(self.psd_to_samples(freqs, psd))
+        psd_arr = np.stack(psd_lst, axis=-1)
+        mean_psd = np.mean(psd_arr, axis=-1)
+        # std_psd = np.std(psd_arr, axis=-1)
 
-            psd_arr = np.stack(psd_lst, axis=-1)
-            mean_psd = np.mean(psd_arr, axis=-1)
-            # std_psd = np.std(psd_arr, axis=-1)
+        psd_samples = self.psd_to_samples(freqs, mean_psd)
 
-            psd_samples = self.psd_to_samples(freqs, mean_psd)
-
-            self.set_prediction(model, psd_samples)
         return psd_samples
 
     def spiketrains_psd(self, spiketrains):

@@ -2,7 +2,7 @@ import sciunit
 import seaborn as sns
 from uuid import uuid4
 from networkunit.plots.sample_histogram import sample_histogram
-
+from networkunit.utils import generate_prediction_wrapper
 
 class two_sample_test(sciunit.Test):
     """
@@ -17,25 +17,19 @@ class two_sample_test(sciunit.Test):
 
     def __init__(self, observation=None, name=None, **params):
         self.test_hash = uuid4().hex
-        if hasattr(self, 'params'):
-            self.default_params = self.params
         super(two_sample_test, self).__init__(observation, name=name, **params)
 
-    def generate_prediction(self, model, **kwargs):
+    @generate_prediction_wrapper
+    def generate_prediction(self, model, **params):
         """
         To be overwritten in child class. The following example code
         should be reused to enable cache storage and prevent multiple
         calculation.
         """
-        if kwargs:
-            self.params.update(kwargs)
-        prediction = self.get_prediction(model)
-        if prediction is None:
-            #############################
-            # calculate prediction here #
-            raise NotImplementedError("")
-            #############################
-            self.set_prediction(model, prediction)
+        #############################
+        # calculate prediction here #
+        raise NotImplementedError("")
+        #############################
         return prediction
 
     def compute_score(self, observation, prediction):

@@ -1,6 +1,7 @@
 from networkunit.tests.correlation_test import correlation_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 import numpy as np
+from networkunit.utils import generate_prediction_wrapper
 
 
 class grouped_correlation_test(correlation_test):
@@ -32,63 +33,56 @@ class grouped_correlation_test(correlation_test):
 
     required_capabilities = (ProducesSpikeTrains, )
 
-    def generate_prediction(self, model, **kwargs):
-        # call the function of the required capability of the model
-        # and pass the parameters of the test class instance in case the
-        preds = self.get_prediction(model)
-        if preds is None:
-            if kwargs:
-                self.params.update(kwargs)
-            lists_of_spiketrains = model.produce_grouped_spiketrains(**self.params)
+    @generate_prediction_wrapper
+    def generate_prediction(self, model, **params):
+        lists_of_spiketrains = model.produce_grouped_spiketrains(**self.params)
 
-            if 'metrics' in self.params.keys():
-                metrics = self.params.pop('metrics')
-                if not isinstance(metrics, list):
-                    metrics = [metrics]
+        if 'metrics' in self.params.keys():
+            metrics = self.params.pop('metrics')
+            if not isinstance(metrics, list):
+                metrics = [metrics]
+        else:
+            metrics = ['avg', 'std']
+
+        avg_correlations = np.array([])
+        std_correlations = np.array([])
+
+        for sts in lists_of_spiketrains:
+            if len(sts) == 1:
+                correlation_avgs = np.array([np.nan])
+                correlation_stds = np.array([np.nan])
             else:
-                metrics = ['avg', 'std']
-
-            avg_correlations = np.array([])
-            std_correlations = np.array([])
-
-            for sts in lists_of_spiketrains:
-                if len(sts) == 1:
-                    correlation_avgs = np.array([np.nan])
-                    correlation_stds = np.array([np.nan])
-                else:
-                    cc_matrix = self.generate_cc_matrix(spiketrains=sts,
-                                                        model=model,
-                                                        **self.params)
-                    np.fill_diagonal(cc_matrix, np.nan)
-
-                    if 'avg' in metrics:
-                        correlation_avgs = \
-                            np.nansum(cc_matrix, axis=0) / len(sts)
-                    if 'std' in metrics:
-                        correlation_stds = np.nanstd(cc_matrix, axis=0)
-
+                cc_matrix = self.generate_cc_matrix(spiketrains=sts,
+                                                    model=model,
+                                                    **self.params)
+                np.fill_diagonal(cc_matrix, np.nan)
 
                 if 'avg' in metrics:
-                    avg_correlations = np.append(avg_correlations,
-                                                 correlation_avgs)
+                    correlation_avgs = \
+                        np.nansum(cc_matrix, axis=0) / len(sts)
                 if 'std' in metrics:
-                    std_correlations = np.append(std_correlations,
-                                                 correlation_stds)
+                    correlation_stds = np.nanstd(cc_matrix, axis=0)
 
 
-            if self.params['nan_to_num']:
-                if 'avg' in metrics:
-                    avg_correlations = np.nan_to_num(avg_correlations)
-                if 'std' in metrics:
-                    std_correlations = np.nan_to_num(std_correlations)
+            if 'avg' in metrics:
+                avg_correlations = np.append(avg_correlations,
+                                             correlation_avgs)
+            if 'std' in metrics:
+                std_correlations = np.append(std_correlations,
+                                             correlation_stds)
 
-            if ('avg' in metrics) and ('std' not in metrics):
-                preds = avg_correlations
-            if ('avg' not in metrics) and ('std' in metrics):
-                preds = std_correlations
-            if ('avg' in metrics) and ('std' in metrics):
-                preds = np.array([avg_correlations, std_correlations]).T
 
-            self.set_prediction(model, preds)
+        if self.params['nan_to_num']:
+            if 'avg' in metrics:
+                avg_correlations = np.nan_to_num(avg_correlations)
+            if 'std' in metrics:
+                std_correlations = np.nan_to_num(std_correlations)
+
+        if ('avg' in metrics) and ('std' not in metrics):
+            preds = avg_correlations
+        if ('avg' not in metrics) and ('std' in metrics):
+            preds = std_correlations
+        if ('avg' in metrics) and ('std' in metrics):
+            preds = np.array([avg_correlations, std_correlations]).T
 
         return preds

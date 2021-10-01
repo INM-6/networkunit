@@ -1,6 +1,7 @@
 from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 from elephant.statistics import mean_firing_rate
+from networkunit.utils import generate_prediction_wrapper
 
 
 class firing_rate_test(two_sample_test):
@@ -12,12 +13,9 @@ class firing_rate_test(two_sample_test):
 
     required_capabilities = (ProducesSpikeTrains, )
 
-    def generate_prediction(self, model, **kwargs):
-        rates = self.get_prediction(model)
-        if rates is None:
-            if kwargs:
-                self.params.update(kwargs)
-            spiketrains = model.produce_spiketrains(**self.params)
-            rates = [mean_firing_rate(st).rescale('Hz') for st in spiketrains]
-            self.set_prediction(model, rates)
+    @generate_prediction_wrapper
+    def generate_prediction(self, model, **params):
+        spiketrains = model.produce_spiketrains(**params)
+        rates = [mean_firing_rate(st).rescale('Hz') for st in spiketrains]
+        self.set_prediction(model, rates)
         return rates

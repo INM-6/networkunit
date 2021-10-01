@@ -1,5 +1,6 @@
 from networkunit.tests.correlation_test import correlation_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
+from networkunit.utils import generate_prediction_wrapper
 
 
 class correlation_dist_test(correlation_test):
@@ -28,15 +29,11 @@ class correlation_dist_test(correlation_test):
 
     required_capabilities = (ProducesSpikeTrains, )
 
-    def generate_prediction(self, model, **kwargs):
+    @generate_prediction_wrapper
+    def generate_prediction(self, model, **params):
         # call the function of the required capability of the model
         # and pass the parameters of the test class instance in case the
-        cc_samples = self.get_prediction(model)
-        if cc_samples is None:
-            if kwargs:
-                self.params.update(kwargs)
-            spiketrains = model.produce_spiketrains(**self.params)
-            cc_samples = self.generate_correlations(spiketrains=spiketrains,
-                                                    **self.params)
-            self.set_prediction(model, cc_samples)
+        spiketrains = model.produce_spiketrains(**params)
+        cc_samples = self.generate_correlations(spiketrains=spiketrains,
+                                                **params)
         return cc_samples

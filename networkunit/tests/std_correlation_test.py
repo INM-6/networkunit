@@ -1,7 +1,7 @@
 from networkunit.tests.correlation_test import correlation_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
+from networkunit.utils import generate_prediction_wrapper
 import numpy as np
-
 
 class std_correlation_test(correlation_test):
     """
@@ -29,30 +29,25 @@ class std_correlation_test(correlation_test):
 
     required_capabilities = (ProducesSpikeTrains, )
 
-    def generate_prediction(self, model, **kwargs):
-        # call the function of the required capability of the model
-        # and pass the parameters of the test class instance in case the
-        std_correlations = self.get_prediction(model)
-        if std_correlations is None:
-            if kwargs:
-                self.params.update(kwargs)
-            lists_of_spiketrains = model.produce_grouped_spiketrains(**self.params)
-            std_correlations = np.array([])
+    @generate_prediction_wrapper
+    def generate_prediction(self, model, **params):
+        lists_of_spiketrains = model.produce_grouped_spiketrains(**self.params)
+        std_correlations = np.array([])
 
-            for sts in lists_of_spiketrains:
-                if len(sts) == 1:
-                    correlation_stds = np.array([np.nan])
-                else:
-                    cc_matrix = self.generate_cc_matrix(spiketrains=sts,
-                                                        model=model,
-                                                        **self.params)
-                    np.fill_diagonal(cc_matrix, 0.)
+        for sts in lists_of_spiketrains:
+            if len(sts) == 1:
+                correlation_stds = np.array([np.nan])
+            else:
+                cc_matrix = self.generate_cc_matrix(spiketrains=sts,
+                                                    model=model,
+                                                    **self.params)
+                np.fill_diagonal(cc_matrix, 0.)
 
-                    correlation_stds = np.nanstd(cc_matrix, axis=0)
-                std_correlations = np.append(std_correlations,
-                                             correlation_stds)
+                correlation_stds = np.nanstd(cc_matrix, axis=0)
+            std_correlations = np.append(std_correlations,
+                                         correlation_stds)
 
-            if self.params['nan_to_num']:
-                std_correlations = np.nan_to_num(std_correlations)
-            self.set_prediction(model, std_correlations)
+        if self.params['nan_to_num']:
+            std_correlations = np.nan_to_num(std_correlations)
+
         return std_correlations
