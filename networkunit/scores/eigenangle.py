@@ -16,18 +16,18 @@ class eigenangle(sciunit.Score):
     The eigenangle score evaluates whether two correlation matrices have
     similar non-random elements by calculating the significance of the angles
     between the corresponding eigenvectors.
-    Either the binsize or the number of bins must be provides to perform the
+    Either the bin_size or the number of bins must be provides to perform the
     signficnace test.
     """
     score = np.nan
 
     @classmethod
     def compute(self, matrix_1, matrix_2, bin_num=None,
-                binsize=None, t_start=None, t_stop=None, **kwargs):
+                bin_size=None, t_start=None, t_stop=None, **kwargs):
         if bin_num is None:
-            if binsize is not None \
+            if bin_size is not None \
             and (t_start is not None and t_stop is not None):
-                    bin_num = float((t_stop - t_start) / binsize)
+                    bin_num = float((t_stop - t_start) / bin_size)
             else:
                 raise ValueError('To few parameters to compute bin_num!')
         N = len(matrix_1)
@@ -122,12 +122,12 @@ class eigenangle(sciunit.Score):
 
     @classmethod
     def plot(self, matrix_1, matrix_2, ax=None, bin_num=None, palette=None,
-             binsize=None, t_start=None, t_stop=None, log=False, **kwargs):
+             bin_size=None, t_start=None, t_stop=None, log=False, **kwargs):
 
         if bin_num is None:
-            if binsize is not None \
+            if bin_size is not None \
             and (t_start is not None and t_stop is not None):
-                    bin_num = float((t_stop - t_start) / binsize)
+                    bin_num = float((t_stop - t_start) / bin_size)
             else:
                 raise ValueError('To few parameters to compute bin_num!')
         N = len(matrix_1)

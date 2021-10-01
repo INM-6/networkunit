@@ -16,7 +16,7 @@ class timescale_test(two_sample_test):
 
     Parameters (in dict params):
     ----------
-    binsize: quantity (default: 1*ms)
+    bin_size: quantity (default: 1*ms)
         Size of bins used to calculate the spiketrain timescale.
     tau_max: quantity (default: 100*ms)
         Maximal integration time of the auto-correlation function.
@@ -34,8 +34,8 @@ class timescale_test(two_sample_test):
         if tau_list is None:
             if kwargs:
                 self.params.update(kwargs)
-            if 'binsize' not in self.params:
-                self.params['binsize'] = 1*ms
+            if 'bin_size' not in self.params:
+                self.params['bin_size'] = 1*ms
             if 'tau_max' not in self.params:
                 self.params['tau_max'] = 100*ms
             if 'min_spikecount' not in self.params:
@@ -45,7 +45,7 @@ class timescale_test(two_sample_test):
             tau_list = []
             for st in spiketrains:
                 if len(st.times) >= self.params['min_spikecount']:
-                    bst = BinnedSpikeTrain(st, binsize=self.params['binsize'])
+                    bst = BinnedSpikeTrain(st, bin_size=self.params['bin_size'])
                     tau = timescale(bst, self.params['tau_max'])
                     tau_list.append(tau.rescale('ms'))
                 else:

@@ -18,7 +18,7 @@ class freqband_power_test(power_spectrum_test):
     """
 
     default_params = {'frequency_resolution': 2.5,
-                      'binsize': 10*pq.ms,
+                      'bin_size': 10*pq.ms,
                       'psd_precision': 0.0001,
                       'highpass_freq': 13*pq.Hz,
                       'lowpass_freq': 20*pq.Hz,

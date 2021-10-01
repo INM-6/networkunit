@@ -21,7 +21,7 @@ class power_spectrum_test(two_sample_test):
     required_capabilities = (ProducesSpikeTrains,)
 
     default_params = {'frequency_resolution': 2.5*pq.Hz,
-                      'binsize': 10*pq.ms,
+                      'bin_size': 10*pq.ms,
                       'psd_precision': 0.0001
                       }
 
@@ -55,7 +55,7 @@ class power_spectrum_test(two_sample_test):
             raise TypeError("Input must be a list of neo.Spiketrain obejects.")
 
         asignal = time_histogram(spiketrains,
-                                 binsize=self.params['binsize'])
+                                 bin_size=self.params['bin_size'])
         zscore(asignal, inplace=True)
 
         psd_sig = signature(welch_psd)

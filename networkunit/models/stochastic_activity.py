@@ -37,8 +37,8 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
                                   so that the amount of correlation is equivalent
                                   to a correlated group with parameters
                                   'assembly_sizes' and 'correlations'
-        expected_binsize : quantity
-            Binsize with which correlations are calculated to be able to
+        expected_bin_size : quantity
+            bin_size with which correlations are calculated to be able to
             generate the pairwise equivalent.
         correlations : float, list of floats
             Average correlation for the correlated group(s). Pass a list of
@@ -64,7 +64,7 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
               'rate': 10 * Hz,
               'statistic': 'poisson',
               'correlation_method': 'CPP', # 'spatio-temporal', 'pairwise_equivalent'
-              'expected_binsize': 2 * ms,
+              'expected_bin_size': 2 * ms,
               'correlations': 0.,
               'assembly_sizes': [],
               'bkgr_correlation': 0.,
@@ -185,12 +185,12 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
                                                  A_size=A_size,
                                                  rate=self.rate,
                                                  T=self.t_stop - self.t_start,
-                                                 binsize=self.expected_binsize)
+                                                 bin_size=self.expected_bin_size)
         bkgr_syncprob = self._correlation_to_syncprob(cc=self.bkgr_correlation,
                                                       A_size=2,
                                                       rate=self.rate,
                                                       T=self.t_stop - self.t_start,
-                                                      binsize=self.expected_binsize)
+                                                      bin_size=self.expected_bin_size)
         if self.correlation_method == 'CPP' \
         or self.correlation_method == 'spatio-temporal':
             assembly_sts = self._generate_CPP_assembly(A_size=A_size,
@@ -235,15 +235,15 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
                                                      t_stop=self.t_stop)
         return shifted_assembly_sts
 
-    def _correlation_to_syncprob(self, cc, A_size, rate, T, binsize):
+    def _correlation_to_syncprob(self, cc, A_size, rate, T, bin_size):
         if A_size < 2:
             raise ValueError
         if cc == 1.:
             return 1.
         if not cc:
             return 0.
-        # m0 = rate * T / (float(T)/float(binsize))
-        m = rate * binsize
+        # m0 = rate * T / (float(T)/float(bin_size))
+        m = rate * bin_size
         if type(m) == quantity.Quantity:
             m = float(m.rescale('dimensionless'))
         A = float(A_size)

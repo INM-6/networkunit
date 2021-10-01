@@ -128,10 +128,10 @@ class graph_centrality_helperclass(sciunit.Test):
         B = None
         if 'bin_num' in self.params:
             B = self.params['bin_num']
-        elif 'binsize' in self.params:
+        elif 'bin_size' in self.params:
             if 't_start' in self.params and 't_stop' in self.params:
                 B = float((self.params['t_stop']-self.params['t_start']) /
-                          self.params['binsize'])
+                          self.params['bin_size'])
         if 'edge_threshold' in self.params:
             edge_threshold = self.params['edge_threshold']
         elif B is not None:

@@ -11,7 +11,7 @@ class correlation_dist_test(correlation_test):
 
     Parameters (in dict params):
     ----------
-    binsize: quantity, None (default: 2*ms)
+    bin_size: quantity, None (default: 2*ms)
         Size of bins used to calculate the correlation coefficients.
     num_bins: int, None (default: None)
         Number of bins within t_start and t_stop used to calculate

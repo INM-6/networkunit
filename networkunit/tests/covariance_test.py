@@ -14,7 +14,7 @@ class covariance_test(two_sample_test):
 
     Parameters (in dict params):
     ----------
-    binsize: quantity, None (default: 2*ms)
+    bin_size: quantity, None (default: 2*ms)
         Size of bins used to calculate the correlation coefficients.
     num_bins: int, None (default: None)
         Number of bins within t_start and t_stop used to calculate
@@ -28,7 +28,7 @@ class covariance_test(two_sample_test):
     """
 
     required_capabilities = (ProducesSpikeTrains, )
-    default_params = {'binsize': 2*ms}
+    default_params = {'bin_size': 2*ms}
 
     def generate_prediction(self, model, **kwargs):
         # call the function of the required capability of the model
@@ -70,9 +70,9 @@ class covariance_test(two_sample_test):
             of spike trains.
         -------
         """
-        def robust_BinnedSpikeTrain(spiketrains, binsize=None, num_bins=None,
+        def robust_BinnedSpikeTrain(spiketrains, bin_size=None, num_bins=None,
                                     t_start=None, t_stop=None, **add_args):
-            return BinnedSpikeTrain(spiketrains, binsize=binsize,
+            return BinnedSpikeTrain(spiketrains, bin_size=bin_size,
                                     num_bins=num_bins, t_start=t_start,
                                     t_stop=t_stop)
         if spiketrain_list is None:

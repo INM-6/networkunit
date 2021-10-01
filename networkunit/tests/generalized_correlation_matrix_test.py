@@ -20,7 +20,7 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
 
     Parameters (in dict params)
     ----------
-        binsize: quantity, None (default: 2*ms)
+        bin_size: quantity, None (default: 2*ms)
         Size of bins used to calculate the correlation coefficients.
     num_bins: int, None (default: None)
         Number of bins within t_start and t_stop used to calculate
@@ -58,7 +58,7 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
     required_capabilities = (ProducesSpikeTrains, )
 
     default_params = {'maxlag': 100,  # in bins
-                      'binsize': 2*ms,
+                      'bin_size': 2*ms,
                       'time_reduction': 'threshold 0.13'
                       }
 
@@ -66,19 +66,19 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
                            **kwargs):
 
         if hasattr(model, 'cch_array')\
-             and 'binsize{}_maxlag{}'.format(self.params['binsize'],
+             and 'bin_size{}_maxlag{}'.format(self.params['bin_size'],
                                              self.params['maxlag'])\
              in model.cch_array:
-            cch_array = model.cch_array['binsize{}_maxlag{}'\
-                .format(self.params['binsize'], self.params['maxlag'])]
+            cch_array = model.cch_array['bin_size{}_maxlag{}'\
+                .format(self.params['bin_size'], self.params['maxlag'])]
         else:
             cch_array = self.generate_cch_array(spiketrains=spiketrains,
                                                 **self.params)
             if model is not None:
                 if not hasattr(model, 'cch_array'):
                     model.cch_array = {}
-                model.cch_array['binsize{}_maxlag{}'\
-                        .format(self.params['binsize'], self.params['maxlag'])] = cch_array
+                model.cch_array['bin_size{}_maxlag{}'\
+                        .format(self.params['bin_size'], self.params['maxlag'])] = cch_array
 
         pairs_idx = np.triu_indices(len(spiketrains), 1)
         pairs = [[i, j] for i, j in zip(pairs_idx[0], pairs_idx[1])]
@@ -120,14 +120,14 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
 
     def generate_cch_array(self, spiketrains, maxlag=None, model=None,
                            **kwargs):
-        if 'binsize' in self.params:
-            binsize = self.params['binsize']
+        if 'bin_size' in self.params:
+            bin_size = self.params['bin_size']
         elif 'num_bins' in self.params:
             t_lims = [(st.t_start, st.t_stop) for st in spiketrains]
             tmin = min(t_lims, key=lambda f: f[0])[0]
             tmax = max(t_lims, key=lambda f: f[1])[1]
             T = tmax - tmin
-            binsize = T / float(self.params['num_bins'])
+            bin_size = T / float(self.params['num_bins'])
         else:
             raise AttributeError("Neither bin size or number of bins was set!")
         if maxlag is None:
@@ -136,11 +136,11 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
             self.params['maxlag'] = maxlag
         if type(maxlag) == Quantity:
             maxlag = int(float(maxlag.rescale('ms'))
-                         / float(binsize.rescale('ms')))
+                         / float(bin_size.rescale('ms')))
 
         if hasattr(model, 'cch_array') and \
-           'binsize{}_maxlag{}'.format(binsize, maxlag) in model.cch_array:
-            cch_array = model.cch_array['binsize{}_maxlag{}'.format(binsize,
+           'bin_size{}_maxlag{}'.format(bin_size, maxlag) in model.cch_array:
+            cch_array = model.cch_array['bin_size{}_maxlag{}'.format(bin_size,
                                                                     maxlag)]
         else:
             try:
@@ -172,9 +172,9 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
             max_cc = 0
             for count, (i, j) in enumerate(split_pairs):
                 binned_sts_i = self.robust_BinnedSpikeTrain(spiketrains[i],
-                                                            binsize=binsize)
+                                                            bin_size=bin_size)
                 binned_sts_j = self.robust_BinnedSpikeTrain(spiketrains[j],
-                                                            binsize=binsize)
+                                                            bin_size=bin_size)
                 cch_array[count] = np.squeeze(cch(binned_sts_i,
                                                   binned_sts_j,
                                                   window=[-maxlag, maxlag],
@@ -191,7 +191,7 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
         if model is not None:
             if not hasattr(model, 'cch_array'):
                 model.cch_array = {}
-            model.cch_array['binsize{}_maxlag{}'.format(binsize, maxlag)] = cch_array
+            model.cch_array['bin_size{}_maxlag{}'.format(bin_size, maxlag)] = cch_array
         return cch_array
 
     def _calc_color_array(self, cch_array, threshold=.5, **kwargs):
@@ -266,18 +266,18 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
         B = len(model.spiketrains[0])
         max_cc = np.max(cch_array)
         palette = palette + [[0, 0, 0]]  # single max value is black
-        binsize = self.params['binsize']
+        bin_size = self.params['bin_size']
 
         fig = plt.figure()
         ax = fig.gca(projection='3d')
         ax.set_xlabel('Neuron i')
         ax.set_xlim3d(0, N)
         ax.set_ylabel(r'$\tau$ [ms]')
-        ax.set_ylim3d(-B / 2 * float(binsize), B / 2 * float(binsize))
+        ax.set_ylim3d(-B / 2 * float(bin_size), B / 2 * float(bin_size))
         ax.set_zlabel('Neuron j')
         ax.set_zlim3d(0, N)
 
-        tau = (np.arange(B) - B / 2) * float(binsize)
+        tau = (np.arange(B) - B / 2) * float(bin_size)
         for count, (i, j, t) in enumerate(pair_tau_ids):
             if alpha:
                 color = _alpha(palette[colorarray[count]],
@@ -316,8 +316,8 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
         ccharray = copy(np.squeeze(cch_array))
         N = len(ccharray)
         B = len(ccharray[0])
-        binsize = self.params['binsize']
-        w = B / 2 * float(binsize)
+        bin_size = self.params['bin_size']
+        w = B / 2 * float(bin_size)
         tau = np.array(list(np.linspace(-w, w, B / 2 * 2 + 1)) * N)
         if hist_filter is None:
             popcch = np.sum(ccharray, axis=0)
