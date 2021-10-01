@@ -5,8 +5,10 @@ from scipy.integrate import quad
 import matplotlib.pyplot as plt
 import seaborn as sns
 import sciunit
+import math
 from networkunit.scores import to_precision
 import matplotlib.mlab as mlab
+import scipy as sc
 from scipy.integrate import quad
 import scipy.interpolate as interpolate
 
@@ -27,7 +29,7 @@ class eigenangle(sciunit.Score):
         if bin_num is None:
             if binsize is not None \
             and (t_start is not None and t_stop is not None):
-                    bin_num = float((t_stop - t_start) / binsize)
+                    bin_num = float((t_stop.rescale('s') - t_start.rescale('s')) / binsize.rescale('s'))
             else:
                 raise ValueError('To few parameters to compute bin_num!')
         N = len(matrix_1)
@@ -83,9 +85,9 @@ class eigenangle(sciunit.Score):
             else:
                 return y
 
-        def weight_dist(x):
+        def weight_dist(x, alpha):
             # ToDo: add alternative distributions for e.g. asymmetric matrices
-            return merchenko_pastur(x)
+            return marchenko_pastur(x, alpha)
 
         def angle_smallness_dist(D, N):
             if D >= -1 and D <= 1:
@@ -102,15 +104,15 @@ class eigenangle(sciunit.Score):
             integrand = lambda x, _D, _N, _alpha: \
                                angle_smallness_dist(_D / float(x), _N) \
                                * weight_dist(x, _alpha) * 1. / x
-            return sc.integrate.quad(integrand, x_min, x_max,
-                                     args=(D,N,alpha,))[0]
+            return quad(integrand, x_min, x_max,
+                        args=(D,N,alpha,))[0]
 
         def similarity_score_distribution(eta, N, alpha):
             integrand = lambda x, N_, alpha_: \
                                x**2 * weighted_smallness_dist(x, N_, alpha_)
-            var = sc.integrate.quad(integrand,
-                                    -np.infty, np.infty,
-                                    args=(N,alpha,))[0]
+            var = quad(integrand,
+                       -np.infty, np.infty,
+                       args=(N,alpha,))[0]
             sigma = np.sqrt(var/N)
             return sc.stats.norm.pdf(eta, 0, sigma)
 
@@ -156,7 +158,7 @@ class eigenangle(sciunit.Score):
         weights = weights / sum(weights) * N
         weighted_smallness = smallness * weights
         similarity_score = np.mean(weighted_smallness)
-        
+
         if ax is None:
             fig, ax = plt.subplots()
 
