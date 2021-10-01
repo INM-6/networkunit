@@ -1,7 +1,7 @@
 def generate_prediction_wrapper(generate_prediction_func):
     """
-    Wraps the `generate_prediction()` function of the tests, handles cached
-    prediction loading, parameter update and prediction saving.
+    Decorator for the `generate_prediction()` function of the tests, handles
+    cached prediction loading, parameter update and prediction saving.
     """
     def wrapper(self, model, **kwargs):
 
