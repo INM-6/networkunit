@@ -1,6 +1,7 @@
 from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 from elephant.statistics import isi, lv, cv2, lvr
+from networkunit.utils import generate_prediction_wrapper
 
 
 class isi_variation_test(two_sample_test):
@@ -17,32 +18,30 @@ class isi_variation_test(two_sample_test):
     """
 
     required_capabilities = (ProducesSpikeTrains, )
+    default_params = {'variation_measure': 'lvr',
+                      'with_nan': True}
 
-    def generate_prediction(self, model, with_nan=True, **kwargs):
-        isi_var = self.get_prediction(model)
-        if isi_var is None:
-            if kwargs:
-                self.params.update(kwargs)
-            if 'variation_measure' not in self.params:
-                self.params.update(variation_measure='lv')
-            spiketrains = model.produce_spiketrains(**self.params)
-            isi_list = [isi(st) for st in spiketrains]
-            if self.params['variation_measure'] == 'lv':
-                isi_var = []
-                for intervals in isi_list:
-                    isi_var.append(lv(intervals, with_nan=with_nan))
-            elif self.params['variation_measure'] == 'cv':
-                isi_var = []
-                for intervals in isi_list:
-                    isi_var.append(cv2(intervals, with_nan=with_nan))
-            elif self.params['variation_measure'] == 'isi':
-                isi_var = [float(item) for sublist in isi_list
-                           for item in sublist]
-            elif self.params['variation_measure'] == 'lvr':
-                isi_var = []
-                for intervals in isi_list:
-                    isi_var.append(lvr(intervals, with_nan=with_nan, **kwargs))
-            else:
-                raise ValueError('Variation measure not known.')
-            self.set_prediction(model, isi_var)
+    @generate_prediction_wrapper
+    def generate_prediction(self, model, **params):
+        spiketrains = model.produce_spiketrains(**self.params)
+        isi_list = [isi(st) for st in spiketrains]
+        measure = params.pop('variation_measure')
+        if measure == 'lv':
+            isi_var = []
+            for intervals in isi_list:
+                isi_var.append(lv(intervals, **params))
+        elif measure == 'cv':
+            isi_var = []
+            for intervals in isi_list:
+                isi_var.append(cv2(intervals, **params))
+        elif measure == 'isi':
+            isi_var = [float(item) for sublist in isi_list
+                       for item in sublist]
+        elif measure == 'lvr':
+            isi_var = []
+            for intervals in isi_list:
+                isi_var.append(lvr(intervals, **params))
+        else:
+            raise ValueError('Variation measure not known.')
+
         return isi_var

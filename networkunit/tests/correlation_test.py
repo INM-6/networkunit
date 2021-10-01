@@ -14,7 +14,7 @@ class correlation_test(two_sample_test):
 
     Parameters (in dict params):
     ----------
-    binsize: quantity, None (default: 2*ms)
+    bin_size: quantity, None (default: 2*ms)
         Size of bins used to calculate the correlation coefficients.
     num_bins: int, None (default: None)
         Number of bins within t_start and t_stop used to calculate
@@ -31,20 +31,11 @@ class correlation_test(two_sample_test):
 
     required_capabilities = (ProducesSpikeTrains, )
 
-    def __init__(self, observation=None, name=None, **params):
-        if params is None:
-            params = {}
-        self.params.update(params)
-        if 'binsize' not in self.params and 'num_bins' not in self.params:
-            self.params['binsize'] = 2*ms
-        super(correlation_test, self).__init__(observation=observation,
-                                               name=name, **self.params)
-
     def validate_observation(self, observation):
         # ToDo: Check if observation values are legit (non nan, positive, ...)
         pass
 
-    def robust_BinnedSpikeTrain(self, spiketrains, binsize=None, num_bins=None,
+    def robust_BinnedSpikeTrain(self, spiketrains, bin_size=None, num_bins=None,
                                 t_start=None, t_stop=None, **add_args):
         if type(spiketrains) == neo.core.spiketrain.SpikeTrain:
             spiketrains = [spiketrains]
@@ -52,9 +43,9 @@ class correlation_test(two_sample_test):
             t_start = min([st.t_start for st in spiketrains])
         if t_stop is None:
             t_stop = min([st.t_stop for st in spiketrains])
-        if binsize is None and num_bins is None:
-            binsize = self.params['binsize']
-        return BinnedSpikeTrain(spiketrains, binsize=binsize,
+        if bin_size is None and num_bins is None:
+            bin_size = self.params['bin_size']
+        return BinnedSpikeTrain(spiketrains, bin_size=bin_size,
                                 num_bins=num_bins, t_start=t_start,
                                 t_stop=t_stop)
 

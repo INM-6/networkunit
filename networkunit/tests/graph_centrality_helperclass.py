@@ -5,6 +5,7 @@ import seaborn as sns
 import numpy as np
 from copy import copy
 import re
+from networkunit.utils import generate_prediction_wrapper
 
 
 class graph_centrality_helperclass(sciunit.Test):
@@ -28,51 +29,48 @@ class graph_centrality_helperclass(sciunit.Test):
             'transitivity', 'small-worldness'
     """
 
-    def generate_prediction(self, model, **kwargs):
-        prediction = self.get_prediction(model)
-        if prediction is None:
-            if kwargs:
-                self.params.update(kwargs)
-            if 'graph_measure' not in self.params:
-                raise ValueError('No graph_measure set!')
-            matrix = super(graph_centrality_helperclass, self).\
-                generate_prediction(model, **kwargs)
-            self.prediction_dim = 2
-            N = len(matrix)
+    @generate_prediction_wrapper
+    def generate_prediction(self, model, **params):
+        if 'graph_measure' not in params:
+            raise ValueError('No graph_measure set!')
+        matrix = super(graph_centrality_helperclass, self).\
+            generate_prediction(model, **kwargs)
+        self.prediction_dim = 2
+        N = len(matrix)
 
-            G = self.get_prediction(model, key=self.test_hash + '_graph')
-            if G is None:
-                G = self.build_graph(matrix)
-                self.set_prediction(model, G, key=self.test_hash + '_graph')
+        G = self.get_prediction(model, key=self.test_hash + '_graph')
+        if G is None:
+            G = self.build_graph(matrix)
+            self.set_prediction(model, G, key=self.test_hash + '_graph')
 
-            if self.params['graph_measure'] == 'degree_strength':
-                prediction = self.degree_strength(G, N)
+        measure = params['graph_measure']
+        if measure == 'degree_strength':
+            prediction = self.degree_strength(G, N)
 
-            elif self.params['graph_measure'] == 'closeness':
-                prediction = self.closeness(G, N)
+        elif measure == 'closeness':
+            prediction = self.closeness(G, N)
 
-            elif self.params['graph_measure'] == 'betweenness':
-                prediction = self.betweenness(G, N)
+        elif measure == 'betweenness':
+            prediction = self.betweenness(G, N)
 
-            elif self.params['graph_measure'] == 'edge_betweenness':
-                prediction = self.edge_betweenness(G, N)
+        elif measure == 'edge_betweenness':
+            prediction = self.edge_betweenness(G, N)
 
-            elif self.params['graph_measure'] == 'katz':
-                prediction = self.katz(G, N)
+        elif measure == 'katz':
+            prediction = self.katz(G, N)
 
-            elif self.params['graph_measure'] == 'clustering_coefficient':
-                prediction = self.clustering_coefficent(G, N)
+        elif measure == 'clustering_coefficient':
+            prediction = self.clustering_coefficent(G, N)
 
-            elif self.params['graph_measure'] == 'transitivity':
-                prediction = self.transitivity(G, N, matrix)
+        elif measure == 'transitivity':
+            prediction = self.transitivity(G, N, matrix)
 
-            elif self.params['graph_measure'] == 'small-worldness':
-                prediction = self.small_worldness(G, N, matrix)
+        elif measure == 'small-worldness':
+            prediction = self.small_worldness(G, N, matrix)
 
-            else:
-                raise KeyError('Graph measure not know!')
+        else:
+            raise KeyError('Graph measure not know!')
 
-            self.set_prediction(model, prediction)
         return prediction
 
     def degree_strength(self, G, N):
@@ -128,10 +126,10 @@ class graph_centrality_helperclass(sciunit.Test):
         B = None
         if 'bin_num' in self.params:
             B = self.params['bin_num']
-        elif 'binsize' in self.params:
+        elif 'bin_size' in self.params:
             if 't_start' in self.params and 't_stop' in self.params:
                 B = float((self.params['t_stop']-self.params['t_start']) /
-                          self.params['binsize'])
+                          self.params['bin_size'])
         if 'edge_threshold' in self.params:
             edge_threshold = self.params['edge_threshold']
         elif B is not None:

@@ -1,6 +1,7 @@
 from networkunit.tests.correlation_test import correlation_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 from scipy.linalg import eigh
+from networkunit.utils import generate_prediction_wrapper
 
 
 class eigenvalue_test(correlation_test):
@@ -12,7 +13,7 @@ class eigenvalue_test(correlation_test):
 
     Parameters (in dict params):
     ----------
-    binsize: quantity, None (default: 2*ms)
+    bin_size: quantity, None (default: 2*ms)
         Size of bins used to calculate the correlation coefficients.
     num_bins: int, None (default: None)
         Number of bins within t_start and t_stop used to calculate
@@ -29,14 +30,10 @@ class eigenvalue_test(correlation_test):
 
     required_capabilities = (ProducesSpikeTrains, )
 
-    def generate_prediction(self, model, **kwargs):
-        ews = self.get_prediction(model)
-        if ews is None:
-            if kwargs:
-                self.params.update(kwargs)
-            spiketrains = model.produce_spiketrains(**self.params)
-            cc_matrix = self.generate_cc_matrix(spiketrains=spiketrains,
-                                                **self.params)
-            ews, _ = eigh(cc_matrix)
-            self.set_prediction(model, ews)
+    @generate_prediction_wrapper
+    def generate_prediction(self, model, **params):
+        spiketrains = model.produce_spiketrains(**params)
+        cc_matrix = self.generate_cc_matrix(spiketrains=spiketrains,
+                                            **params)
+        ews, _ = eigh(cc_matrix)
         return ews

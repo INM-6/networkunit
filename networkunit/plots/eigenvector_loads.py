@@ -7,7 +7,7 @@ import seaborn as sns
 
 
 def eigenvector_loads(EVs, color, hatch=None, ax=None,  ordered=False,
-                          abs=False,  binsize=.025, scaling=.85, alpha=0.001):
+                          abs=False,  bin_size=.025, scaling=.85, alpha=0.001):
     # plots the loads of as many eigenvectors in EVs as there are colors
 
     if ax is None:
@@ -32,7 +32,7 @@ def eigenvector_loads(EVs, color, hatch=None, ax=None,  ordered=False,
 
     max_load = np.max(vector_loads[:len(color)])
     min_load = np.min(vector_loads[:len(color)])
-    bin_num = (max_load - min_load) / binsize
+    bin_num = (max_load - min_load) / bin_size
     edges = np.linspace(min_load, max_load, bin_num)
     for i, _ in enumerate(color):
         i = len(color) - i - 1

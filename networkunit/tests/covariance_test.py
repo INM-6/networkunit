@@ -4,6 +4,7 @@ from numpy import triu_indices
 from quantities import ms
 from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
+from networkunit.utils import generate_prediction_wrapper
 
 
 class covariance_test(two_sample_test):
@@ -14,7 +15,7 @@ class covariance_test(two_sample_test):
 
     Parameters (in dict params):
     ----------
-    binsize: quantity, None (default: 2*ms)
+    bin_size: quantity, None (default: 2*ms)
         Size of bins used to calculate the correlation coefficients.
     num_bins: int, None (default: None)
         Number of bins within t_start and t_stop used to calculate
@@ -28,20 +29,13 @@ class covariance_test(two_sample_test):
     """
 
     required_capabilities = (ProducesSpikeTrains, )
+    default_params = {'bin_size': 2*ms}
 
-    def generate_prediction(self, model, **kwargs):
-        # call the function of the required capability of the model
-        # and pass the parameters of the test class instance in case the
-        covariances = self.get_prediction(model)
-        if covariances is None:
-            if kwargs:
-                self.params.update(kwargs)
-            if 'binsize' not in self.params and 'num_bins' not in self.params:
-                self.params['binsize'] = 2*ms
-            self.spiketrains = model.produce_spiketrains(**self.params)
-            covariances = self.generate_covariances(self.spiketrains,
-                                                    **self.params)
-            self.set_prediction(model, covariances)
+    @generate_prediction_wrapper
+    def generate_prediction(self, model, **params):
+        self.spiketrains = model.produce_spiketrains(**params)
+        covariances = self.generate_covariances(self.spiketrains,
+                                                **params)
         return covariances
 
     def validate_observation(self, observation):
@@ -71,9 +65,9 @@ class covariance_test(two_sample_test):
             of spike trains.
         -------
         """
-        def robust_BinnedSpikeTrain(spiketrains, binsize=None, num_bins=None,
+        def robust_BinnedSpikeTrain(spiketrains, bin_size=None, num_bins=None,
                                     t_start=None, t_stop=None, **add_args):
-            return BinnedSpikeTrain(spiketrains, binsize=binsize,
+            return BinnedSpikeTrain(spiketrains, bin_size=bin_size,
                                     num_bins=num_bins, t_start=t_start,
                                     t_stop=t_stop)
         if spiketrain_list is None:

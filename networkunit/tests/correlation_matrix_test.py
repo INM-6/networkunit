@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 from copy import copy
+from networkunit.utils import generate_prediction_wrapper
 
 
 class correlation_matrix_test(correlation_test):
@@ -22,7 +23,7 @@ class correlation_matrix_test(correlation_test):
 
     Parameters (in dict params):
     ----------
-    binsize: quantity, None (default: 2*ms)
+    bin_size: quantity, None (default: 2*ms)
         Size of bins used to calculate the correlation coefficients.
     num_bins: int, None (default: None)
         Number of bins within t_start and t_stop used to calculate
@@ -50,42 +51,36 @@ class correlation_matrix_test(correlation_test):
 
     required_capabilities = (ProducesSpikeTrains, )
 
-    def generate_prediction(self, model, **kwargs):
-        # call the function of the required capability of the model
-        # and pass the parameters of the test class instance in case the
-        cc_matrix = self.get_prediction(model)
-        if cc_matrix is None:
-            if kwargs:
-                self.params.update(kwargs)
-            spiketrains = model.produce_spiketrains(**self.params)
-            cc_matrix = self.generate_cc_matrix(spiketrains=spiketrains,
-                                                model=model, **self.params)
-            if 'cluster_matrix' in self.params and self.params['cluster_matrix']:
-                np.fill_diagonal(cc_matrix, 1.)
-                if 'cluster_method' not in self.params:
-                    self.params.update(cluster_method='ward')
+    @generate_prediction_wrapper
+    def generate_prediction(self, model, **params):
+        spiketrains = model.produce_spiketrains(**params)
+        cc_matrix = self.generate_cc_matrix(spiketrains=spiketrains,
+                                            model=model, **params)
+        if 'cluster_matrix' in params and params['cluster_matrix']:
+            np.fill_diagonal(cc_matrix, 1.)
+            if 'cluster_method' not in params:
+                params.update(cluster_method='ward')
+            try:
                 try:
-                    try:
-                        linkagematrix = linkage(squareform(1. - cc_matrix),
-                                                method=self.params['cluster_method'])
-                    except:
-                        if fastcluster_pkg:
-                            print('using fastcluster')
-                            linkagematrix = fastcluster.linkage(squareform(1. - cc_matrix),
-                                                        method=self.params['cluster_method'])
-                        else:
-                            print('using fastcluster')
-                    dendro = dendrogram(linkagematrix, no_plot=True)
-                    order = dendro['leaves']
-                    model.cluster_order = order
-                    cc_matrix = cc_matrix[order, :][:, order]
-                except Exception as e:
-                    print('Clustering failed!')
-                    print(e)
-            if 'remove_autocorr' in self.params and self.params['remove_autocorr']:
-                np.fill_diagonal(cc_matrix, 0.)
-            self.set_prediction(model, cc_matrix)
-            model.cc_matrix = cc_matrix
+                    linkagematrix = linkage(squareform(1. - cc_matrix),
+                                            method=params['cluster_method'])
+                except:
+                    if fastcluster_pkg:
+                        print('using fastcluster')
+                        linkagematrix = fastcluster.linkage(squareform(1. - cc_matrix),
+                                                    method=params['cluster_method'])
+                    else:
+                        print('using fastcluster')
+                dendro = dendrogram(linkagematrix, no_plot=True)
+                order = dendro['leaves']
+                model.cluster_order = order
+                cc_matrix = cc_matrix[order, :][:, order]
+            except Exception as e:
+                print('Clustering failed!')
+                print(e)
+        if 'remove_autocorr' in params and params['remove_autocorr']:
+            np.fill_diagonal(cc_matrix, 0.)
+        model.cc_matrix = cc_matrix
         return cc_matrix
 
     def visualize_samples(self, model1=None, model2=None, ax=None, labels=None,

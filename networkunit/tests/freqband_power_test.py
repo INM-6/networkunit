@@ -1,9 +1,9 @@
 from networkunit.tests.power_spectrum_test import power_spectrum_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
+from networkunit.utils import generate_prediction_wrapper
 from elephant.statistics import time_histogram
 from elephant.spectral import welch_psd
 from elephant.signal_processing import zscore
-# from networkunit.plots.power_spectral_density import power_spectral_density
 import numpy as np
 import quantities as pq
 from inspect import signature
@@ -18,26 +18,22 @@ class freqband_power_test(power_spectrum_test):
     """
 
     default_params = {'frequency_resolution': 2.5,
-                      'binsize': 10*pq.ms,
+                      'bin_size': 10*pq.ms,
                       'psd_precision': 0.0001,
                       'highpass_freq': 13*pq.Hz,
                       'lowpass_freq': 20*pq.Hz,
                       }
 
-    def generate_prediction(self, model, **kwargs):
-        psd_samples = self.get_prediction(model)
-        if psd_samples is None:
-            if kwargs:
-                self.params.update(kwargs)
+    @generate_prediction_wrapper
+    def generate_prediction(self, model, **params):
 
-            spiketrains_list = model.produce_grouped_spiketrains(**self.params)
-            band_powers = []
+        spiketrains_list = model.produce_grouped_spiketrains(**params)
+        band_powers = []
 
-            for spiketrains in spiketrains_list:
-                freqs, psd = self.spiketrains_psd(spiketrains)
-                f0 = np.argmax(freqs >= self.params['highpass_freq'])
-                f1 = np.argmax(freqs >= self.params['lowpass_freq'])
-                band_powers.append(np.mean(psd[f0:f1]))
+        for spiketrains in spiketrains_list:
+            freqs, psd = self.spiketrains_psd(spiketrains)
+            f0 = np.argmax(freqs >= params['highpass_freq'])
+            f1 = np.argmax(freqs >= params['lowpass_freq'])
+            band_powers.append(np.mean(psd[f0:f1]))
 
-            self.set_prediction(model, band_powers)
         return band_powers

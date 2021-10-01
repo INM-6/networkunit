@@ -4,7 +4,7 @@ from quantities import ms
 from elephant.conversion import BinnedSpikeTrain
 from elephant.spike_train_correlation import spike_train_timescale as timescale
 import numpy as np
-
+from networkunit.utils import generate_prediction_wrapper
 
 class timescale_test(two_sample_test):
     """
@@ -16,7 +16,7 @@ class timescale_test(two_sample_test):
 
     Parameters (in dict params):
     ----------
-    binsize: quantity (default: 1*ms)
+    bin_size: quantity (default: 1*ms)
         Size of bins used to calculate the spiketrain timescale.
     tau_max: quantity (default: 100*ms)
         Maximal integration time of the auto-correlation function.
@@ -28,27 +28,21 @@ class timescale_test(two_sample_test):
 
     name = 'Timescale'
     required_capabilities = (ProducesSpikeTrains, )
+    default_params = {'bin_size': 1*ms,
+                      'tau_max': 100*ms,
+                      'min_spikecount': 2}
 
-    def generate_prediction(self, model, **kwargs):
-        tau_list = self.get_prediction(model)
-        if tau_list is None:
-            if kwargs:
-                self.params.update(kwargs)
-            if 'binsize' not in self.params:
-                self.params['binsize'] = 1*ms
-            if 'tau_max' not in self.params:
-                self.params['tau_max'] = 100*ms
-            if 'min_spikecount' not in self.params:
-                self.params['min_spikecount'] = 2
-            spiketrains = model.produce_spiketrains(**self.params)
+    @generate_prediction_wrapper
+    def generate_prediction(self, model, **params):
+        spiketrains = model.produce_spiketrains(**self.params)
 
-            tau_list = []
-            for st in spiketrains:
-                if len(st.times) >= self.params['min_spikecount']:
-                    bst = BinnedSpikeTrain(st, binsize=self.params['binsize'])
-                    tau = timescale(bst, self.params['tau_max'])
-                    tau_list.append(tau.rescale('ms'))
-                else:
-                    tau_list.append(np.nan)
-            self.set_prediction(model, tau_list)
+        tau_list = []
+        for st in spiketrains:
+            if len(st.times) >= self.params['min_spikecount']:
+                bst = BinnedSpikeTrain(st, bin_size=self.params['bin_size'])
+                tau = timescale(bst, self.params['tau_max'])
+                tau_list.append(tau.rescale('ms'))
+            else:
+                tau_list.append(np.nan)
+
         return tau_list
