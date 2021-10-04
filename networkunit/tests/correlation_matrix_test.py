@@ -50,7 +50,8 @@ class correlation_matrix_test(correlation_test):
     """
 
     required_capabilities = (ProducesSpikeTrains, )
-    default_params = {'cluster_method': 'ward'}
+    default_params = {'cluster_method': 'ward',
+                      'cluster_matrix': False}
 
     @generate_prediction_wrapper
     def generate_prediction(self, model, **params):
@@ -106,9 +107,6 @@ class correlation_matrix_test(correlation_test):
                 sample_names[1] = model2.name
         else:
             sample_names[1] = model1.name
-
-        if 'cluster_matrix' not in self.params:
-            self.params.update(cluster_matrix=False)
 
         i = 0
         j = 1

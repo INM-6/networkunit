@@ -34,13 +34,13 @@ class timescale_test(two_sample_test):
 
     @generate_prediction_wrapper
     def generate_prediction(self, model, **params):
-        spiketrains = model.produce_spiketrains(**self.params)
+        spiketrains = model.produce_spiketrains(**params)
 
         tau_list = []
         for st in spiketrains:
-            if len(st.times) >= self.params['min_spikecount']:
-                bst = BinnedSpikeTrain(st, bin_size=self.params['bin_size'])
-                tau = timescale(bst, self.params['tau_max'])
+            if len(st.times) >= params['min_spikecount']:
+                bst = BinnedSpikeTrain(st, bin_size=params['bin_size'])
+                tau = timescale(bst, params['tau_max'])
                 tau_list.append(tau.rescale('ms'))
             else:
                 tau_list.append(np.nan)
