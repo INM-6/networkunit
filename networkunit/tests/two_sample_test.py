@@ -3,6 +3,8 @@ import seaborn as sns
 from uuid import uuid4
 from networkunit.plots.sample_histogram import sample_histogram
 from networkunit.utils import use_prediction_cache
+from elephant.parallel import SingleProcess
+
 
 class two_sample_test(sciunit.Test):
     """
@@ -14,6 +16,8 @@ class two_sample_test(sciunit.Test):
     # required_capabilites = (ProducesSample, ) # Replace by more appropriate
                                               # capability in child class
                                               # i.e ProduceCovariances
+                                              
+    default_params = {'parallel_executor': SingleProcess()}
 
     def __init__(self, observation=None, name=None, **params):
         self.test_hash = uuid4().hex
@@ -129,7 +133,7 @@ class two_sample_test(sciunit.Test):
         When there is a specific visualization function called plot() for the
         given score type, score_type.plot() is called;
         else call visualize_sample()
-        
+
         Parameters:
         ----------
         ax : matplotlib axis

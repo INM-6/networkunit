@@ -1,4 +1,5 @@
 import inspect
+from elephant.parallel import SingleProcess
 
 
 def use_prediction_cache(generate_prediction_func):
@@ -46,3 +47,39 @@ class filter_valid_params:
     def __exit__(self, exc_type, exc_value, exc_traceback):
         pass
         return False
+
+
+class parallelize:
+    """
+    Context manager that applies elephant.parallel executors.
+    Default executor: SingleProcess()
+
+    Example:
+    ```
+    results = [my_function(arg) for arg in iterables_list]
+    ```
+    becomes
+    ```
+    with parallelize(my_function) as parallel_func:
+        results = parallel_func(iterables_list, **kwargs)
+    ```
+    """
+    def __init__(self, func):
+        if 'parallel_executor' not in self.params:
+            self.params['parallel_executor'] = SingleProcess()
+        self.func = func
+
+    def __enter__(self):
+
+        def _func(iterable_list, **kwargs):
+
+            def arg_func(iterable_list):
+                return self.func(iterable_list, **kwargs)
+
+            result = self.params['parallel_executor'].execute(arg_func, iterable_list)
+            return result
+
+        return _func
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        pass
