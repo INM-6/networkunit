@@ -23,7 +23,7 @@ def use_prediction_cache(generate_prediction_func):
     return wrapper
 
 
-class filter_params:
+class filter_valid_params:
     """
     Context manager that enables to pass any non-valid arguments to a function
     that are subsequently ignored.

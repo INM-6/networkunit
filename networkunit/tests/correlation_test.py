@@ -46,7 +46,7 @@ class correlation_test(two_sample_test):
         if t_stop is None:
             t_stop = min([st.t_stop for st in spiketrains])
         if bin_size is None and num_bins is None:
-            bin_size = self.params['bin_size']
+            raise ValueError('Either bin_size or num_bins must be defined!')
         return BinnedSpikeTrain(spiketrains, bin_size=bin_size,
                                 num_bins=num_bins, t_start=t_start,
                                 t_stop=t_stop)
@@ -59,6 +59,7 @@ class correlation_test(two_sample_test):
             cc_matrix = np.nan_to_num(cc_matrix)
         idx = np.triu_indices(len(cc_matrix), 1)
         return cc_matrix[idx]
+
 
     def generate_cc_matrix(self, spiketrains=None, binary=False, model=None,
                            nan_to_num=False, **kwargs):

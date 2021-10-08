@@ -1,6 +1,6 @@
 from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
-from networkunit.utils import use_prediction_cache, filter_params
+from networkunit.utils import use_prediction_cache, filter_valid_params
 from elephant.statistics import time_histogram
 from elephant.spectral import welch_psd
 from elephant.signal_processing import zscore
@@ -53,7 +53,7 @@ class power_spectrum_test(two_sample_test):
                                  bin_size=self.params['bin_size'])
         zscore(asignal, inplace=True)
 
-        with filter_params(welch_psd) as _welch_psd:
+        with filter_valid_params(welch_psd) as _welch_psd:
             freqs, psd = _welch_psd(asignal, **self.params)
 
         # Enforce single dimension shape, since

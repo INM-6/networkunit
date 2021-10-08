@@ -1,7 +1,7 @@
 from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 from elephant.statistics import isi, lv, cv2, lvr
-from networkunit.utils import use_prediction_cache, filter_params
+from networkunit.utils import use_prediction_cache, filter_valid_params
 
 
 class isi_variation_test(two_sample_test):
@@ -27,12 +27,12 @@ class isi_variation_test(two_sample_test):
         isi_list = [isi(st) for st in spiketrains]
         if self.params['variation_measure'] == 'lv':
             isi_var = []
-            with filter_params(lv) as _lv:
+            with filter_valid_params(lv) as _lv:
                 for intervals in isi_list:
                     isi_var.append(_lv(intervals, **self.params))
         elif self.params['variation_measure'] == 'cv':
             isi_var = []
-            with filter_params(cv2) as _cv2:
+            with filter_valid_params(cv2) as _cv2:
                 for intervals in isi_list:
                     isi_var.append(_cv2(intervals, **self.params))
         elif self.params['variation_measure'] == 'isi':
@@ -40,7 +40,7 @@ class isi_variation_test(two_sample_test):
                        for item in sublist]
         elif self.params['variation_measure'] == 'lvr':
             isi_var = []
-            with filter_params(lvr) as _lvr:
+            with filter_valid_params(lvr) as _lvr:
                 for intervals in isi_list:
                     isi_var.append(_lvr(intervals, **self.params))
         else:

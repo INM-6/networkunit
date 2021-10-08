@@ -59,15 +59,16 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
 
     default_params = {'maxlag': 100,  # in bins
                       'bin_size': 2*ms,
-                      'time_reduction': 'threshold 0.13'
+                      'time_reduction': 'threshold 0.13',
+                      'binary': False
                       }
 
     def generate_cc_matrix(self, spiketrains, binary=False, model=None,
-                           **kwargs):
+                           **params):
 
         if hasattr(model, 'cch_array')\
              and 'bin_size{}_maxlag{}'.format(self.params['bin_size'],
-                                             self.params['maxlag'])\
+                                              self.params['maxlag'])\
              in model.cch_array:
             cch_array = model.cch_array['bin_size{}_maxlag{}'\
                 .format(self.params['bin_size'], self.params['maxlag'])]
