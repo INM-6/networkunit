@@ -50,14 +50,14 @@ class correlation_matrix_test(correlation_test):
     """
 
     required_capabilities = (ProducesSpikeTrains, )
-    default_params = {'cluster_method': 'ward',
+    default_params = {**correlation_test.default_params,
+                      'cluster_method': 'ward',
                       'cluster_matrix': False}
 
     @use_prediction_cache
     def generate_prediction(self, model):
         spiketrains = model.produce_spiketrains(**self.params)
-        cc_matrix = self.generate_cc_matrix(spiketrains=spiketrains,
-                                            model=model, **self.params)
+        cc_matrix = self.generate_cc_matrix(spiketrains=spiketrains)
         if 'cluster_matrix' in self.params and self.params['cluster_matrix']:
             np.fill_diagonal(cc_matrix, 1.)
             try:
@@ -161,8 +161,7 @@ class correlation_matrix_test(correlation_test):
             G = self.graph['graph_{}'.format(model.name)]
         else:
             spiketrains = model.produce_spiketrains(**self.params)
-            matrix = self.generate_cc_matrix(spiketrains=spiketrains,
-                                             **self.params)
+            matrix = self.generate_cc_matrix(spiketrains=spiketrains)
             weight_matrix = copy(matrix)
             if draw_edge_threshold is None:
                 if 'edge_threshold' in self.params:

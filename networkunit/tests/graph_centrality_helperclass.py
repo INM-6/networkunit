@@ -29,6 +29,8 @@ class graph_centrality_helperclass(sciunit.Test):
             'transitivity', 'small-worldness'
     """
 
+    # ToDo: fix parameter handling here
+
     @use_prediction_cache
     def generate_prediction(self, model):
         if 'graph_measure' not in self.params:

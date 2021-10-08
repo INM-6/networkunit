@@ -26,9 +26,9 @@ class timescale_test(two_sample_test):
 
     """
 
-    name = 'Timescale'
     required_capabilities = (ProducesSpikeTrains, )
-    default_params = {'bin_size': 1*ms,
+    default_params = {**two_sample_test.default_params,
+                      'bin_size': 1*ms,
                       'tau_max': 100*ms,
                       'min_spikecount': 2}
 

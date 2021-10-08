@@ -33,7 +33,6 @@ class eigenvalue_test(correlation_test):
     @use_prediction_cache
     def generate_prediction(self, model):
         spiketrains = model.produce_spiketrains(**self.params)
-        cc_matrix = self.generate_cc_matrix(spiketrains=spiketrains,
-                                            **self.params)
+        cc_matrix = self.generate_cc_matrix(spiketrains=spiketrains)
         ews, _ = eigh(cc_matrix)
         return ews

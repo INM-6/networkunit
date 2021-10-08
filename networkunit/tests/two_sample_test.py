@@ -16,8 +16,9 @@ class two_sample_test(sciunit.Test):
     # required_capabilites = (ProducesSample, ) # Replace by more appropriate
                                               # capability in child class
                                               # i.e ProduceCovariances
-                                              
-    default_params = {'parallel_executor': SingleProcess()}
+
+    default_params = {**sciunit.Test.default_params,
+                      'parallel_executor': SingleProcess()}
 
     def __init__(self, observation=None, name=None, **params):
         self.test_hash = uuid4().hex

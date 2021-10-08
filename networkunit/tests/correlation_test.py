@@ -1,4 +1,4 @@
-from elephant.spike_train_correlation import corrcoef
+from elephant.spike_train_correlation import correlation_coefficient
 from elephant.conversion import BinnedSpikeTrain
 import neo
 import numpy as np
@@ -23,7 +23,7 @@ class correlation_test(two_sample_test):
         Start of time window used to calculate the correlation coefficents.
     t_stop: quantity, None
         Stop of time window used to calculate the correlation coefficents.
-    nan_to_num: bool
+    nan_to_num: bool (default: False)
         If true, np.nan are set to 0, and np.inf to largest finite float.
     binary: bool
         If true, the binned spike trains are set to be binary.
@@ -31,63 +31,33 @@ class correlation_test(two_sample_test):
 
     required_capabilities = (ProducesSpikeTrains, )
 
-    default_params = {'bin_size': 2*ms}
+    default_params = {**two_sample_test.default_params,
+                      'bin_size': 2*ms,
+                      'nan_to_num': False,
+                      'corrcoef_norm': True}
 
-    def validate_observation(self, observation):
-        # ToDo: Check if observation values are legit (non nan, positive, ...)
-        pass
 
-    def robust_BinnedSpikeTrain(self, spiketrains, bin_size=None, num_bins=None,
-                                t_start=None, t_stop=None, **add_args):
-        if type(spiketrains) == neo.core.spiketrain.SpikeTrain:
-            spiketrains = [spiketrains]
-        if t_start is None:
-            t_start = min([st.t_start for st in spiketrains])
-        if t_stop is None:
-            t_stop = min([st.t_stop for st in spiketrains])
-        if bin_size is None and num_bins is None:
-            raise ValueError('Either bin_size or num_bins must be defined!')
-        return BinnedSpikeTrain(spiketrains, bin_size=bin_size,
-                                num_bins=num_bins, t_start=t_start,
-                                t_stop=t_stop)
-
-    def generate_correlations(self, spiketrains=None, binary=False,
-                              nan_to_num=False, **kwargs):
+    def generate_correlations(self, spiketrains=None, model=None):
         cc_matrix = self.generate_cc_matrix(spiketrains=spiketrains,
-                                            binary=binary, **kwargs)
-        if nan_to_num:
-            cc_matrix = np.nan_to_num(cc_matrix)
+                                            model=model)
         idx = np.triu_indices(len(cc_matrix), 1)
         return cc_matrix[idx]
 
 
-    def generate_cc_matrix(self, spiketrains=None, binary=False, model=None,
-                           nan_to_num=False, **kwargs):
-        """
-        Calculates the covariances between all pairs of spike trains.
+    def generate_cc_matrix(self, spiketrains=None, model=None):
+        if spiketrains is None:
+            if model is None:
+                raise ValueError('generate_cc_matrix needs either '
+                                 'spiketrains or model as input!')
+            spiketrains = model.produce_spiketrains()
 
-        Parameters
-        ----------
-        spiketrain_list : list of neo.SpikeTrain (default None)
-            If no list is passed the function tries to access the class
-            parameter 'spiketrains'.
+        with filter_valid_params(BinnedSpikeTrain) as _BinnedSpikeTrain:
+            binned_sts = _BinnedSpikeTrain(spiketrains, **self.params)
 
-        binary: bool (default False)
-            Parameter is passed to
-            elephant.spike_train_correlation.covariance()
+        # if 'corrcoef_norm' in self.params and 'corrcoef_norm'
+        with filter_valid_params(correlation_coefficient) as _corrcoef:
+            cc_matrix = _corrcoef(binned_sts, **self.params)
 
-        kwargs:
-            Passed to elephant.conversion.BinnedSpikeTrain()
-
-        Returns : list of floats
-            list of covariances of length = (N^2 - N)/2 where N is the number
-            of spike trains.
-        -------
-        """
-        binned_sts = self.robust_BinnedSpikeTrain(spiketrains, **kwargs)
-
-        cc_matrix = corrcoef(binned_sts, binary=binary)
-
-        if nan_to_num:
+        if 'nan_to_num' in self. params and self.params['nan_to_num']:
             cc_matrix = np.nan_to_num(cc_matrix)
         return cc_matrix

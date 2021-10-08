@@ -18,7 +18,8 @@ class isi_variation_test(two_sample_test):
     """
 
     required_capabilities = (ProducesSpikeTrains, )
-    default_params = {'variation_measure': 'lvr',
+    default_params = {**two_sample_test.default_params,
+                      'variation_measure': 'lvr',
                       'with_nan': True}
 
     @use_prediction_cache

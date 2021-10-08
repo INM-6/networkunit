@@ -19,7 +19,8 @@ class power_spectrum_test(two_sample_test):
 
     required_capabilities = (ProducesSpikeTrains,)
 
-    default_params = {'frequency_resolution': 2.5*pq.Hz,
+    default_params = {**two_sample_test.default_params,
+                      'frequency_resolution': 2.5*pq.Hz,
                       'bin_size': 10*pq.ms,
                       'psd_precision': 0.0001
                       }

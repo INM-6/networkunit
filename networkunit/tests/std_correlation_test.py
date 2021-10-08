@@ -38,9 +38,7 @@ class std_correlation_test(correlation_test):
             if len(sts) == 1:
                 correlation_stds = np.array([np.nan])
             else:
-                cc_matrix = self.generate_cc_matrix(spiketrains=sts,
-                                                    model=model,
-                                                    **self.params)
+                cc_matrix = self.generate_cc_matrix(spiketrains=sts)
                 np.fill_diagonal(cc_matrix, 0.)
 
                 correlation_stds = np.nanstd(cc_matrix, axis=0)

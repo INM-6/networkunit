@@ -39,9 +39,7 @@ class average_correlation_test(correlation_test):
             if len(sts) == 1:
                 correlation_averages = np.array([np.nan])
             else:
-                cc_matrix = self.generate_cc_matrix(spiketrains=sts,
-                                                    model=model,
-                                                    **self.params)
+                cc_matrix = self.generate_cc_matrix(spiketrains=sts)
                 np.fill_diagonal(cc_matrix, np.nan)
 
                 correlation_averages = np.nansum(cc_matrix, axis=0) / len(sts)

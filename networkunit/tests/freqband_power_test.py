@@ -17,9 +17,7 @@ class freqband_power_test(power_spectrum_test):
     Parameters are passed on to elephant.spectral.welch_psd()
     """
 
-    default_params = {'frequency_resolution': 2.5,
-                      'bin_size': 10*pq.ms,
-                      'psd_precision': 0.0001,
+    default_params = {**power_spectrum_test.default_params,
                       'highpass_freq': 13*pq.Hz,
                       'lowpass_freq': 20*pq.Hz,
                       }

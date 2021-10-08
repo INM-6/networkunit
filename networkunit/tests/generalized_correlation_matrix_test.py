@@ -57,8 +57,8 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
 
     required_capabilities = (ProducesSpikeTrains, )
 
-    default_params = {'maxlag': 100,  # in bins
-                      'bin_size': 2*ms,
+    default_params = {**correlation_matrix_test.default_params,
+                      'maxlag': 100,  # in bins
                       'time_reduction': 'threshold 0.13',
                       'binary': False
                       }
