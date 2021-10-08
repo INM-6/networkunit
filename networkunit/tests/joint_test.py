@@ -16,7 +16,6 @@ class joint_test(two_sample_test):
     ```
     class fr_lv_jtest(tests.TestM2M, tests.joint_test):
         score_type = scores.kl_divergence
-        params = {}
         test_list = [tests.firing_rate_test,
                      tests.isi_variation_test,
                      tests.isi_variation_test]
@@ -33,11 +32,11 @@ class joint_test(two_sample_test):
             raise AttributeError("Joint test doesn't define a test_params list!")
         if len(self.test_list) - len(self.test_params):
             raise AttributeError("test_list and test_params are not of same length!")
-        for test, params in zip(self.test_list, self.test_params):
+        for test, test_params in zip(self.test_list, self.test_params):
             if not isinstance(test, type):
                 raise TypeError("{} not a legit test class!".format(test))
-            if not isinstance(params, dict):
-                raise TypeError("{} doesn't have legit params dict!".format(test))
+            if not isinstance(test_params, dict):
+                raise TypeError("{} doesn't have legitimate test_params dict!".format(test))
 
         sts = model.produce_spiketrains()
         grouped_sts = model.produce_grouped_spiketrains()

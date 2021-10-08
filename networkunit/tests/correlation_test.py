@@ -12,7 +12,7 @@ class correlation_test(two_sample_test):
     Abstract test class  to compare the pairwise correlations between spike
     trains of a set of neurons in a network.
 
-    Parameters (in dict params):
+    Parameters:
     ----------
     bin_size: quantity, None (default: 2*ms)
         Size of bins used to calculate the correlation coefficients.

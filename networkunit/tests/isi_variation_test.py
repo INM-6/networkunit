@@ -8,7 +8,7 @@ class isi_variation_test(two_sample_test):
     """
     Test to compare the firing rates of a set of spiking neurons in a network.
 
-    Parameters (in dict params)
+    Parameters:
     ----------
     variation_measure: 'isi', 'cv', 'lv', 'lvr' (default)
         'isi' - Compares the inter-spike intervals

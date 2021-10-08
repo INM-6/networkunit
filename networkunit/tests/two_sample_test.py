@@ -127,7 +127,8 @@ class two_sample_test(sciunit.Test):
         When there is a specific visualization function called plot() for the
         given score type, score_type.plot() is called;
         else call visualize_sample()
-        Parameters
+        
+        Parameters:
         ----------
         ax : matplotlib axis
             If no axis is passed a new figure is created.

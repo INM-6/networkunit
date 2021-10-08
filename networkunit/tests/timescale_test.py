@@ -14,7 +14,7 @@ class timescale_test(two_sample_test):
     The statistical testing method needs to be set in form of a
     sciunit.Score as score_type.
 
-    Parameters (in dict params):
+    Parameters:
     ----------
     bin_size: quantity (default: 1*ms)
         Size of bins used to calculate the spiketrain timescale.

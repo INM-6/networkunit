@@ -11,7 +11,7 @@ class average_correlation_test(correlation_test):
     The statistical testing method needs to be set in form of a
     sciunit.Score as score_type.
 
-    Parameters (in dict params):
+    Parameters:
     ----------
     bin_size: quantity, None (default: 2*ms)
         Size of bins used to calculate the correlation coefficients.
@@ -47,6 +47,6 @@ class average_correlation_test(correlation_test):
                 correlation_averages = np.nansum(cc_matrix, axis=0) / len(sts)
             avg_correlations = np.append(avg_correlations, correlation_averages)
 
-        if params['nan_to_num']:
+        if self.params['nan_to_num']:
             avg_correlations = np.nan_to_num(avg_correlations)
         return avg_correlations

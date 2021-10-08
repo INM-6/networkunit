@@ -13,7 +13,7 @@ class covariance_test(two_sample_test):
     The statistical testing method needs to be set in form of a
     sciunit.Score as score_type.
 
-    Parameters (in dict params):
+    Parameters:
     ----------
     bin_size: quantity, None (default: 2*ms)
         Size of bins used to calculate the correlation coefficients.
@@ -47,7 +47,7 @@ class covariance_test(two_sample_test):
         """
         Calculates the covariances between all pairs of spike trains.
 
-        Parameters
+        Parameters:
         ----------
         spiketrain_list : list of neo.SpikeTrain (default None)
             If no list is passed the function tries to access the class

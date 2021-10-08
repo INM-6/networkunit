@@ -21,7 +21,7 @@ class correlation_matrix_test(correlation_test):
     The statistical testing method needs to be set in form of a
     sciunit.Score as score_type.
 
-    Parameters (in dict params):
+    Parameters:
     ----------
     bin_size: quantity, None (default: 2*ms)
         Size of bins used to calculate the correlation coefficients.
@@ -58,17 +58,17 @@ class correlation_matrix_test(correlation_test):
         spiketrains = model.produce_spiketrains(**self.params)
         cc_matrix = self.generate_cc_matrix(spiketrains=spiketrains,
                                             model=model, **self.params)
-        if 'cluster_matrix' in params and params['cluster_matrix']:
+        if 'cluster_matrix' in self.params and self.params['cluster_matrix']:
             np.fill_diagonal(cc_matrix, 1.)
             try:
                 try:
                     linkagematrix = linkage(squareform(1. - cc_matrix),
-                                            method=params['cluster_method'])
+                                            method=self.params['cluster_method'])
                 except:
                     if fastcluster_pkg:
                         print('using fastcluster')
                         linkagematrix = fastcluster.linkage(squareform(1. - cc_matrix),
-                                                    method=params['cluster_method'])
+                                                    method=self.params['cluster_method'])
                     else:
                         print('using fastcluster')
                 dendro = dendrogram(linkagematrix, no_plot=True)
@@ -78,7 +78,7 @@ class correlation_matrix_test(correlation_test):
             except Exception as e:
                 print('Clustering failed!')
                 print(e)
-        if 'remove_autocorr' in params and params['remove_autocorr']:
+        if 'remove_autocorr' in self.params and self.params['remove_autocorr']:
             np.fill_diagonal(cc_matrix, 0.)
         model.cc_matrix = cc_matrix
         return cc_matrix

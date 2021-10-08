@@ -20,7 +20,7 @@ class graph_centrality_helperclass(sciunit.Test):
     matrix generating test
     in the order (TestM2M), graph_centrality_helperclass, matrix_test.
 
-    Parameters
+    Parameters:
         ----------
         edge_threshold: float (default: 0)
             Threshold for the matrix values to create the graph.

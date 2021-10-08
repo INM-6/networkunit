@@ -18,7 +18,7 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
     The statistical testing method needs to be set in form of a
     sciunit.Score as score_type.
 
-    Parameters (in dict params)
+    Parameters:
     ----------
         bin_size: quantity, None (default: 2*ms)
         Size of bins used to calculate the correlation coefficients.
@@ -63,8 +63,7 @@ class generalized_correlation_matrix_test(correlation_matrix_test):
                       'binary': False
                       }
 
-    def generate_cc_matrix(self, spiketrains, binary=False, model=None,
-                           **params):
+    def generate_cc_matrix(self, spiketrains=None, model=None):
 
         if hasattr(model, 'cch_array')\
              and 'bin_size{}_maxlag{}'.format(self.params['bin_size'],
