@@ -4,6 +4,8 @@
 * improved parameter handling
 * improved caching of intermediate test- and simulation results
 * various bug fixes
+* generate_prediction() and other custom class function no long take optional extra parameter as arguments, but only use self.params
+    * no class function should accept arguments that override class parameters
 * adding the `joint_test` class enabling to combine multiple neuron-wise tests for multidimensional testing with the Wasserstein score
 * new models:
     * brunel
@@ -20,6 +22,6 @@
     * Eigenangles
 
 ### ToDo:
-* parallelization
+* parallelization (use Elephant feature?)
 * unit tests
 * more example notebooks (combine with unit tests?)

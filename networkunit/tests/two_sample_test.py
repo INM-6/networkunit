@@ -43,7 +43,7 @@ class two_sample_test(sciunit.Test):
         if hasattr(model, 'backend'):
             if model._backend.use_memory_cache:
                 prediction = model._backend.get_memory_cache(key=key)
-            if model._backend.use_disk_cache:
+            elif model._backend.use_disk_cache:
                 prediction = model._backend.get_disk_cache(key=key)
         return prediction
 
@@ -53,9 +53,11 @@ class two_sample_test(sciunit.Test):
         if hasattr(model, 'backend'):
             if model._backend.use_memory_cache:
                 model._backend.set_memory_cache(prediction, key=key)
-            if model._backend.use_disk_cache:
+                return True
+            elif model._backend.use_disk_cache:
                 model._backend.set_disk_cache(prediction, key=key)
-        return None
+                return True
+        return False
 
     def _create_plotting_samples(self, model1=None, model2=None, palette=None):
         samples = []
