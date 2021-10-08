@@ -1,6 +1,6 @@
 from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
-from networkunit.utils import generate_prediction_wrapper, filter_params
+from networkunit.utils import use_prediction_cache, filter_params
 from elephant.statistics import time_histogram
 from elephant.spectral import welch_psd
 from elephant.signal_processing import zscore
@@ -24,9 +24,9 @@ class power_spectrum_test(two_sample_test):
                       'psd_precision': 0.0001
                       }
 
-    @generate_prediction_wrapper
-    def generate_prediction(self, model, **params):
-        spiketrains_list = model.produce_grouped_spiketrains(**params)
+    @use_prediction_cache
+    def generate_prediction(self, model):
+        spiketrains_list = model.produce_grouped_spiketrains(**self.params)
         # psd_samples = []
         psd_lst = []
 
@@ -40,21 +40,21 @@ class power_spectrum_test(two_sample_test):
         # std_psd = np.std(psd_arr, axis=-1)
 
         psd_samples = self.psd_to_samples(freqs, mean_psd,
-                                          params['psd_precision'])
+                                          self.params['psd_precision'])
 
         return psd_samples
 
-    def spiketrains_psd(self, spiketrains, **params):
+    def spiketrains_psd(self, spiketrains):
         if not (type(spiketrains) == list) \
           or not type(spiketrains[0]) == neo.SpikeTrain:
             raise TypeError("Input must be a list of neo.Spiketrain obejects.")
 
         asignal = time_histogram(spiketrains,
-                                 bin_size=params['bin_size'])
+                                 bin_size=self.params['bin_size'])
         zscore(asignal, inplace=True)
 
         with filter_params(welch_psd) as _welch_psd:
-            freqs, psd = _welch_psd(asignal, **params)
+            freqs, psd = _welch_psd(asignal, **self.params)
 
         # Enforce single dimension shape, since
         # asignal will always be one-dimensional in this case
@@ -63,7 +63,7 @@ class power_spectrum_test(two_sample_test):
         # If there are nonzero values in the psd, avoid division by 0
         if psd.any():
             # Adjust so the integral over f is 1
-            psd /= (np.nanmean(psd)*params['frequency_resolution'])
+            psd /= (np.nanmean(psd)*self.params['frequency_resolution'])
 
         return freqs, psd
 

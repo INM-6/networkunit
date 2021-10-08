@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 from copy import copy
-from networkunit.utils import generate_prediction_wrapper
+from networkunit.utils import use_prediction_cache
 
 
 class correlation_matrix_test(correlation_test):
@@ -53,11 +53,11 @@ class correlation_matrix_test(correlation_test):
     default_params = {'cluster_method': 'ward',
                       'cluster_matrix': False}
 
-    @generate_prediction_wrapper
-    def generate_prediction(self, model, **params):
-        spiketrains = model.produce_spiketrains(**params)
+    @use_prediction_cache
+    def generate_prediction(self, model):
+        spiketrains = model.produce_spiketrains(**self.params)
         cc_matrix = self.generate_cc_matrix(spiketrains=spiketrains,
-                                            model=model, **params)
+                                            model=model, **self.params)
         if 'cluster_matrix' in params and params['cluster_matrix']:
             np.fill_diagonal(cc_matrix, 1.)
             try:

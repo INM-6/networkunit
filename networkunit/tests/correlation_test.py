@@ -31,6 +31,8 @@ class correlation_test(two_sample_test):
 
     required_capabilities = (ProducesSpikeTrains, )
 
+    default_params = {'bin_size': 2*ms}
+
     def validate_observation(self, observation):
         # ToDo: Check if observation values are legit (non nan, positive, ...)
         pass

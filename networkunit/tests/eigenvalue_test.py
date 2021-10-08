@@ -1,8 +1,8 @@
 from networkunit.tests.correlation_test import correlation_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 from scipy.linalg import eigh
-from networkunit.utils import generate_prediction_wrapper
-
+from networkunit.utils import use_prediction_cache
+from quantities import ms
 
 class eigenvalue_test(correlation_test):
     """
@@ -30,10 +30,10 @@ class eigenvalue_test(correlation_test):
 
     required_capabilities = (ProducesSpikeTrains, )
 
-    @generate_prediction_wrapper
-    def generate_prediction(self, model, **params):
-        spiketrains = model.produce_spiketrains(**params)
+    @use_prediction_cache
+    def generate_prediction(self, model):
+        spiketrains = model.produce_spiketrains(**self.params)
         cc_matrix = self.generate_cc_matrix(spiketrains=spiketrains,
-                                            **params)
+                                            **self.params)
         ews, _ = eigh(cc_matrix)
         return ews

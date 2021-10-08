@@ -1,6 +1,6 @@
 from networkunit.tests.correlation_test import correlation_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
-from networkunit.utils import generate_prediction_wrapper
+from networkunit.utils import use_prediction_cache
 import numpy as np
 
 class std_correlation_test(correlation_test):
@@ -29,9 +29,9 @@ class std_correlation_test(correlation_test):
 
     required_capabilities = (ProducesSpikeTrains, )
 
-    @generate_prediction_wrapper
-    def generate_prediction(self, model, **params):
-        lists_of_spiketrains = model.produce_grouped_spiketrains(**params)
+    @use_prediction_cache
+    def generate_prediction(self, model):
+        lists_of_spiketrains = model.produce_grouped_spiketrains(**self.params)
         std_correlations = np.array([])
 
         for sts in lists_of_spiketrains:
@@ -40,14 +40,14 @@ class std_correlation_test(correlation_test):
             else:
                 cc_matrix = self.generate_cc_matrix(spiketrains=sts,
                                                     model=model,
-                                                    **params)
+                                                    **self.params)
                 np.fill_diagonal(cc_matrix, 0.)
 
                 correlation_stds = np.nanstd(cc_matrix, axis=0)
             std_correlations = np.append(std_correlations,
                                          correlation_stds)
 
-        if params['nan_to_num']:
+        if self.params['nan_to_num']:
             std_correlations = np.nan_to_num(std_correlations)
 
         return std_correlations

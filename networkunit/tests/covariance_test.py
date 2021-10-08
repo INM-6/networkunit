@@ -4,7 +4,7 @@ from numpy import triu_indices
 from quantities import ms
 from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
-from networkunit.utils import generate_prediction_wrapper
+from networkunit.utils import use_prediction_cache
 
 
 class covariance_test(two_sample_test):
@@ -31,11 +31,11 @@ class covariance_test(two_sample_test):
     required_capabilities = (ProducesSpikeTrains, )
     default_params = {'bin_size': 2*ms}
 
-    @generate_prediction_wrapper
-    def generate_prediction(self, model, **params):
-        self.spiketrains = model.produce_spiketrains(**params)
+    @use_prediction_cache
+    def generate_prediction(self, model):
+        self.spiketrains = model.produce_spiketrains(**self.params)
         covariances = self.generate_covariances(self.spiketrains,
-                                                **params)
+                                                **self.params)
         return covariances
 
     def validate_observation(self, observation):

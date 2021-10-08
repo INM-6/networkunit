@@ -5,7 +5,7 @@ import seaborn as sns
 import numpy as np
 from copy import copy
 import re
-from networkunit.utils import generate_prediction_wrapper
+from networkunit.utils import use_prediction_cache
 
 
 class graph_centrality_helperclass(sciunit.Test):
@@ -29,12 +29,12 @@ class graph_centrality_helperclass(sciunit.Test):
             'transitivity', 'small-worldness'
     """
 
-    @generate_prediction_wrapper
-    def generate_prediction(self, model, **params):
-        if 'graph_measure' not in params:
+    @use_prediction_cache
+    def generate_prediction(self, model):
+        if 'graph_measure' not in self.params:
             raise ValueError('No graph_measure set!')
         matrix = super(graph_centrality_helperclass, self).\
-            generate_prediction(model, **kwargs)
+            generate_prediction(model)
         self.prediction_dim = 2
         N = len(matrix)
 
@@ -43,7 +43,7 @@ class graph_centrality_helperclass(sciunit.Test):
             G = self.build_graph(matrix)
             self.set_prediction(model, G, key=self.test_hash + '_graph')
 
-        measure = params['graph_measure']
+        measure = self.params['graph_measure']
         if measure == 'degree_strength':
             prediction = self.degree_strength(G, N)
 

@@ -1,7 +1,7 @@
 from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 from elephant.statistics import isi, lv, cv2, lvr
-from networkunit.utils import generate_prediction_wrapper, filter_params
+from networkunit.utils import use_prediction_cache, filter_params
 
 
 class isi_variation_test(two_sample_test):
@@ -21,29 +21,28 @@ class isi_variation_test(two_sample_test):
     default_params = {'variation_measure': 'lvr',
                       'with_nan': True}
 
-    @generate_prediction_wrapper
-    def generate_prediction(self, model, **params):
+    @use_prediction_cache
+    def generate_prediction(self, model):
         spiketrains = model.produce_spiketrains(**self.params)
         isi_list = [isi(st) for st in spiketrains]
-        measure = params.pop('variation_measure')
-        if measure == 'lv':
+        if self.params['variation_measure'] == 'lv':
             isi_var = []
             with filter_params(lv) as _lv:
                 for intervals in isi_list:
-                    isi_var.append(_lv(intervals, **params))
-        elif measure == 'cv':
+                    isi_var.append(_lv(intervals, **self.params))
+        elif self.params['variation_measure'] == 'cv':
             isi_var = []
             with filter_params(cv2) as _cv2:
                 for intervals in isi_list:
-                    isi_var.append(_cv2(intervals, **params))
-        elif measure == 'isi':
+                    isi_var.append(_cv2(intervals, **self.params))
+        elif self.params['variation_measure'] == 'isi':
             isi_var = [float(item) for sublist in isi_list
                        for item in sublist]
-        elif measure == 'lvr':
+        elif self.params['variation_measure'] == 'lvr':
             isi_var = []
             with filter_params(lvr) as _lvr:
                 for intervals in isi_list:
-                    isi_var.append(_lvr(intervals, **params))
+                    isi_var.append(_lvr(intervals, **self.params))
         else:
             raise ValueError('Variation measure not known.')
 

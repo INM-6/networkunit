@@ -1,6 +1,6 @@
 import numpy as np
 from networkunit.tests.two_sample_test import two_sample_test
-from networkunit.utils import generate_prediction_wrapper
+from networkunit.utils import use_prediction_cache
 
 class joint_test(two_sample_test):
     """
@@ -50,8 +50,8 @@ class joint_test(two_sample_test):
         del sts
         pass
 
-    @generate_prediction_wrapper
-    def generate_prediction(self, model, **params):
+    @use_prediction_cache
+    def generate_prediction(self, model):
         self.check_tests(model)
 
         prediction = []

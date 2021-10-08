@@ -1,6 +1,6 @@
 from networkunit.tests.correlation_test import correlation_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
-from networkunit.utils import generate_prediction_wrapper
+from networkunit.utils import use_prediction_cache
 import numpy as np
 
 
@@ -30,9 +30,9 @@ class average_correlation_test(correlation_test):
 
     required_capabilities = (ProducesSpikeTrains, )
 
-    @generate_prediction_wrapper
-    def generate_prediction(self, model, **params):
-        lists_of_spiketrains = model.produce_grouped_spiketrains(**params)
+    @use_prediction_cache
+    def generate_prediction(self, model):
+        lists_of_spiketrains = model.produce_grouped_spiketrains(**self.params)
         avg_correlations = np.array([])
 
         for sts in lists_of_spiketrains:
@@ -41,7 +41,7 @@ class average_correlation_test(correlation_test):
             else:
                 cc_matrix = self.generate_cc_matrix(spiketrains=sts,
                                                     model=model,
-                                                    **params)
+                                                    **self.params)
                 np.fill_diagonal(cc_matrix, np.nan)
 
                 correlation_averages = np.nansum(cc_matrix, axis=0) / len(sts)
