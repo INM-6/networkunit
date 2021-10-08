@@ -2,7 +2,7 @@ import sciunit
 import seaborn as sns
 from uuid import uuid4
 from networkunit.plots.sample_histogram import sample_histogram
-from networkunit.utils import generate_prediction_wrapper
+from networkunit.utils import use_prediction_cache
 
 class two_sample_test(sciunit.Test):
     """
@@ -19,8 +19,8 @@ class two_sample_test(sciunit.Test):
         self.test_hash = uuid4().hex
         super(two_sample_test, self).__init__(observation, name=name, **params)
 
-    @generate_prediction_wrapper
-    def generate_prediction(self, model, **params):
+    @use_prediction_cache
+    def generate_prediction(self, model):
         """
         To be overwritten in child class. The following example code
         should be reused to enable cache storage and prevent multiple
@@ -79,7 +79,7 @@ class two_sample_test(sciunit.Test):
                 except:
                     palette = palette + [sns.color_palette()[0]]
         if model1 is not None:
-            samples += [self.generate_prediction(model1, **self.params)]
+            samples += [self.generate_prediction(model1)]
             names += [model1.name]
             if fill_palette:
                 try:
@@ -87,7 +87,7 @@ class two_sample_test(sciunit.Test):
                 except:
                     palette = palette + [sns.color_palette()[len(samples)-1]]
         if model2 is not None:
-            samples += [self.generate_prediction(model2, **self.params)]
+            samples += [self.generate_prediction(model2)]
             names += [model2.name]
             if fill_palette:
                 try:
@@ -129,7 +129,8 @@ class two_sample_test(sciunit.Test):
         When there is a specific visualization function called plot() for the
         given score type, score_type.plot() is called;
         else call visualize_sample()
-        Parameters
+        
+        Parameters:
         ----------
         ax : matplotlib axis
             If no axis is passed a new figure is created.

@@ -1,12 +1,11 @@
 from networkunit.tests.correlation_test import correlation_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
-from scipy.linalg import eigh
 from networkunit.utils import use_prediction_cache
-from quantities import ms
+import numpy as np
 
-class eigenvalue_test(correlation_test):
+class std_correlation_test(correlation_test):
     """
-    Test to compare the eigenvalues of correlation matrices of a set of
+    Abstract test class to compare correlation matrices of a set of
     spiking neurons in a network.
     The statistical testing method needs to be set in form of a
     sciunit.Score as score_type.
@@ -32,8 +31,23 @@ class eigenvalue_test(correlation_test):
 
     @use_prediction_cache
     def generate_prediction(self, model):
-        spiketrains = model.produce_spiketrains(**self.params)
-        cc_matrix = self.generate_cc_matrix(spiketrains=spiketrains,
-                                            **self.params)
-        ews, _ = eigh(cc_matrix)
-        return ews
+        lists_of_spiketrains = model.produce_grouped_spiketrains(**self.params)
+        std_correlations = np.array([])
+
+        for sts in lists_of_spiketrains:
+            if len(sts) == 1:
+                correlation_stds = np.array([np.nan])
+            else:
+                cc_matrix = self.generate_cc_matrix(spiketrains=sts,
+                                                    model=model,
+                                                    **self.params)
+                np.fill_diagonal(cc_matrix, 0.)
+
+                correlation_stds = np.nanstd(cc_matrix, axis=0)
+            std_correlations = np.append(std_correlations,
+                                         correlation_stds)
+
+        if self.params['nan_to_num']:
+            std_correlations = np.nan_to_num(std_correlations)
+
+        return std_correlations

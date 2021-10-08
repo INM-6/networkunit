@@ -1,6 +1,6 @@
 from networkunit.tests.power_spectrum_test import power_spectrum_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
-from networkunit.utils import generate_prediction_wrapper
+from networkunit.utils import use_prediction_cache
 from elephant.statistics import time_histogram
 from elephant.spectral import welch_psd
 from elephant.signal_processing import zscore
@@ -24,16 +24,16 @@ class freqband_power_test(power_spectrum_test):
                       'lowpass_freq': 20*pq.Hz,
                       }
 
-    @generate_prediction_wrapper
-    def generate_prediction(self, model, **params):
+    @use_prediction_cache
+    def generate_prediction(self, model):
 
-        spiketrains_list = model.produce_grouped_spiketrains(**params)
+        spiketrains_list = model.produce_grouped_spiketrains(**self.params)
         band_powers = []
 
         for spiketrains in spiketrains_list:
-            freqs, psd = self.spiketrains_psd(spiketrains, **params)
-            f0 = np.argmax(freqs >= params['highpass_freq'])
-            f1 = np.argmax(freqs >= params['lowpass_freq'])
+            freqs, psd = self.spiketrains_psd(spiketrains, **self.params)
+            f0 = np.argmax(freqs >= self.params['highpass_freq'])
+            f1 = np.argmax(freqs >= self.params['lowpass_freq'])
             band_powers.append(np.mean(psd[f0:f1]))
 
         return band_powers

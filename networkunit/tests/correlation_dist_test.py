@@ -1,6 +1,6 @@
 from networkunit.tests.correlation_test import correlation_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
-from networkunit.utils import generate_prediction_wrapper
+from networkunit.utils import use_prediction_cache
 
 
 class correlation_dist_test(correlation_test):
@@ -10,7 +10,7 @@ class correlation_dist_test(correlation_test):
     The statistical testing method needs to be set in form of a
     sciunit.Score as score_type.
 
-    Parameters (in dict params):
+    Parameters:
     ----------
     bin_size: quantity, None (default: 2*ms)
         Size of bins used to calculate the correlation coefficients.
@@ -29,11 +29,11 @@ class correlation_dist_test(correlation_test):
 
     required_capabilities = (ProducesSpikeTrains, )
 
-    @generate_prediction_wrapper
-    def generate_prediction(self, model, **params):
+    @use_prediction_cache
+    def generate_prediction(self, model):
         # call the function of the required capability of the model
         # and pass the parameters of the test class instance in case the
-        spiketrains = model.produce_spiketrains(**params)
+        spiketrains = model.produce_spiketrains(**self.params)
         cc_samples = self.generate_correlations(spiketrains=spiketrains,
-                                                **params)
+                                                **self.params)
         return cc_samples

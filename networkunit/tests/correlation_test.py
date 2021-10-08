@@ -12,7 +12,7 @@ class correlation_test(two_sample_test):
     Abstract test class  to compare the pairwise correlations between spike
     trains of a set of neurons in a network.
 
-    Parameters (in dict params):
+    Parameters:
     ----------
     bin_size: quantity, None (default: 2*ms)
         Size of bins used to calculate the correlation coefficients.
@@ -30,6 +30,8 @@ class correlation_test(two_sample_test):
     """
 
     required_capabilities = (ProducesSpikeTrains, )
+
+    default_params = {'bin_size': 2*ms}
 
     def validate_observation(self, observation):
         # ToDo: Check if observation values are legit (non nan, positive, ...)

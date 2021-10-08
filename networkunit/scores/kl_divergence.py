@@ -23,7 +23,7 @@ class kl_divergence(sciunit.Score):
     . math $$ D_\mathrm{KL}(P,Q) := \frac{1}{2} \left(D_\mathrm{KL}(P|Q) +
                                       D_\mathrm{KL}(Q|P)\right)$$
 
-    Parameters
+    Parameters:
     ----------
         kl_bin_size : float
             Bin size of the histogram, used to calculate the KL divergence.
