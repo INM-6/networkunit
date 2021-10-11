@@ -1,6 +1,6 @@
 from networkunit.tests.correlation_test import correlation_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
-from networkunit.utils import use_prediction_cache
+from networkunit.utils import use_prediction_cache, parallelize
 import numpy as np
 
 class std_correlation_test(correlation_test):
@@ -32,20 +32,24 @@ class std_correlation_test(correlation_test):
     @use_prediction_cache
     def generate_prediction(self, model):
         lists_of_spiketrains = model.produce_grouped_spiketrains(**self.params)
-        std_correlations = np.array([])
 
-        for sts in lists_of_spiketrains:
-            if len(sts) == 1:
-                correlation_stds = np.array([np.nan])
-            else:
-                cc_matrix = self.generate_cc_matrix(spiketrains=sts)
-                np.fill_diagonal(cc_matrix, 0.)
+        with parallelize(self.calc_std_correlations, self) as std_corr_parallel:
+            std_correlations = std_corr_parallel(lists_of_spiketrains)
 
-                correlation_stds = np.nanstd(cc_matrix, axis=0)
-            std_correlations = np.append(std_correlations,
-                                         correlation_stds)
+        std_correlations = np.concatenate(std_correlations)
 
         if self.params['nan_to_num']:
             std_correlations = np.nan_to_num(std_correlations)
 
         return std_correlations
+
+
+    def calc_std_correlations(self, spiketrains):
+        if len(spiketrains) == 1:
+            std_corr = np.array([np.nan])
+        else:
+            cc_matrix = self.generate_cc_matrix(spiketrains)
+            np.fill_diagonal(cc_matrix, np.nan)
+
+            std_corr = np.nanstd(cc_matrix, axis=0)
+        return std_corr

@@ -5,6 +5,8 @@ import numpy as np
 from quantities import ms
 from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
+from networkunit.utils import filter_valid_params, parallelize
+
 
 
 class correlation_test(two_sample_test):

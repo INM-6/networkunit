@@ -1,7 +1,8 @@
 from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 from elephant.statistics import isi, lv, cv2, lvr
-from networkunit.utils import use_prediction_cache, filter_valid_params
+from networkunit.utils import use_prediction_cache, filter_valid_params, parallelize
+import numpy as np
 
 
 class isi_variation_test(two_sample_test):
@@ -24,27 +25,21 @@ class isi_variation_test(two_sample_test):
 
     @use_prediction_cache
     def generate_prediction(self, model):
-        spiketrains = model.produce_spiketrains(**self.params)
-        isi_list = [isi(st) for st in spiketrains]
-        if self.params['variation_measure'] == 'lv':
-            isi_var = []
-            with filter_valid_params(lv) as _lv:
-                for intervals in isi_list:
-                    isi_var.append(_lv(intervals, **self.params))
-        elif self.params['variation_measure'] == 'cv':
-            isi_var = []
-            with filter_valid_params(cv2) as _cv2:
-                for intervals in isi_list:
-                    isi_var.append(_cv2(intervals, **self.params))
-        elif self.params['variation_measure'] == 'isi':
-            isi_var = [float(item) for sublist in isi_list
-                       for item in sublist]
-        elif self.params['variation_measure'] == 'lvr':
-            isi_var = []
-            with filter_valid_params(lvr) as _lvr:
-                for intervals in isi_list:
-                    isi_var.append(_lvr(intervals, **self.params))
-        else:
+        if self.params['variation_measure'] not in ['isi', 'cv', 'lv', 'lvr']:
             raise ValueError('Variation measure not known.')
 
-        return isi_var
+        spiketrains = model.produce_spiketrains(**self.params)
+
+        with parallelize(isi, self) as isi_parallel:
+            intervals = isi_parallel(spiketrains)
+
+        if self.params['variation_measure'] == 'isi':
+            return np.concatenate(intervals) * intervals.units
+
+        var_measure_func = globals()[self.params['variation_measure']]
+
+        with filter_valid_params(var_measure_func) as _var_measure:
+            with parallelize(_var_measure, self) as var_measure_parallel:
+                isi_var = var_measure_parallel(intervals, **self.params)
+
+        return np.array(isi_var)

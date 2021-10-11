@@ -58,30 +58,37 @@ class correlation_matrix_test(correlation_test):
     def generate_prediction(self, model):
         spiketrains = model.produce_spiketrains(**self.params)
         cc_matrix = self.generate_cc_matrix(spiketrains=spiketrains)
+
         if 'cluster_matrix' in self.params and self.params['cluster_matrix']:
-            np.fill_diagonal(cc_matrix, 1.)
-            try:
-                try:
-                    linkagematrix = linkage(squareform(1. - cc_matrix),
-                                            method=self.params['cluster_method'])
-                except:
-                    if fastcluster_pkg:
-                        print('using fastcluster')
-                        linkagematrix = fastcluster.linkage(squareform(1. - cc_matrix),
-                                                    method=self.params['cluster_method'])
-                    else:
-                        print('using fastcluster')
-                dendro = dendrogram(linkagematrix, no_plot=True)
-                order = dendro['leaves']
-                model.cluster_order = order
-                cc_matrix = cc_matrix[order, :][:, order]
-            except Exception as e:
-                print('Clustering failed!')
-                print(e)
+            cc_matrix, cluster_order = self.cluster_matrix(cc_matrix)
+            model.cluster_order = cluster_order
+
         if 'remove_autocorr' in self.params and self.params['remove_autocorr']:
             np.fill_diagonal(cc_matrix, 0.)
-        model.cc_matrix = cc_matrix
+
         return cc_matrix
+
+
+    def cluster_matrix(self, matrix):
+        np.fill_diagonal(matrix, 1.)
+        try:
+            try:
+                linkagematrix = linkage(squareform(1. - matrix),
+                                        method=self.params['cluster_method'])
+            except Exception as e:
+                if fastcluster_pkg:
+                    print('using fastcluster')
+                    linkagematrix = fastcluster.linkage(squareform(1. - matrix),
+                                                method=self.params['cluster_method'])
+                else:
+                    print('Clustering failed!\n', e)
+            dendro = dendrogram(linkagematrix, no_plot=True)
+            order = dendro['leaves']
+            cc_matrix = cc_matrix[order, :][:, order]
+        except Exception as e:
+            print('Clustering failed!\n', e)
+        return matrix, order
+
 
     def visualize_samples(self, model1=None, model2=None, ax=None, labels=None,
                           palette=None, remove_autocorr=True,
@@ -154,6 +161,7 @@ class correlation_matrix_test(correlation_test):
                 model1.cluster_order = order
             ax[j].set_title(sample_names[j])
         return ax
+
 
     def draw_graph(self, model, draw_edge_threshold=None, **kwargs):
         if draw_edge_threshold is None and hasattr(self, 'graph') \

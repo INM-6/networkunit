@@ -1,6 +1,6 @@
 from networkunit.tests.correlation_test import correlation_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
-from networkunit.utils import use_prediction_cache
+from networkunit.utils import use_prediction_cache, parallelize
 import numpy as np
 
 
@@ -33,18 +33,24 @@ class average_correlation_test(correlation_test):
     @use_prediction_cache
     def generate_prediction(self, model):
         lists_of_spiketrains = model.produce_grouped_spiketrains(**self.params)
-        avg_correlations = np.array([])
 
-        for sts in lists_of_spiketrains:
-            if len(sts) == 1:
-                correlation_averages = np.array([np.nan])
-            else:
-                cc_matrix = self.generate_cc_matrix(spiketrains=sts)
-                np.fill_diagonal(cc_matrix, np.nan)
+        with parallelize(self.calc_avg_correlations, self) as avg_corr_parallel:
+            avg_correlations = avg_corr_parallel(lists_of_spiketrains)
 
-                correlation_averages = np.nansum(cc_matrix, axis=0) / len(sts)
-            avg_correlations = np.append(avg_correlations, correlation_averages)
+        avg_correlations = np.concatenate(avg_correlations)
 
         if self.params['nan_to_num']:
             avg_correlations = np.nan_to_num(avg_correlations)
+
         return avg_correlations
+
+
+    def calc_avg_correlations(self, spiketrains):
+        if len(spiketrains) == 1:
+            avg_corr = np.array([np.nan])
+        else:
+            cc_matrix = self.generate_cc_matrix(spiketrains)
+            np.fill_diagonal(cc_matrix, np.nan)
+
+            avg_corr = np.nansum(cc_matrix, axis=0) / len(spiketrains)
+        return avg_corr

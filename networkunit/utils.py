@@ -64,10 +64,12 @@ class parallelize:
         results = parallel_func(iterables_list, **kwargs)
     ```
     """
-    def __init__(self, func):
-        if 'parallel_executor' not in self.params:
-            self.params['parallel_executor'] = SingleProcess()
+    def __init__(self, func, test_class=None, executor=SingleProcess()):
+        self.executor = executor
         self.func = func
+
+        if test_class is not None and'parallel_executor' in test_class.params:
+            self.executor = test_class.params['parallel_executor']
 
     def __enter__(self):
 
@@ -76,7 +78,7 @@ class parallelize:
             def arg_func(iterable_list):
                 return self.func(iterable_list, **kwargs)
 
-            result = self.params['parallel_executor'].execute(arg_func, iterable_list)
+            result = self.executor.execute(arg_func, iterable_list)
             return result
 
         return _func

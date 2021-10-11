@@ -31,9 +31,6 @@ class correlation_dist_test(correlation_test):
 
     @use_prediction_cache
     def generate_prediction(self, model):
-        # call the function of the required capability of the model
-        # and pass the parameters of the test class instance in case the
         spiketrains = model.produce_spiketrains(**self.params)
-        cc_samples = self.generate_correlations(spiketrains=spiketrains,
-                                                **self.params)
+        cc_samples = self.generate_correlations(spiketrains=spiketrains)
         return cc_samples

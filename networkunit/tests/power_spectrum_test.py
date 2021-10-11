@@ -1,6 +1,6 @@
 from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
-from networkunit.utils import use_prediction_cache, filter_valid_params
+from networkunit.utils import use_prediction_cache, filter_valid_params, parallelize
 from elephant.statistics import time_histogram
 from elephant.spectral import welch_psd
 from elephant.signal_processing import zscore
@@ -28,22 +28,20 @@ class power_spectrum_test(two_sample_test):
     @use_prediction_cache
     def generate_prediction(self, model):
         spiketrains_list = model.produce_grouped_spiketrains(**self.params)
-        # psd_samples = []
-        psd_lst = []
 
-        for spiketrains in spiketrains_list:
-            freqs, psd = self.spiketrains_psd(spiketrains)
-            psd_lst.append(psd)
-            # psd_samples.append(self.psd_to_samples(freqs, psd))
+        with parallelize(self.spiketrains_psd, self) as psd_parallel:
+            psd_out = psd_parallel(spiketrains_list)
 
+        freqs = psd_out[0][0]
+        psd_lst = [out[1] for out in psd_out]
         psd_arr = np.stack(psd_lst, axis=-1)
         mean_psd = np.mean(psd_arr, axis=-1)
-        # std_psd = np.std(psd_arr, axis=-1)
 
         psd_samples = self.psd_to_samples(freqs, mean_psd,
                                           self.params['psd_precision'])
 
         return psd_samples
+
 
     def spiketrains_psd(self, spiketrains):
         if not (type(spiketrains) == list) \
@@ -67,6 +65,7 @@ class power_spectrum_test(two_sample_test):
             psd /= (np.nanmean(psd)*self.params['frequency_resolution'])
 
         return freqs, psd
+
 
     def psd_to_samples(self, freqs, psd, precision):
         factor = 1 / precision

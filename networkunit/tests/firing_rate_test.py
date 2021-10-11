@@ -20,7 +20,7 @@ class firing_rate_test(two_sample_test):
         def mean_firing_rate_Hz(st):
             return mean_firing_rate(st).rescale('Hz')
 
-        with parallelize(mean_firing_rate_Hz) as parallel_mean_firing_rate:
-            rates = parallel_mean_firing_rate(spiketrains)
+        with parallelize(mean_firing_rate_Hz, self) as parallel_mean_firing_rate_Hz:
+            rates = parallel_mean_firing_rate_Hz(spiketrains)
 
         return rates
