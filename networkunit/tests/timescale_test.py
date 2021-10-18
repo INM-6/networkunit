@@ -4,7 +4,7 @@ from quantities import ms
 from elephant.conversion import BinnedSpikeTrain
 from elephant.spike_train_correlation import spike_train_timescale as timescale
 import numpy as np
-from networkunit.utils import use_prediction_cache
+from networkunit.utils import use_prediction_cache, parallelize
 
 class timescale_test(two_sample_test):
     """

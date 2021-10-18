@@ -12,7 +12,8 @@ def use_prediction_cache(generate_prediction_func):
         # Check if predictions were already calculated
         prediction = self.get_prediction(model)
 
-        # If any parameter was specified by the user in the generate_prediction function the predictions are recalculated
+        # If any parameter was specified by the user in the generate_prediction
+        # function the predictions are recalculated
         if prediction is None:
 
             # Generate and save prediction
@@ -51,8 +52,9 @@ class filter_valid_params:
 
 class parallelize:
     """
-    Context manager that applies elephant.parallel executors.
-    Default executor: SingleProcess()
+    Context manager that applies elephant.parallel executors:
+    ProcessPoolExecutor(), MPIPoolExecutor(), MPICommExecutor(), or
+    SingleProcess() (default).
 
     Example:
     ```
@@ -60,7 +62,7 @@ class parallelize:
     ```
     becomes
     ```
-    with parallelize(my_function) as parallel_func:
+    with parallelize(my_function, self) as parallel_func:
         results = parallel_func(iterables_list, **kwargs)
     ```
     """
