@@ -25,6 +25,8 @@ class joint_test(two_sample_test):
     ```
     """
 
+    default_params = {**two_sample_test.default_params}
+
     def check_tests(self, model):
         if not hasattr(self, 'test_list') or not isinstance(self.test_list, list):
             raise AttributeError("Joint test doesn't define a test_list!")
@@ -53,7 +55,6 @@ class joint_test(two_sample_test):
     def generate_prediction(self, model):
         self.check_tests(model)
 
-        prediction = []
         self.test_inst = []
 
         for test_class, test_params in zip(self.test_list, self.test_params):
@@ -61,19 +62,20 @@ class joint_test(two_sample_test):
                 test_name = test_params.pop('name')
             else:
                 test_name = None
+
+            # Params priority order:
+            # test params > joint-test params > joint-test default params
+            # > test default params
             self.test_inst.append(
                 test_class(observation=self.observation,
                            name=test_name,
-                           **test_params))
+                           **{**self.params, **test_params}))
 
-        # ToDO: consider parallelization
-        for test in self.test_inst:
-            pred = np.array(test.generate_prediction(model))
-            if len(pred.shape) > 1:
-                for i in range(pred.shape[-1]):
-                    prediction.append(pred[:, i])
-            else:
-                prediction.append(pred)
+        def generate_test_prediction(test_inst):
+            return np.array(test_inst.generate_prediction(model))
+
+        with parallelize(generate_test_prediction) as parallel_test_predictions:
+            prediction = parallel_test_predictions(self.test_inst)
 
         it = iter(prediction)
         the_len = len(next(it))
