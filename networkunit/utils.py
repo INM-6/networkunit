@@ -2,27 +2,42 @@ import inspect
 from elephant.parallel import SingleProcess
 
 
-def use_prediction_cache(generate_prediction_func):
+def use_prediction_cache(generate_prediction_func=None, hash_key=None):
     """
     Decorator for the `generate_prediction()` function of the tests, handles
     cached prediction loading, parameter update and prediction saving.
+    Optionally, a hash key can be passed to the decorator as name for the cache,
+    e.g. for using a shared cache for redundant calculations on the same model
+    across tests; if hash_key is None, the hash id of the test is used. 
     """
-    def wrapper(self, model):
 
-        # Check if predictions were already calculated
-        prediction = self.get_prediction(model)
+    def _decorate(function):
 
-        # If any parameter was specified by the user in the generate_prediction
-        # function the predictions are recalculated
-        if prediction is None:
+        @functools.wraps(function)
+        def wrapper(self, model):
 
-            # Generate and save prediction
-            prediction = generate_prediction_func(self, model)
-            self.set_prediction(model, prediction)
+            # Check if predictions were already calculated
+            prediction = self.get_prediction(model=model,
+                                             key=hash_key)
 
-        return prediction
+            # If any parameter was specified by the user in the generate_prediction
+            # function the predictions are recalculated
+            if prediction is None:
 
-    return wrapper
+                # Generate and save prediction
+                prediction = function(self, model=model)
+                self.set_prediction(model=model,
+                                    prediction=prediction,
+                                    key=hash_key)
+
+            return prediction
+
+        return wrapper
+
+    if generate_prediction_func:
+        return _decorate(generate_prediction_func)
+    else:
+        return _decorate
 
 
 class filter_valid_params:

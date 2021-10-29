@@ -46,7 +46,9 @@ class correlation_test(two_sample_test):
         return cc_matrix[idx]
 
 
+    @use_prediction_cache(hash_key=self.params['correlation_cache_hash'])
     def generate_cc_matrix(self, spiketrains=None, model=None):
+        # Todo: use custom cache
         if spiketrains is None:
             if model is None:
                 raise ValueError('generate_cc_matrix needs either '
