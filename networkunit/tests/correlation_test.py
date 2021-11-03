@@ -34,7 +34,7 @@ class correlation_test(two_sample_test):
     required_capabilities = (ProducesSpikeTrains, )
 
     default_params = {**two_sample_test.default_params,
-                      'correlation_cache_key': False,
+                      'correlation_cache_key': None,
                       'bin_size': 2*ms,
                       'nan_to_num': False,
                       'corrcoef_norm': True}
@@ -47,7 +47,7 @@ class correlation_test(two_sample_test):
         return cc_matrix[idx]
 
 
-    @use_cache(cache_key=self.params['correlation_cache_key'])
+    @use_cache(cache_key_param='correlation_cache_key')
     def generate_cc_matrix(self, spiketrains=None, model=None):
         if spiketrains is None:
             if model is None:
