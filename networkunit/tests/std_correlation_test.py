@@ -1,6 +1,6 @@
 from networkunit.tests.correlation_test import correlation_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
-from networkunit.utils import use_prediction_cache, parallelize
+from networkunit.utils import use_cache, parallelize
 import numpy as np
 
 class std_correlation_test(correlation_test):
@@ -29,7 +29,7 @@ class std_correlation_test(correlation_test):
 
     required_capabilities = (ProducesSpikeTrains, )
 
-    @use_prediction_cache
+    @use_cache
     def generate_prediction(self, model):
         lists_of_spiketrains = model.produce_grouped_spiketrains(**self.params)
 

@@ -1,24 +1,27 @@
 import inspect
+import functools
 from elephant.parallel import SingleProcess
 
-
-def use_prediction_cache(generate_prediction_func=None, hash_key=None):
+def use_cache(original_function=None, cache_key_param=None):
     """
-    Decorator for the `generate_prediction()` function of the tests, handles
+    Decorator in prarticular for the `generate_prediction()` function of the tests, handles
     cached prediction loading, parameter update and prediction saving.
     Optionally, a hash key can be passed to the decorator as name for the cache,
     e.g. for using a shared cache for redundant calculations on the same model
-    across tests; if hash_key is None, the hash id of the test is used. 
+    across tests; if hash_key is None, the hash id of the test is used.
     """
 
     def _decorate(function):
 
         @functools.wraps(function)
         def wrapper(self, model):
+            cache_key=None
+            if cache_key_param:
+                cache_key = self.params[cache_key_param]
 
             # Check if predictions were already calculated
-            prediction = self.get_prediction(model=model,
-                                             key=hash_key)
+            prediction = self.get_cache(model=model,
+                                        key=cache_key)
 
             # If any parameter was specified by the user in the generate_prediction
             # function the predictions are recalculated
@@ -26,16 +29,16 @@ def use_prediction_cache(generate_prediction_func=None, hash_key=None):
 
                 # Generate and save prediction
                 prediction = function(self, model=model)
-                self.set_prediction(model=model,
-                                    prediction=prediction,
-                                    key=hash_key)
+                self.set_cache(model=model,
+                               prediction=prediction,
+                               key=cache_key)
 
             return prediction
 
         return wrapper
 
-    if generate_prediction_func:
-        return _decorate(generate_prediction_func)
+    if original_function:
+        return _decorate(original_function)
     else:
         return _decorate
 

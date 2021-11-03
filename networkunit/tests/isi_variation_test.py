@@ -1,7 +1,7 @@
 from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 from elephant.statistics import isi, lv, cv2, lvr
-from networkunit.utils import use_prediction_cache, filter_valid_params, parallelize
+from networkunit.utils import use_cache, filter_valid_params, parallelize
 import numpy as np
 
 
@@ -23,7 +23,7 @@ class isi_variation_test(two_sample_test):
                       'variation_measure': 'lvr',
                       'with_nan': True}
 
-    @use_prediction_cache
+    @use_cache
     def generate_prediction(self, model):
         if self.params['variation_measure'] not in ['isi', 'cv', 'lv', 'lvr']:
             raise ValueError('Variation measure not known.')

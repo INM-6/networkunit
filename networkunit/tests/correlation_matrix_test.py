@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 from copy import copy
-from networkunit.utils import use_prediction_cache
+from networkunit.utils import use_cache
 
 
 class correlation_matrix_test(correlation_test):
@@ -54,7 +54,7 @@ class correlation_matrix_test(correlation_test):
                       'cluster_method': 'ward',
                       'cluster_matrix': False}
 
-    @use_prediction_cache
+    @use_cache
     def generate_prediction(self, model):
         spiketrains = model.produce_spiketrains(**self.params)
         cc_matrix = self.generate_cc_matrix(spiketrains=spiketrains)

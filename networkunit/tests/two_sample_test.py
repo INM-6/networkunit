@@ -2,7 +2,7 @@ import sciunit
 import seaborn as sns
 from uuid import uuid4
 from networkunit.plots.sample_histogram import sample_histogram
-from networkunit.utils import use_prediction_cache
+from networkunit.utils import use_cache
 from elephant.parallel import SingleProcess
 
 
@@ -24,7 +24,7 @@ class two_sample_test(sciunit.Test):
         self.test_hash = uuid4().hex
         super(two_sample_test, self).__init__(observation, name=name, **params)
 
-    @use_prediction_cache
+    @use_cache
     def generate_prediction(self, model):
         """
         To be overwritten in child class. The following example code
@@ -41,9 +41,11 @@ class two_sample_test(sciunit.Test):
         score = self.score_type.compute(observation, prediction, **self.params)
         return score
 
-    def get_prediction(self, model, key=None):
+    def get_cache(self, model, key=None):
         if key is None:
             key = self.test_hash
+        elif not key:
+            return None
         prediction = None
         if hasattr(model, 'backend'):
             if model._backend.use_memory_cache:
@@ -52,9 +54,11 @@ class two_sample_test(sciunit.Test):
                 prediction = model._backend.get_disk_cache(key=key)
         return prediction
 
-    def set_prediction(self, model, prediction, key=None):
+    def set_cache(self, model, prediction, key=None):
         if key is None:
             key = self.test_hash
+        elif not key:
+            return False
         if hasattr(model, 'backend'):
             if model._backend.use_memory_cache:
                 model._backend.set_memory_cache(prediction, key=key)

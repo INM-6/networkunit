@@ -1,6 +1,6 @@
 from networkunit.tests.power_spectrum_test import power_spectrum_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
-from networkunit.utils import use_prediction_cache, parallelize
+from networkunit.utils import use_cache, parallelize
 from elephant.statistics import time_histogram
 from elephant.spectral import welch_psd
 from elephant.signal_processing import zscore
@@ -22,7 +22,7 @@ class freqband_power_test(power_spectrum_test):
                       'lowpass_freq': 20*pq.Hz,
                       }
 
-    @use_prediction_cache
+    @use_cache
     def generate_prediction(self, model):
         spiketrains_list = model.produce_grouped_spiketrains(**self.params)
 

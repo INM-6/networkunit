@@ -5,7 +5,7 @@ import seaborn as sns
 import numpy as np
 from copy import copy
 import re
-from networkunit.utils import use_prediction_cache
+from networkunit.utils import use_cache
 
 
 class graph_centrality_helperclass(sciunit.Test):
@@ -31,7 +31,7 @@ class graph_centrality_helperclass(sciunit.Test):
 
     # ToDo: fix parameter handling here
 
-    @use_prediction_cache
+    @use_cache
     def generate_prediction(self, model):
         if 'graph_measure' not in self.params:
             raise ValueError('No graph_measure set!')
@@ -40,10 +40,10 @@ class graph_centrality_helperclass(sciunit.Test):
         self.prediction_dim = 2
         N = len(matrix)
 
-        G = self.get_prediction(model, key=self.test_hash + '_graph')
+        G = self.get_cache(model, key=self.test_hash + '_graph')
         if G is None:
             G = self.build_graph(matrix)
-            self.set_prediction(model, G, key=self.test_hash + '_graph')
+            self.set_cache(model, G, key=self.test_hash + '_graph')
 
         measure = self.params['graph_measure']
         if measure == 'degree_strength':

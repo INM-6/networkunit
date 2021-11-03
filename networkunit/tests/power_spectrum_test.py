@@ -1,6 +1,6 @@
 from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
-from networkunit.utils import use_prediction_cache, filter_valid_params, parallelize
+from networkunit.utils import use_cache, filter_valid_params, parallelize
 from elephant.statistics import time_histogram
 from elephant.spectral import welch_psd
 from elephant.signal_processing import zscore
@@ -25,7 +25,7 @@ class power_spectrum_test(two_sample_test):
                       'psd_precision': 0.0001
                       }
 
-    @use_prediction_cache
+    @use_cache
     def generate_prediction(self, model):
         spiketrains_list = model.produce_grouped_spiketrains(**self.params)
 

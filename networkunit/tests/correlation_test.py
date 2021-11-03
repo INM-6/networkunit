@@ -5,7 +5,7 @@ import numpy as np
 from quantities import ms
 from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
-from networkunit.utils import filter_valid_params, parallelize
+from networkunit.utils import filter_valid_params, parallelize, use_cache
 
 
 
@@ -34,6 +34,7 @@ class correlation_test(two_sample_test):
     required_capabilities = (ProducesSpikeTrains, )
 
     default_params = {**two_sample_test.default_params,
+                      'correlation_cache_key': False,
                       'bin_size': 2*ms,
                       'nan_to_num': False,
                       'corrcoef_norm': True}
@@ -46,9 +47,8 @@ class correlation_test(two_sample_test):
         return cc_matrix[idx]
 
 
-    @use_prediction_cache(hash_key=self.params['correlation_cache_hash'])
+    @use_cache(cache_key=self.params['correlation_cache_key'])
     def generate_cc_matrix(self, spiketrains=None, model=None):
-        # Todo: use custom cache
         if spiketrains is None:
             if model is None:
                 raise ValueError('generate_cc_matrix needs either '
@@ -62,6 +62,6 @@ class correlation_test(two_sample_test):
         with filter_valid_params(correlation_coefficient) as _corrcoef:
             cc_matrix = _corrcoef(binned_sts, **self.params)
 
-        if 'nan_to_num' in self. params and self.params['nan_to_num']:
+        if self.params['nan_to_num']:
             cc_matrix = np.nan_to_num(cc_matrix)
         return cc_matrix
