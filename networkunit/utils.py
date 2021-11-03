@@ -14,7 +14,7 @@ def use_cache(original_function=None, cache_key_param=None):
     def _decorate(function):
 
         @functools.wraps(function)
-        def wrapper(self, model):
+        def wrapper(self, model, **kwargs):
             cache_key=None
             if cache_key_param:
                 cache_key = self.params[cache_key_param]
@@ -28,7 +28,7 @@ def use_cache(original_function=None, cache_key_param=None):
             if prediction is None:
 
                 # Generate and save prediction
-                prediction = function(self, model=model)
+                prediction = function(self, model=model, **kwargs)
                 self.set_cache(model=model,
                                prediction=prediction,
                                key=cache_key)

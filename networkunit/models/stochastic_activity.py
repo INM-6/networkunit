@@ -1,5 +1,6 @@
 import sciunit
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
+from sciunit.models import RunnableModel
 import numpy as np
 from elephant.spike_train_generation import single_interaction_process as SIP
 from elephant.spike_train_generation import compound_poisson_process as CPP
@@ -11,7 +12,7 @@ import random
 from .backends import available_backends
 
 
-class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
+class stochastic_activity(RunnableModel, ProducesSpikeTrains):
     """
     Model class which is able to generate stochastic spiking data
 
@@ -58,31 +59,32 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
     ----------
 
     """
-    params = {'size': 100,
-              't_start': 0 * ms,
-              't_stop': 10000 * ms,
-              'rate': 10 * Hz,
-              'statistic': 'poisson',
-              'correlation_method': 'CPP', # 'spatio-temporal', 'pairwise_equivalent'
-              'expected_bin_size': 2 * ms,
-              'correlations': 0.,
-              'assembly_sizes': [],
-              'bkgr_correlation': 0.,
-              'max_pattern_length':100 * ms,
-              'shuffle': False,
-              'shuffle_seed': None}
+    default_params = {'size': 100,
+                      't_start': 0 * ms,
+                      't_stop': 10000 * ms,
+                      'rate': 10 * Hz,
+                      'statistic': 'poisson',
+                      'correlation_method': 'CPP', # 'spatio-temporal', 'pairwise_equivalent'
+                      'expected_bin_size': 2 * ms,
+                      'correlations': 0.,
+                      'assembly_sizes': [],
+                      'bkgr_correlation': 0.,
+                      'max_pattern_length':100 * ms,
+                      'shuffle': False,
+                      'shuffle_seed': None}
 
-    def __init__(self, name=None, backend='storage', **params):
-        self.params.update(params)
+    def __init__(self, name=None, backend='storage', attrs=None, **params):
+        self.params = {**default_params, **params}
         # updating params is only for testing reasons
         # for usage in the validation framework, the params need to be fixed!
         self.__dict__.update(self.params)
-        self.check_input()
-        super(stochastic_activity, self).__init__(name=name, **self.params)
-        if backend is not None:
-            self.set_backend(backend)
+        super(stochastic_activity, self).__init__(name=name,
+                                                  backend=backend,
+                                                  attrs=attrs,
+                                                  **self.params)
 
-    def check_input(self):
+
+    def check_params(self):
         if not type(self.correlations) == list:
             self.correlations = [self.correlations] * len(self.assembly_sizes)
         elif len(self.correlations) == 1:
@@ -91,45 +93,15 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
             self.assembly_sizes = []
         pass
 
+
+    def load(self):
+        return self.generate_spiketrains()
+
+
     def produce_spiketrains(self, **kwargs):
-        if not hasattr(self, 'spiketrains'):
-            self.spiketrains = self.generate_spiketrains(**kwargs)
+        self.spiketrains = self._backend.backend_run()
         return self.spiketrains
 
-    def get_backend(self):
-        """Return the simulation backend."""
-        return self._backend
-
-    def set_backend(self, backend):
-        """Set the simulation backend."""
-        if isinstance(backend, str):
-            name = backend
-            args = []
-            kwargs = {}
-        elif isinstance(backend, (tuple, list)):
-            name = ''
-            args = []
-            kwargs = {}
-            for i in range(len(backend)):
-                if i == 0:
-                    name = backend[i]
-                else:
-                    if isinstance(backend[i], dict):
-                        kwargs.update(backend[i])
-                    else:
-                        args += backend[i]
-        else:
-            raise TypeError("Backend must be string, tuple, or list")
-        if name in available_backends:
-            self.backend = name
-            self._backend = available_backends[name]()
-        elif name is None:
-            # The base class should not be called.
-            raise Exception(("A backend must be selected"))
-        else:
-            raise Exception("Backend %s not found in backends" % name)
-        self._backend.model = self
-        self._backend.init_backend(*args, **kwargs)
 
     def generate_spiketrains(self, **kwargs):
         spiketrains = [None] * self.size
