@@ -1,6 +1,5 @@
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 from sciunit.models import RunnableModel
-from networkunit.models.loaded_data import loaded_data
 from networkunit.plots.rasterplot import rasterplot
 from neo.core import SpikeTrain
 from copy import copy
