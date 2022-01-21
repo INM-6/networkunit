@@ -1,6 +1,6 @@
 import numpy as np
 from networkunit.tests.two_sample_test import two_sample_test
-from networkunit.utils import use_cache
+from networkunit.utils import use_cache, parallelize
 
 class joint_test(two_sample_test):
     """
@@ -74,7 +74,7 @@ class joint_test(two_sample_test):
         def generate_test_prediction(test_inst):
             return np.array(test_inst.generate_prediction(model))
 
-        with parallelize(generate_test_prediction) as parallel_test_predictions:
+        with parallelize(generate_test_prediction, test_class=self) as parallel_test_predictions:
             prediction = parallel_test_predictions(self.test_inst)
 
         it = iter(prediction)
