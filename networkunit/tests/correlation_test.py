@@ -48,13 +48,19 @@ class correlation_test(two_sample_test):
 
 
     @use_cache(cache_key_param='correlation_cache_key')
-    def generate_cc_matrix(self, spiketrains=None, model=None):
+    def generate_cc_matrix(self, model, spiketrains=None):
         if spiketrains is None:
-            if model is None:
-                raise ValueError('generate_cc_matrix needs either '
-                                 'spiketrains or model as input!')
             spiketrains = model.produce_spiketrains()
 
+        if isinstance(spiketrains[0], list):
+            with parallelize(self.calculate_cc_matrix, self) as calc:
+                cc_matrix = calc(spiketrains)
+        else:
+            cc_matrix = self.calculate_cc_matrix(spiketrains)
+
+        return cc_matrix
+
+    def calculate_cc_matrix(self, spiketrains):
         with filter_valid_params(BinnedSpikeTrain) as _BinnedSpikeTrain:
             binned_sts = _BinnedSpikeTrain(spiketrains, **self.params)
 
@@ -64,4 +70,5 @@ class correlation_test(two_sample_test):
 
         if self.params['nan_to_num']:
             cc_matrix = np.nan_to_num(cc_matrix)
+
         return cc_matrix

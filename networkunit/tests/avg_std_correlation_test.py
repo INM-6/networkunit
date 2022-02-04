@@ -3,8 +3,7 @@ from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 from networkunit.utils import use_cache, parallelize
 import numpy as np
 
-
-class average_correlation_test(correlation_test):
+class avg_std_correlation_test(correlation_test):
     """
     Abstract test class to compare correlation matrices of a set of
     spiking neurons in a network.
@@ -30,27 +29,31 @@ class average_correlation_test(correlation_test):
 
     required_capabilities = (ProducesSpikeTrains, )
 
+    default_params = {**correlation_test.default_params,
+                      'statistic': 'avg'}
+
     @use_cache
     def generate_prediction(self, model):
-        lists_of_spiketrains = model.produce_grouped_spiketrains(**self.params)
 
-        with parallelize(self.calc_avg_correlations, self) as avg_corr_parallel:
-            avg_correlations = avg_corr_parallel(lists_of_spiketrains)
+        spiketrains_lst = model.produce_grouped_spiketrains(**self.params)
 
-        avg_correlations = np.concatenate(avg_correlations)
+        cc_matrix_lst = self.generate_cc_matrix(model, spiketrains=spiketrains_lst)
+
+        predictions = []
+        for cc_matrix in cc_matrix_lst:
+            np.fill_diagonal(cc_matrix, np.nan)
+            avg_corr = np.nansum(cc_matrix, axis=0) / (cc_matrix.shape[0] - 1)
+            if self.params['statistic'] == 'std':
+                std_corr = np.sqrt(np.nansum(
+                    (cc_matrix-avg_corr[np.newaxis, :])**2, axis=0) /
+                    (cc_matrix.shape[0] - 1))
+                predictions.append(std_corr)
+            elif self.params['statistic'] == 'avg':
+                predictions.append(avg_corr)
+
+        predictions = np.concatenate(predictions)
 
         if self.params['nan_to_num']:
-            avg_correlations = np.nan_to_num(avg_correlations)
+            predictions = np.nan_to_num(predictions)
 
-        return avg_correlations
-
-
-    def calc_avg_correlations(self, spiketrains):
-        if len(spiketrains) == 1:
-            avg_corr = np.array([np.nan])
-        else:
-            cc_matrix = self.generate_cc_matrix(spiketrains)
-            np.fill_diagonal(cc_matrix, np.nan)
-
-            avg_corr = np.nansum(cc_matrix, axis=0) / len(spiketrains)
-        return avg_corr
+        return predictions
