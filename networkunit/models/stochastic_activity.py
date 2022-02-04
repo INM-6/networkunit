@@ -74,14 +74,13 @@ class stochastic_activity(RunnableModel, ProducesSpikeTrains):
                       'shuffle_seed': None}
 
     def __init__(self, name=None, backend='storage', attrs=None, **params):
-        self.params = {**default_params, **params}
         # updating params is only for testing reasons
         # for usage in the validation framework, the params need to be fixed!
         self.__dict__.update(self.params)
         super(stochastic_activity, self).__init__(name=name,
                                                   backend=backend,
-                                                  attrs=attrs,
-                                                  **self.params)
+                                                  attrs=attrs)
+        self.params = {**self.default_params, **params}
 
 
     def check_params(self):

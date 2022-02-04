@@ -15,7 +15,7 @@ def use_cache(original_function=None, cache_key_param=None):
 
         @functools.wraps(function)
         def wrapper(self, model, **kwargs):
-            cache_key=None
+            cache_key = None
             if cache_key_param:
                 cache_key = self.params[cache_key_param]
 
@@ -88,7 +88,7 @@ class parallelize:
         self.executor = executor
         self.func = func
 
-        if test_class is not None and'parallel_executor' in test_class.params:
+        if test_class is not None and 'parallel_executor' in test_class.params:
             self.executor = test_class.params['parallel_executor']
 
     def __enter__(self):

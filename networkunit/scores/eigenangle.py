@@ -9,7 +9,6 @@ import math
 from networkunit.scores import to_precision
 import matplotlib.mlab as mlab
 import scipy as sc
-from scipy.integrate import quad
 import scipy.interpolate as interpolate
 
 
