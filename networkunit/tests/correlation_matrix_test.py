@@ -57,7 +57,7 @@ class correlation_matrix_test(correlation_test):
     @use_cache
     def generate_prediction(self, model):
         spiketrains = model.produce_spiketrains(**self.params)
-        cc_matrix = self.generate_cc_matrix(spiketrains=spiketrains)
+        cc_matrix = self.generate_cc_matrix(model, spiketrains=spiketrains)
 
         if 'cluster_matrix' in self.params and self.params['cluster_matrix']:
             cc_matrix, cluster_order = self.cluster_matrix(cc_matrix)
