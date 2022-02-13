@@ -29,10 +29,10 @@ class loaded_spiketrains(RunnableModel, ProducesSpikeTrains):
             class attributes to be stored in self.params
         """
 
-        self.params = {**self.default_params, **params}
         super(loaded_spiketrains, self).__init__(name=name,
                                                  backend=backend,
                                                  attrs=attrs)
+        self.params = {**self.default_params, **params}
 
 
     def load(self):

@@ -1,4 +1,5 @@
 from networkunit.tests.correlation_test import correlation_test
+from networkunit.tests.correlation_test import correlation_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 from networkunit.utils import use_cache
 
@@ -28,6 +29,9 @@ class correlation_dist_test(correlation_test):
     """
 
     required_capabilities = (ProducesSpikeTrains, )
+
+    default_params = {**correlation_test.default_params,
+                      }
 
     @use_cache
     def generate_prediction(self, model):

@@ -7,10 +7,10 @@ class storage(Backend):
     def _backend_run(self):
         try:
             data = self.model.load()
-        except e:
+        except Exception as e:
+            print(e)
             raise NotImplementedError('Hint: the model class must define a '
                                       'load() function!')
-            print(e)
         return data
 
     def load_model(self) -> None:
