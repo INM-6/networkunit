@@ -76,14 +76,15 @@ class stochastic_activity(RunnableModel, ProducesSpikeTrains):
     def __init__(self, name=None, backend='storage', attrs=None, **params):
         # updating params is only for testing reasons
         # for usage in the validation framework, the params need to be fixed!
-        self.__dict__.update(self.params)
         super(stochastic_activity, self).__init__(name=name,
                                                   backend=backend,
                                                   attrs=attrs)
         self.params = {**self.default_params, **params}
+        self.__dict__.update(self.params)
+        self._check_params()
 
 
-    def check_params(self):
+    def _check_params(self):
         if not type(self.correlations) == list:
             self.correlations = [self.correlations] * len(self.assembly_sizes)
         elif len(self.correlations) == 1:
