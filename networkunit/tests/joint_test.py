@@ -1,6 +1,7 @@
 import numpy as np
 from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.utils import use_cache, parallelize
+from copy import copy
 
 class joint_test(two_sample_test):
     """
@@ -58,17 +59,11 @@ class joint_test(two_sample_test):
         self.test_inst = []
 
         for test_class, test_params in zip(self.test_list, self.test_params):
-            if 'name' in test_params.keys():
-                test_name = test_params.pop('name')
-            else:
-                test_name = None
-
             # Params priority order:
             # test params > joint-test params > joint-test default params
             # > test default params
             self.test_inst.append(
                 test_class(observation=self.observation,
-                           name=test_name,
                            **{**self.params, **test_params}))
 
         def generate_test_prediction(test_inst):
