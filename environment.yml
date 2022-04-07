@@ -3,6 +3,7 @@ channels:
   - damianavila82
   - defaults
 dependencies:
+  - python==3.6.8
   - rise
   - pip
   - pip:
@@ -21,5 +22,5 @@ dependencies:
     - neo==0.7.1
     - sciunit==0.2.1
     - rdflib==4.2.2
-    - odml==1.4.2
+    - odml==1.4.2.1
     - networkunit==0.1.1
