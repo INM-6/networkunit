@@ -6,7 +6,8 @@
     * no class function should accept arguments that override class parameters
     * default_params test class attribute are inherited by using `default_params = {**parent.default_params, 'new_param':0}`
 * caching
-    * improved caching of intermediate test- and simulation results
+    * improved caching of intermediate test- and simulation results, e.g. for the correlation matrix
+    * improving backend definitions
 * parallelization
     * automatic parallelization for loops over spiketrains or lists of spiketrains. To use set params['parallel executor'] to ProcessPoolExecutor(), MPIPoolExecutor(), or MPICommExecutor() [see elephant ref]
 * various bug fixes
@@ -27,14 +28,18 @@
     * Eigenangles
 
 ### ToDo:
-* apply parallelization
-    * parallelize correlation matrix calculation??
-    * parallelize joint test
-* clean up parameter handling and defaults in all tests (e.g. graph)
-* unit tests
-* more example notebooks (combine with unit tests?)
 * merge logic of correlation and covariance tests (avg, std tests)
 * consistent handling and setting of correlation/covariance diagonal
     * aligning avg_correlation, and std_correlation test
-* how to cache the correlation matrix
 * should prediction be quantities?
+* clean up parameter handling and defaults in all tests (e.g. graph)
+* more example notebooks (combine with unit tests?)
+* unit tests
+* update readmes
+
+#### SciUnit PR
+* create helper function `get_cache` and `set_cache` to handle both disk and memory
+* create decorator to use cached results from function
+* create a decorated `_generate_prediction` function that interfaces between `judge` and `generate_prediction`
+    * calling `generate_prediction` in any test would still recalculate, only `_generate_prediction` uses the cache
+* add solution for models without backend
