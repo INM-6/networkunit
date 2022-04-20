@@ -93,15 +93,15 @@ class stochastic_activity(RunnableModel, ProducesSpikeTrains):
             self.assembly_sizes = []
         pass
 
-
-    def load(self):
-        return self.generate_spiketrains()
-
+    def load(self, model=None):
+        if hasattr(self, 'spiketrains'):
+            return self.spiketrains
+        else:
+            return self.generate_spiketrains()
 
     def produce_spiketrains(self, **kwargs):
         self.spiketrains = self._backend.backend_run()
         return self.spiketrains
-
 
     def generate_spiketrains(self, **kwargs):
         spiketrains = [None] * self.size

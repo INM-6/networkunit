@@ -1,6 +1,6 @@
 from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
-from elephant.statistics import isi, lv, cv2, lvr
+from elephant.statistics import isi, lv, cv, cv2, lvr
 from networkunit.utils import use_cache, filter_valid_params, parallelize
 import numpy as np
 

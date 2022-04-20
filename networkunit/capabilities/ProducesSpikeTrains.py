@@ -11,4 +11,4 @@ class ProducesSpikeTrains(sciunit.Capability):
         # self.unimplemented()
 
     def produce_grouped_spiketrains(self, **kwargs):
-        return list(self.produce_spiketrains(**kwargs))
+        return [self.produce_spiketrains(**kwargs)]

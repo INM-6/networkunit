@@ -45,7 +45,7 @@ class joint_test(two_sample_test):
         grouped_sts = model.produce_grouped_spiketrains()
         flat_sts = [st for st_list in grouped_sts for st in st_list]
         for st1, st2 in zip(sts, flat_sts):
-            if not np.allclose(st1.times, st2.times):
+            if not np.allclose(st1.times.magnitude, st2.times.magnitude):
                 raise ValueError('flattened grouped spiketrains and spiketrains must have the same ordering!')
         del grouped_sts
         del flat_sts
