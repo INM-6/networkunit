@@ -12,7 +12,7 @@ class wasserstein_distance(sciunit.Score):
     _worst = np.nan_to_num(np.inf)
 
     @classmethod
-    def compute(self, observation, prediction, norm='obsv', **kwargs):
+    def compute(self, observation, prediction, norm='both', **kwargs):
         """
         Calculates the Wasserstein distance (Earth mover's distance) between
         two point clouds. Uses the opencv implementation in the backend and can
@@ -26,7 +26,6 @@ class wasserstein_distance(sciunit.Score):
             * If 'pred', then the prediction mean and std are used
             * If 'both', then the observation and prediction are concatenated
             and the mean and std of the full array are used for normalization.
-
         """
         if type(observation) == list:
             observation = np.array(observation).reshape((1,len(observation)))
@@ -61,6 +60,7 @@ class wasserstein_distance(sciunit.Score):
                 obsv_pred = np.concatenate((observation, prediction), axis=1)
                 avg = obsv_pred.mean(axis=1).reshape(ndim, 1)
                 std = obsv_pred.std(axis=1).reshape(ndim, 1)
+
             observation = (observation - avg) / std
             prediction = (prediction - avg) / std
 
