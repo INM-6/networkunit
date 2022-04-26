@@ -28,6 +28,11 @@ class wasserstein_distance(sciunit.Score):
             and the mean and std of the full array are used for normalization.
 
         """
+        if type(observation) == list:
+            observation = np.array(observation).reshape((1,len(observation)))
+        if type(prediction) == list:
+            prediction = np.array(prediction).reshape((1,len(prediction)))
+
         if observation.shape[0] == prediction.shape[0]:
             ndim = observation.shape[0]
         else:
