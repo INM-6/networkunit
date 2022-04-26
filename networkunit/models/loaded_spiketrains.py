@@ -32,7 +32,9 @@ class loaded_spiketrains(RunnableModel, ProducesSpikeTrains):
         super(loaded_spiketrains, self).__init__(name=name,
                                                  backend=backend,
                                                  attrs=attrs)
-        self.params = {**self.default_params, **params}
+        if not hasattr(self, params):
+            self.params = {}
+        self.params = {**self.default_params, **self.params, **params}
 
 
     def load(self):
