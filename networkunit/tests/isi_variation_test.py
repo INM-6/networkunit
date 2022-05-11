@@ -14,6 +14,7 @@ class isi_variation_test(two_sample_test):
     variation_measure: 'isi', 'cv', 'lv', 'lvr' (default)
         'isi' - Compares the inter-spike intervals
         'cv'  - Compares the coefficients of variation
+        'cv2'  - Compares the coefficients of variation
         'lv'  - Compares the local coefficients of variation
         'lvr'  - Compares the revised local coefficients of variation
     """
@@ -25,7 +26,7 @@ class isi_variation_test(two_sample_test):
 
     @use_cache
     def generate_prediction(self, model):
-        if self.params['variation_measure'] not in ['isi', 'cv', 'lv', 'lvr']:
+        if self.params['variation_measure'] not in ['isi', 'cv', 'cv2', 'lv', 'lvr']:
             raise ValueError('Variation measure not known.')
 
         spiketrains = model.produce_spiketrains(**self.params)
