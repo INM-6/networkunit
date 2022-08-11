@@ -29,12 +29,16 @@ class loaded_spiketrains(RunnableModel, ProducesSpikeTrains):
             class attributes to be stored in self.params
         """
 
+        if not hasattr(self, 'default_params'):
+            self.default_params = {}
+        if not hasattr(self, 'params') or self.params is None:
+            self.params = {}
+        params = {**self.default_params, **self.params, **params}
+
         super(loaded_spiketrains, self).__init__(name=name,
                                                  backend=backend,
-                                                 attrs=attrs)
-        if not hasattr(self, 'params'):
-            self.params = {}
-        self.params = {**self.default_params, **self.params, **params}
+                                                 attrs=attrs,
+                                                 **params)
 
 
     def load(self):

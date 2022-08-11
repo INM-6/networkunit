@@ -76,13 +76,17 @@ class stochastic_activity(RunnableModel, ProducesSpikeTrains):
     def __init__(self, name=None, backend='storage', attrs=None, **params):
         # updating params is only for testing reasons
         # for usage in the validation framework, the params need to be fixed!
+
+        if not hasattr(self, 'default_params'):
+            self.default_params = {}
+        if not hasattr(self, 'params') or self.params is None:
+            self.params = {}
+        params = {**self.default_params, **self.params, **params}
+
         super(stochastic_activity, self).__init__(name=name,
                                                   backend=backend,
-                                                  attrs=attrs)
-        self.params = {**self.default_params, **params}
-        self.__dict__.update(self.params)
-        self._check_params()
-
+                                                  attrs=attrs,
+                                                  **params)
 
     def _check_params(self):
         if not type(self.correlations) == list:
