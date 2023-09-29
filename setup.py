@@ -11,7 +11,7 @@ extras_require = {}
 
 setup(
     name="networkunit",
-    version='0.1.2',
+    version='0.2.0',
     packages=['networkunit', 'figures', 'examples'],
     package_data={'networkunit':[
         os.path.join('tests','*.py'),
@@ -19,7 +19,8 @@ setup(
         os.path.join('models/backends','*.py'),
         os.path.join('capabilities','*.py'),
         os.path.join('scores','*.py'),
-        os.path.join('plots','*.py')],
+        os.path.join('plots','*.py'),
+        'VERSION'],
         'figures':['*.png'],
         'examples':['*.py', '*.ipynb']
         },

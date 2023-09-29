@@ -1,9 +1,9 @@
 import sciunit
-import matplotlib.pyplot as plt
 import seaborn as sns
-import numpy as np
 from uuid import uuid4
-from networkunit.plots.plot_sample_histogram import sample_histogram
+from networkunit.plots.sample_histogram import sample_histogram
+from networkunit.utils import use_cache
+from elephant.parallel import SingleProcess
 
 
 class two_sample_test(sciunit.Test):
@@ -17,52 +17,56 @@ class two_sample_test(sciunit.Test):
                                               # capability in child class
                                               # i.e ProduceCovariances
 
+    default_params = {**sciunit.Test.default_params,
+                      'parallel_executor': SingleProcess()}
+
     def __init__(self, observation=None, name=None, **params):
         self.test_hash = uuid4().hex
-        if hasattr(self, 'params'):
-            self.default_params = self.params
-        super(two_sample_test,self).__init__(observation, name=name, **params)
+        super(two_sample_test, self).__init__(observation, name=name, **params)
 
-    def generate_prediction(self, model, **kwargs):
+    @use_cache
+    def generate_prediction(self, model):
         """
         To be overwritten in child class. The following example code
         should be reused to enable cache storage and prevent multiple
         calculation.
         """
-        if kwargs:
-            self.params.update(kwargs)
-        prediction = self.get_prediction(model)
-        if prediction is None:
-            #############################
-            # calculate prediction here #
-            raise NotImplementedError("")
-            #############################
-            self.set_prediction(model, prediction)
+        #############################
+        # calculate prediction here #
+        raise NotImplementedError("")
+        #############################
         return prediction
 
     def compute_score(self, observation, prediction):
         score = self.score_type.compute(observation, prediction, **self.params)
         return score
 
-    def get_prediction(self, model, key=None):
+    def get_cache(self, model, key=None):
         if key is None:
             key = self.test_hash
+        elif not key:
+            return None
         prediction = None
         if hasattr(model, 'backend'):
             if model._backend.use_memory_cache:
                 prediction = model._backend.get_memory_cache(key=key)
-            if model._backend.use_disk_cache:
+            elif model._backend.use_disk_cache:
                 prediction = model._backend.get_disk_cache(key=key)
         return prediction
 
-    def set_prediction(self, model, prediction, key=None):
+    def set_cache(self, model, prediction, key=None):
         if key is None:
             key = self.test_hash
+        elif not key:
+            return False
         if hasattr(model, 'backend'):
             if model._backend.use_memory_cache:
                 model._backend.set_memory_cache(prediction, key=key)
-            if model._backend.use_disk_cache:
+                return True
+            elif model._backend.use_disk_cache:
                 model._backend.set_disk_cache(prediction, key=key)
+                return True
+        return False
 
     def _create_plotting_samples(self, model1=None, model2=None, palette=None):
         samples = []
@@ -84,7 +88,7 @@ class two_sample_test(sciunit.Test):
                 except:
                     palette = palette + [sns.color_palette()[0]]
         if model1 is not None:
-            samples += [self.generate_prediction(model1, **self.params)]
+            samples += [self.generate_prediction(model1)]
             names += [model1.name]
             if fill_palette:
                 try:
@@ -92,7 +96,7 @@ class two_sample_test(sciunit.Test):
                 except:
                     palette = palette + [sns.color_palette()[len(samples)-1]]
         if model2 is not None:
-            samples += [self.generate_prediction(model2, **self.params)]
+            samples += [self.generate_prediction(model2)]
             names += [model2.name]
             if fill_palette:
                 try:
@@ -103,9 +107,9 @@ class two_sample_test(sciunit.Test):
         return samples, palette, names
 
     def visualize_samples(self, model1=None, model2=None, ax=None, bins=100,
-                         palette=None, density=True,
-                         sample_names=['observation', 'prediction'],
-                         var_name='Measured Parameter', **kwargs):
+                          palette=None, density=True,
+                          sample_names=['observation', 'prediction'],
+                          var_name='Measured Parameter', **kwargs):
 
         samples, palette, names = self._create_plotting_samples(model1=model1,
                                                          model2=model2,
@@ -134,7 +138,8 @@ class two_sample_test(sciunit.Test):
         When there is a specific visualization function called plot() for the
         given score type, score_type.plot() is called;
         else call visualize_sample()
-        Parameters
+
+        Parameters:
         ----------
         ax : matplotlib axis
             If no axis is passed a new figure is created.

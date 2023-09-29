@@ -2,7 +2,6 @@ import numpy as np
 from scipy.stats import mannwhitneyu, rankdata
 from pandas import DataFrame
 import matplotlib.pyplot as plt
-import matplotlib.colors as colors
 import seaborn as sns
 import sciunit
 from networkunit.scores import to_precision
@@ -37,7 +36,7 @@ class mwu_statistic(sciunit.Score):
         if excl_nan:
             sample1 = np.array(sample1)[np.isfinite(sample1)]
             sample2 = np.array(sample2)[np.isfinite(sample2)]
-        final_len =  np.array([len(sample1), len(sample2)])
+        final_len = np.array([len(sample1), len(sample2)])
         discard = sum(init_len-final_len)
 
         if len(sample1) < 20 or len(sample2) < 20:
@@ -52,7 +51,6 @@ class mwu_statistic(sciunit.Score):
         self.score.discarded_values = discard
         self.score.pvalue = pvalue
         return self.score
-
 
     @classmethod
     def plot(self, sample1, sample2, ax=None, palette=None,

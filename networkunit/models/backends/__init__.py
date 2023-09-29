@@ -7,6 +7,12 @@ except ImportError:
     storage_backend = None
     print('Could not load storage backend')
 
+try:
+    from .nest import NestBackend
+except ImportError:
+    nest_backend = None
+    print('Could not load Nest backend')
+
 available_backends = {x.replace('Backend', ''): cls for x, cls
                       in locals().items()
                       if inspect.isclass(cls) and

@@ -1,16 +1,18 @@
 import sciunit
-from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
+from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
+from sciunit.models import RunnableModel
 import numpy as np
 from elephant.spike_train_generation import single_interaction_process as SIP
 from elephant.spike_train_generation import compound_poisson_process as CPP
 from elephant.spike_train_generation import homogeneous_poisson_process as HPP
 from quantities import ms, Hz, quantity
-from networkunit.plots.plot_rasterplot import rasterplot
+from networkunit.plots.rasterplot import rasterplot
 import neo
 import random
+from .backends import available_backends
 
 
-class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
+class stochastic_activity(RunnableModel, ProducesSpikeTrains):
     """
     Model class which is able to generate stochastic spiking data
 
@@ -36,8 +38,8 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
                                   so that the amount of correlation is equivalent
                                   to a correlated group with parameters
                                   'assembly_sizes' and 'correlations'
-        expected_binsize : quantity
-            Binsize with which correlations are calculated to be able to
+        expected_bin_size : quantity
+            bin_size with which correlations are calculated to be able to
             generate the pairwise equivalent.
         correlations : float, list of floats
             Average correlation for the correlated group(s). Pass a list of
@@ -57,31 +59,36 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
     ----------
 
     """
-    params = {'size': 100,
-              't_start': 0 * ms,
-              't_stop': 10000 * ms,
-              'rate': 10 * Hz,
-              'statistic': 'poisson',
-              'correlation_method': 'CPP', # 'spatio-temporal', 'pairwise_equivalent'
-              'expected_binsize': 2 * ms,
-              'correlations': 0.,
-              'assembly_sizes': [],
-              'bkgr_correlation': 0.,
-              'max_pattern_length':100 * ms,
-              'shuffle': False,
-              'shuffle_seed': None}
+    default_params = {'size': 100,
+                      't_start': 0 * ms,
+                      't_stop': 10000 * ms,
+                      'rate': 10 * Hz,
+                      'statistic': 'poisson',
+                      'correlation_method': 'CPP', # 'spatio-temporal', 'pairwise_equivalent'
+                      'expected_bin_size': 2 * ms,
+                      'correlations': 0.,
+                      'assembly_sizes': [],
+                      'bkgr_correlation': 0.,
+                      'max_pattern_length':100 * ms,
+                      'shuffle': False,
+                      'shuffle_seed': None}
 
-    def __init__(self, name=None, backend='storage', **params):
-        self.params.update(params)
+    def __init__(self, name=None, backend='storage', attrs=None, **params):
         # updating params is only for testing reasons
         # for usage in the validation framework, the params need to be fixed!
-        self.__dict__.update(self.params)
-        self.check_input()
-        super(stochastic_activity, self).__init__(name=name, **self.params)
-        if backend is not None:
-            self.set_backend(backend)
 
-    def check_input(self):
+        if not hasattr(self, 'default_params'):
+            self.default_params = {}
+        if not hasattr(self, 'params') or self.params is None:
+            self.params = {}
+        params = {**self.default_params, **self.params, **params}
+
+        super(stochastic_activity, self).__init__(name=name,
+                                                  backend=backend,
+                                                  attrs=attrs,
+                                                  **params)
+
+    def _check_params(self):
         if not type(self.correlations) == list:
             self.correlations = [self.correlations] * len(self.assembly_sizes)
         elif len(self.correlations) == 1:
@@ -90,27 +97,15 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
             self.assembly_sizes = []
         pass
 
-    def produce_spiketrains(self, **kwargs):
-        if not self.spiketrains:
-            self.spiketrains = self.generate_spiketrains(**kwargs)
-        return self.spiketrains
-
-    def get_backend(self):
-        """Return the simulation backend."""
-        return self._backend
-
-    def set_backend(self, backend):
-        """Set the simulation backend."""
-        if isinstance(backend, str) and backend in available_backends:
-            self.backend = backend
-            self._backend = available_backends[backend]()
-        elif backend is None:
-            # The base class should not be called.
-            raise Exception(("A backend must be selected"))
+    def load(self, model=None):
+        if hasattr(self, 'spiketrains'):
+            return self.spiketrains
         else:
-            raise Exception("Backend %s not found in backends" % name)
-        self._backend.model = self
-        self._backend.init_backend(*args, **kwargs)
+            return self.generate_spiketrains()
+
+    def produce_spiketrains(self, **kwargs):
+        self.spiketrains = self._backend.backend_run()
+        return self.spiketrains
 
     def generate_spiketrains(self, **kwargs):
         spiketrains = [None] * self.size
@@ -166,12 +161,12 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
                                                  A_size=A_size,
                                                  rate=self.rate,
                                                  T=self.t_stop - self.t_start,
-                                                 binsize=self.expected_binsize)
+                                                 bin_size=self.expected_bin_size)
         bkgr_syncprob = self._correlation_to_syncprob(cc=self.bkgr_correlation,
                                                       A_size=2,
                                                       rate=self.rate,
                                                       T=self.t_stop - self.t_start,
-                                                      binsize=self.expected_binsize)
+                                                      bin_size=self.expected_bin_size)
         if self.correlation_method == 'CPP' \
         or self.correlation_method == 'spatio-temporal':
             assembly_sts = self._generate_CPP_assembly(A_size=A_size,
@@ -216,15 +211,15 @@ class stochastic_activity(sciunit.Model, ProducesSpikeTrains):
                                                      t_stop=self.t_stop)
         return shifted_assembly_sts
 
-    def _correlation_to_syncprob(self, cc, A_size, rate, T, binsize):
+    def _correlation_to_syncprob(self, cc, A_size, rate, T, bin_size):
         if A_size < 2:
             raise ValueError
         if cc == 1.:
             return 1.
         if not cc:
             return 0.
-        # m0 = rate * T / (float(T)/float(binsize))
-        m = rate * binsize
+        # m0 = rate * T / (float(T)/float(bin_size))
+        m = rate * bin_size
         if type(m) == quantity.Quantity:
             m = float(m.rescale('dimensionless'))
         A = float(A_size)

@@ -46,6 +46,7 @@ class ks_distance(sciunit.Score):
 
         DKS, pvalue = ks_2samp(sample1, sample2)
         score = ks_distance(DKS)
+        score.distance = DKS
         score.pvalue = pvalue
         score.data_size = [len(sample1), len(sample2)]
         return score

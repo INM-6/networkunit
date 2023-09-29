@@ -1,15 +1,13 @@
-from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
-from networkunit.models.model_loaded_data import loaded_data
-from networkunit.plots.plot_rasterplot import rasterplot
+from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
+from sciunit.models import RunnableModel
+from networkunit.plots.rasterplot import rasterplot
 from neo.core import SpikeTrain
-from neo.io import NeoHdf5IO
 from copy import copy
 import numpy as np
-import os
 import neo
 
 
-class spiketrain_data(loaded_data, ProducesSpikeTrains):
+class loaded_spiketrains(RunnableModel, ProducesSpikeTrains):
     """
     Abstract model class for spiking data.
     It has an example loading routine for hdf files, is able to display the
@@ -18,38 +16,56 @@ class spiketrain_data(loaded_data, ProducesSpikeTrains):
     align_to_0=True, the spiketrains all start from 0s,
     max_subsamplesize=x, only the x first spike trains are used.
     """
-    def load(self, file_path=None, client=None, **kwargs):
-        """
-        Loads spiketrains from a hdf5 file in the neo data format.
 
+    default_params = {'file_path':None}
+
+    def __init__(self, name=None, backend='storage', attrs=None, **params):
+        """
         Parameters
         ----------
-        file_path : string
-            Path to file
-        client :
-            When file is loaded from a collab storage a appropriate client
-            must be provided.
+        name : string
+            Name of model instance
+        **params :
+            class attributes to be stored in self.params
+        """
+
+        if not hasattr(self, 'default_params'):
+            self.default_params = {}
+        if not hasattr(self, 'params') or self.params is None:
+            self.params = {}
+        params = {**self.default_params, **self.params, **params}
+
+        super(loaded_spiketrains, self).__init__(name=name,
+                                                 backend=backend,
+                                                 attrs=attrs,
+                                                 **params)
+
+
+    def load(self):
+        """
+        Loads spiketrains from a .nix file in the neo data format.
+
         Returns :
             List of neo.SpikeTrains
          """
+        file_path = self.params['file_path']
         if file_path is None:
-            file_path = self.file_path
-        if file_path[-2:] != 'h5':
-            raise IOError('file must be in hdf5 file in Neo format')
+            raise ValueError('"file_path" parameter is not set!')
+        if not file_path.endswith('.nix'):
+            raise IOError('file must be in .NIX format')
 
         if client is None:
-            data = NeoHdf5IO(file_path)
+            with neo.NixIO(file_path) as nio:
+                block = nio.read_block()
         else:
             store_path = './' + file_path.split('/')[-1]
             client.download_file(file_path, store_path)
-            data = NeoHdf5IO(store_path)
+            with neo.NixIO(store_path) as nio:
+                block = nio.read_block()
 
-        spiketrains = data.read_block().list_children_by_class(SpikeTrain)
-
-        for i in xrange(len(spiketrains)):
-            spiketrains[i] = spiketrains[i].rescale('ms')
-
+        spiketrains = block.list_children_by_class(SpikeTrain)
         return spiketrains
+
 
     def _align_to_zero(self, spiketrains=None):
         if spiketrains is None:
@@ -67,6 +83,7 @@ class spiketrain_data(loaded_data, ProducesSpikeTrains):
             spiketrains[count].annotations = annotations
         return spiketrains
 
+
     def preprocess(self, spiketrain_list, max_subsamplesize=None,
                    align_to_0=True, **kwargs):
         """
@@ -82,12 +99,12 @@ class spiketrain_data(loaded_data, ProducesSpikeTrains):
             spiketrains = self._align_to_zero(spiketrains)
         return spiketrains
 
+
     def produce_spiketrains(self, **kwargs):
         """
         overwrites function in capability class ProduceSpiketrains
         """
-        self.params.update(kwargs)
-        self.spiketrains = self.load(file_path=self.file_path, **self.params)
+        self.spiketrains = self._backend.backend_run()
         if type(self.spiketrains) == list:
             for st in self.spiketrains:
                 if type(st) == neo.core.spiketrain.SpikeTrain:
@@ -95,8 +112,10 @@ class spiketrain_data(loaded_data, ProducesSpikeTrains):
         else:
             raise TypeError('loaded data is not a list of neo.SpikeTrain')
 
+        self.params.update(kwargs)
         self.spiketrains = self.preprocess(self.spiketrains, **self.params)
         return self.spiketrains
+
 
     def show_rasterplot(self, **kwargs):
         return rasterplot(self.spiketrains, **kwargs)

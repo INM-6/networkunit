@@ -1,22 +1,19 @@
-"""Loads NetworkUnit plot classes for NeuronUnit"""
+"""Loads NetworkUnit plot classes"""
 
-import pkgutil
+from .correlation_matrix import correlation_matrix
+from .covar_pdf_ei import covar_pdf_ei
+from .covar_pdf import covar_pdf
+from .eigenvalues import eigenvalues
+from .eigenvector_loads import eigenvector_loads
+from .mu_std_table import mu_std_table
+from .power_spectral_density import power_spectral_density
+from .rasterplot import rasterplot
+from .sample_histogram import sample_histogram
+
+
 import matplotlib.colors as colors
 
 def alpha(color_inst, a):
     if color_inst[0] == '#':
         color_inst = colors.hex2color(color_inst)
     return [el + (1. - el) * (1 - a) for el in color_inst]
-
-
-"""
-NOTE: All test files must have a prefix "plot_" and extension ".py".
-Only these would be loaded.
-"""
-
-__path__ = pkgutil.extend_path(__path__, __name__)
-
-for importer, modname, ispkg in pkgutil.walk_packages(path=__path__, prefix=__name__+'.'):
-    module_type, module_name = str.split(str.split(modname, '.')[-1], '_', 1)
-    if module_type == 'plot':
-        exec("from {} import {}".format(modname, module_name))

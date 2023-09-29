@@ -1,4 +1,4 @@
-"""Loads NeuroUnit score classes for NeuronUnit"""
+"""Loads NetworkUnit score classes"""
 
 import math
 
@@ -62,16 +62,12 @@ def to_precision(x,p):
 
     return "".join(out)
 
-"""
-NOTE: All score files must have a prefix "score_" and extension ".py".
-Only these would be loaded.
-"""
-import pkgutil
-
-__path__ = pkgutil.extend_path(__path__, __name__)
-
-for importer, modname, ispkg in pkgutil.walk_packages(path=__path__, prefix=__name__+'.'):
-    module_type, module_name = str.split(str.split(modname, '.')[-1], '_', 1)
-    if module_type == 'score':
-        exec("from {} import {}".format(modname, module_name))
-
+from .best_effect_size import best_effect_size
+from .effect_size import effect_size
+from .eigenangle import eigenangle
+from .kl_divergence import kl_divergence
+from .ks_distance import ks_distance
+from .levene_score import levene_score
+from .mwu_statistic import mwu_statistic
+from .students_t import students_t
+from .wasserstein_distance import wasserstein_distance

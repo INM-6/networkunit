@@ -93,13 +93,13 @@ best_effect_size    Bayesian estimation effect size     standardized mean
 Overview of model classes
 -------------------------
 
-===================     ===================     ===============     ==================================
-Model name              Capability              Parent class        Purpose
-===================     ===================     ===============     ==================================
-loaded_data             \-                      sciunit.Model       loading simulated data
-spiketrain_data         ProducesSpikeTrains     simulation_data     loading simulated spiking data
-stochastic_activity     ProducesSpikeTrains     sciunit.Model       generating stochastic spiking data
-===================     ===================     ===============     ==================================
+===================     ===================     ===============        ==================================
+Model name              Capability              Parent class           Purpose
+===================     ===================     ===============        ==================================
+loaded_spiketrains      ProducesSpikeTrains     sciunit.RunnableModel  loading simulated spiking data
+stochastic_activity     ProducesSpikeTrains     sciunit.RunnableModel  generating stochastic spiking data
+nest_simulation         ProducesSpikeTrains     sciunit.RunnableModel  template for NEST models
+===================     ===================     ===============        ==================================
 
 Other validation test repositories
 ----------------------------------

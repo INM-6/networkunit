@@ -2,8 +2,9 @@ from elephant.spike_train_correlation import covariance
 from elephant.conversion import BinnedSpikeTrain
 from numpy import triu_indices
 from quantities import ms
-from networkunit.tests.test_two_sample_test import two_sample_test
-from networkunit.capabilities.cap_ProducesSpikeTrains import ProducesSpikeTrains
+from networkunit.tests.two_sample_test import two_sample_test
+from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
+from networkunit.utils import use_cache
 
 
 class covariance_test(two_sample_test):
@@ -12,9 +13,9 @@ class covariance_test(two_sample_test):
     The statistical testing method needs to be set in form of a
     sciunit.Score as score_type.
 
-    Parameters (in dict params):
+    Parameters:
     ----------
-    binsize: quantity, None (default: 2*ms)
+    bin_size: quantity, None (default: 2*ms)
         Size of bins used to calculate the correlation coefficients.
     num_bins: int, None (default: None)
         Number of bins within t_start and t_stop used to calculate
@@ -28,20 +29,14 @@ class covariance_test(two_sample_test):
     """
 
     required_capabilities = (ProducesSpikeTrains, )
+    default_params = {**two_sample_test.default_params,
+                      'bin_size': 2*ms}
 
-    def generate_prediction(self, model, **kwargs):
-        # call the function of the required capability of the model
-        # and pass the parameters of the test class instance in case the
-        covariances = self.get_prediction(model)
-        if covariances is None:
-            if kwargs:
-                self.params.update(kwargs)
-            if 'binsize' not in self.params and 'num_bins' not in self.params:
-                self.params['binsize'] = 2*ms
-            self.spiketrains = model.produce_spiketrains(**self.params)
-            covariances = self.generate_covariances(self.spiketrains,
-                                                    **self.params)
-            self.set_prediction(model, covariances)
+    @use_cache
+    def generate_prediction(self, model):
+        self.spiketrains = model.produce_spiketrains(**self.params)
+        covariances = self.generate_covariances(self.spiketrains,
+                                                **self.params)
         return covariances
 
     def validate_observation(self, observation):
@@ -49,11 +44,11 @@ class covariance_test(two_sample_test):
         pass
 
     def generate_covariances(self, spiketrain_list=None, binary=False,
-                             ** kwargs):
+                             **kwargs):
         """
         Calculates the covariances between all pairs of spike trains.
 
-        Parameters
+        Parameters:
         ----------
         spiketrain_list : list of neo.SpikeTrain (default None)
             If no list is passed the function tries to access the class
@@ -71,14 +66,17 @@ class covariance_test(two_sample_test):
             of spike trains.
         -------
         """
-        def robust_BinnedSpikeTrain(spiketrains, binsize=None, num_bins=None,
-                                    t_start=None, t_stop=None, **add_args):
-            return BinnedSpikeTrain(spiketrains, binsize=binsize,
-                                    num_bins=num_bins, t_start=t_start,
-                                    t_stop=t_stop)
+        if spiketrains is None:
+            if model is None:
+                raise ValueError('generate_cc_matrix needs either '
+                                 'spiketrains or model as input!')
+            spiketrains = model.produce_spiketrains()
         if spiketrain_list is None:
             # assuming the class has the property 'spiketrains' and it
             # contains a list of neo.Spiketrains
+            with filter_valid_params(BinnedSpikeTrain) as _BinnedSpikeTrain:
+                binned_sts = _BinnedSpikeTrain(spiketrains, **self.params)
+
             binned_sts = robust_BinnedSpikeTrain(self.spiketrains, **kwargs)
         else:
             binned_sts = robust_BinnedSpikeTrain(spiketrain_list, **kwargs)
