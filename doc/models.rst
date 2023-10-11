@@ -6,7 +6,8 @@ Overview of models
 loaded_spiketrains
 ===================
 
-.. automodule:: networkunit.models.loaded_spiketrains
+.. autoclass:: networkunit.models.loaded_spiketrains
+
 
 ===================
 stochastic_activity

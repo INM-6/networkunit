@@ -6,7 +6,7 @@ Overview of tests
 two_sample_test
 ===============
 
-.. automodule:: networkunit.tests.two_sample_test
+.. autoclass:: networkunit.tests.two_sample_test
 
 ================
 correlation_test
