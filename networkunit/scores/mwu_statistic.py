@@ -8,12 +8,14 @@ from networkunit.scores import to_precision
 
 
 class mwu_statistic(sciunit.Score):
-    """
+    r"""
         Mann-Whitney-U test
 
-    .math $$ U_i = R_i - \frac{n_i(n_i + 1)}{2}\\ U = min(U_1,U_2) $$
+    .. math::
+        U_i = R_i - \frac{n_i(n_i + 1)}{2}\\
+        U = min(U_1,U_2)
 
-    With the rank sum R and the sample size n_i.
+    With the rank sum R and the sample size :math:`n_i`.
 
     The Mann-Whitney U is a rank statistic which test the null hypothesis
     that a random value of sample 1 is equally likely to be larger or a smaller
