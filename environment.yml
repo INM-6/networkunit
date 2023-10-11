@@ -22,5 +22,5 @@ dependencies:
     - sciunit==0.2.1
     - rdflib==4.2.2
     - odml==1.4.2.1
-    - networkunit==0.1.1
+    - networkunit==0.2.0
     - opencv-python
