@@ -2,8 +2,28 @@
 Installation
 ************
 
+The easiest way to install NetworkUnit is by creating a conda environment, followed by ``pip install networkunit``.
+Below is the explanation of how to proceed with these two steps.
+
+Prerequisites
+-------------
+
+Create new conda environment:
+
+.. code:: bash
+
+    conda create --name networkunit python=3.8
+
+Activate conda environment:
+
+.. code:: bash
+
+    conda activate networkunit
+
 Installation
 ------------
+
+Install NetworkUnit to the currently activated environment:
 
 .. code:: bash
 
