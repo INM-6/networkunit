@@ -1,0 +1,65 @@
+*****************
+Overview of tests
+*****************
+
+===============
+two_sample_test
+===============
+
+.. autoclass:: networkunit.tests.two_sample_test
+
+================
+correlation_test
+================
+
+.. autoclass:: networkunit.tests.correlation_test
+
+=====================
+correlation_dist_test
+=====================
+
+.. autoclass:: networkunit.tests.correlation_dist_test
+
+=======================
+correlation_matrix_test
+=======================
+
+.. autoclass:: networkunit.tests.correlation_matrix_test
+
+===================================
+generalized_correlation_matrix_test
+===================================
+
+.. autoclass:: networkunit.tests.generalized_correlation_matrix_test
+
+===============
+eigenvalue_test
+===============
+
+.. autoclass:: networkunit.tests.eigenvalue_test
+
+===============
+covariance_test
+===============
+
+.. autoclass:: networkunit.tests.covariance_test
+
+================
+firing_rate_test
+================
+
+.. autoclass:: networkunit.tests.firing_rate_test
+
+==================
+isi_variation_test
+==================
+
+.. autoclass:: networkunit.tests.isi_variation_test
+
+============================
+graph_centrality_helperclass
+============================
+
+.. autoclass:: networkunit.tests.graph_centrality_helperclass
+
+

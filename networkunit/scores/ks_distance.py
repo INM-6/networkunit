@@ -9,17 +9,17 @@ from networkunit.scores import to_precision
 
 class ks_distance(sciunit.Score):
     """
-    Kolmogorov-Smirnov-Distance D_KS
+    Kolmogorov-Smirnov-Distance :math:`D_{KS}`
 
-    ..math::
-        $$ D_\mathrm{KS} = \sup | \hat{P}(x) - \hat{Q}(x) | $$
+    .. math::
+        D_\mathrm{KS} = \sup | \hat{P}(x) - \hat{Q}(x) |
 
     The KS-Distance measures the maximal vertical distance of the cumulative
-    distributions $\hat{P}$ and $\hat{Q}$. This measure is a sensitive tool for
+    distributions :math:`\hat{P}` and :math:`\hat{Q}`. This measure is a sensitive tool for
     detecting differences in mean, variance and distribution type.
 
     The null hypothesis that the underlying distributions are identical is
-    rejected when the D_KS statistic is larger than a critical value, or
+    rejected when the :math:`D_{KS}` statistic is larger than a critical value, or
     equivalently when the corresponding p-value is less than the significance
     level.
 

@@ -6,22 +6,22 @@ import sciunit
 
 
 class kl_divergence(sciunit.Score):
-    """
-    Kullback-Leibner Divergence D_KL(P||Q)
+    r"""
+    Kullback-Leibner Divergence :math:`D_{KL}(P||Q)`
 
     Calculates the difference of two sampled distributions P and Q in form of
-    an entropy measure. The D_KL measure is effectively the difference of the
+    an entropy measure. The :math:`D_{KL}` measure is effectively the difference of the
     cross-entropy of the of both distribution P,Q and the entropy of P.
-    D_KL can be interpreted as the amount of information lost when
+    :math:`D_{KL}` can be interpreted as the amount of information lost when
     approximating P by Q.
 
-    . math $$ D\mathrm{KL}(P||Q) =\sum{i} P(i) \log_2 \frac{P(i)}{Q(i)}
-                                 = H(P,Q) - H(P) $$
+    .. math::
+        D_\mathrm{KL}(P||Q) =\sum{i} P(i) \log_2 \frac{P(i)}{Q(i)}= H(P,Q) - H(P)
 
     The returned score is the symmetric version of the kl divergence
 
-    . math $$ D_\mathrm{KL}(P,Q) := \frac{1}{2} \left(D_\mathrm{KL}(P|Q) +
-                                      D_\mathrm{KL}(Q|P)\right)$$
+    .. math::
+        D_\mathrm{KL}(P,Q) := \frac{1}{2} \left(D_\mathrm{KL}(P|Q) + D_\mathrm{KL}(Q|P)\right)
 
     Parameters:
     ----------
