@@ -10,9 +10,7 @@ sphinx:
   builder: html
   configuration: doc/conf.py
 
-#conda:
-#  environment: ./environment-docs.yml
-#
+
 python:
     install:
         - method: pip
