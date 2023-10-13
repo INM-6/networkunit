@@ -12,7 +12,7 @@ Create new conda environment:
 
 .. code:: bash
 
-    conda create --name networkunit python=3.8
+    conda create --name networkunit python=3.11
 
 Activate conda environment:
 

@@ -6,4 +6,4 @@ Examples
 
     View the example notebook for :doc:`general use <./ex_index>`
 
-    View the example notebook for :doc:`joint_test <./joint_test>`
+    .. View the example notebook for :doc:`joint_test <./joint_test>`
