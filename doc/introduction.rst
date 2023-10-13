@@ -2,7 +2,7 @@
 What is NetworkUnit?
 ********************
 
-The NetworkUnit module builds upon the formalized validation scheme of the SciUnit package,
+The NetworkUnit package builds upon the formalized validation scheme of the SciUnit package,
 which enables the validation of *models* against experimental data (or other models) via *tests*.
 A test is matched to the model by *capabilities* and quantitatively evaluated by a *score*.
 The following figure illustrates a typical test design within NetworkUnit.
