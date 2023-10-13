@@ -8,6 +8,9 @@ long_description = open("README.rst").read()
 with open('requirements.txt', 'r') as fp:
     install_requires = fp.read()
 extras_require = {}
+for extra in ['docs']:
+    with open('requirements-{0}.txt'.format(extra)) as fp:
+        extras_require[extra] = fp.read()
 
 setup(
     name="networkunit",
