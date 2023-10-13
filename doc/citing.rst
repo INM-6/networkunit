@@ -16,14 +16,14 @@ A BibTeX entry for LaTeX users is:
 
 .. code-block:: none
 
-    @ARTICLE{10.3389/fninf.2018.00090,
-        AUTHOR={Gutzen, Robin and von Papen, Michael and Trensch, Guido and Quaglio, Pietro and Grün, Sonja and Denker, Michael},
-        TITLE={Reproducible Neural Network Simulations: Statistical Methods for Model Validation on the Level of Network Activity Data},
-        JOURNAL={Frontiers in Neuroinformatics},
-        VOLUME={12},
-        PAGE={90},
-        YEAR={2018},
-        URL={https://www.frontiersin.org/articles/10.3389/fninf.2018.00090},
-        DOI={10.3389/fninf.2018.00090},
-        ISSN={1662-5196},
+    @article{networkunit18,
+        author={Gutzen, Robin and von Papen, Michael and Trensch, Guido and Quaglio, Pietro and Grün, Sonja and Denker, Michael},
+        title={Reproducible Neural Network Simulations: Statistical Methods for Model Validation on the Level of Network Activity Data},
+        journal={Frontiers in Neuroinformatics},
+        volume={12},
+        page={90},
+        year={2018},
+        url={https://www.frontiersin.org/articles/10.3389/fninf.2018.00090},
+        doi={10.3389/fninf.2018.00090},
+        issn={1662-5196},
     }
