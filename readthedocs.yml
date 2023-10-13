@@ -13,9 +13,9 @@ sphinx:
 #conda:
 #  environment: ./environment-docs.yml
 #
-#python:
-#    install:
-#        - method: pip
-#          path: .
-#          extra_requirements:
-#              - docs
+python:
+    install:
+        - method: pip
+          path: .
+          extra_requirements:
+              - docs
