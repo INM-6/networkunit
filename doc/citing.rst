@@ -4,7 +4,7 @@ Citing NetworkUnit
 
 To refer to the NetworkUnit software package in publications, please use:
 
-NetworkUnit(`doi:10.3389/fninf.2018.00090 <https://doi.org/10.3389/fninf.2018.00090>`_)
+NetworkUnit (`RRID:SCR_016543 <https://scicrunch.org/resolver/RRID:SCR_016543>`_)
 
 To cite NetworkUnit, please use:
 
