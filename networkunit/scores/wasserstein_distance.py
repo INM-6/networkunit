@@ -7,26 +7,26 @@ from cv2 import EMD, DIST_L2
 
 
 class wasserstein_distance(sciunit.Score):
+    """
+    Calculates the Wasserstein distance (Earth mover's distance) between
+    two point clouds. Uses the opencv implementation in the backend and can
+    handle any dimensionality. The observation and prediction must have the
+    same dimensionality.
+
+    norm : string
+        Determines normalization of the input data.
+        * If 'obsv', then all data are normalized based on the observation
+        mean and standard deviation (default)
+        * If 'pred', then the prediction mean and std are used
+        * If 'both', then the observation and prediction are concatenated
+        and the mean and std of the full array are used for normalization.
+    """
     score = np.nan
     _best = 0.
     _worst = np.nan_to_num(np.inf)
 
     @classmethod
     def compute(self, observation, prediction, norm='both', **kwargs):
-        """
-        Calculates the Wasserstein distance (Earth mover's distance) between
-        two point clouds. Uses the opencv implementation in the backend and can
-        handle any dimensionality. The observation and prediction must have the
-        same dimensionality.
-
-        norm : string
-            Determines normalization of the input data.
-            * If 'obsv', then all data are normalized based on the observation
-            mean and standard deviation (default)
-            * If 'pred', then the prediction mean and std are used
-            * If 'both', then the observation and prediction are concatenated
-            and the mean and std of the full array are used for normalization.
-        """
         if type(observation) == list:
             observation = np.array(observation)
         if type(prediction) == list:

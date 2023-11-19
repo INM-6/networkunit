@@ -32,12 +32,6 @@ avg_std_correlation_test
 
 .. autoclass:: networkunit.tests.avg_std_correlation_test
 
-===================================
-generalized_correlation_matrix_test
-===================================
-
-.. autoclass:: networkunit.tests.generalized_correlation_matrix_test
-
 ===============
 eigenvalue_test
 ===============

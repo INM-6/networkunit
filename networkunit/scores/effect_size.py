@@ -4,6 +4,9 @@ import sciunit
 import matplotlib.pyplot as plt
 
 class effect_size(sciunit.Score):
+    """
+    Calculates the effect size between samples.
+    """
 
     score = np.nan
 
