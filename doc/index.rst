@@ -11,7 +11,7 @@ A SciUnit_ library for validation testing of spiking networks.
    :target: https://mybinder.org/v2/gh/INM-6/NetworkUnit/master?filepath=examples%2Findex.ipynb
    :alt: Binder Link
 
-Github_
+Project hosted on Github_.
 
 .. role:: py(code)
    :language: python
@@ -28,6 +28,7 @@ Table of contents
    scores
    models
    examples
+   releases
    authors
    citing
 

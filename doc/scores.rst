@@ -43,3 +43,15 @@ best_effect_size
 ================
 
 .. autoclass:: networkunit.scores.best_effect_size
+
+====================
+wasserstein_distance
+====================
+
+.. autoclass:: networkunit.scores.wasserstein_distance
+
+==========
+eigenangle
+==========
+
+.. autoclass:: networkunit.scores.eigenangle
