@@ -75,9 +75,9 @@ graph_centrality_helperclass            sciunit.Test                graph centra
 
 Inheritance order in case of multiple inheritance for derived test classes:
 
-.. code:: python
+.. code:: Python
 
-    class new_test(sciunit.TestM2M, graph_centrality_helperclass, <base_test_class>)
+   class new_test(sciunit.TestM2M, graph_centrality_helperclass, <base_test_class>)
 
 
 Overview of scores
@@ -98,13 +98,13 @@ best_effect_size    Bayesian estimation effect size     standardized mean
 Overview of model classes
 -------------------------
 
-===================     ===================     ===============        ==================================
+===================     ===================     =====================  ==================================
 Model name              Capability              Parent class           Purpose
-===================     ===================     ===============        ==================================
+===================     ===================     =====================  ==================================
 loaded_spiketrains      ProducesSpikeTrains     sciunit.RunnableModel  loading simulated spiking data
 stochastic_activity     ProducesSpikeTrains     sciunit.RunnableModel  generating stochastic spiking data
 nest_simulation         ProducesSpikeTrains     sciunit.RunnableModel  template for NEST models
-===================     ===================     ===============        ==================================
+===================     ===================     =====================  ==================================
 
 Other validation test repositories
 ----------------------------------

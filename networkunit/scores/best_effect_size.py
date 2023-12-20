@@ -1,3 +1,7 @@
+"""
+The Baysian Estimation Effect Size  is introduced in Kruschke, J. (2012)
+doi:10.1037/a0029146
+"""
 from __future__ import division
 import numpy as np
 import sciunit
@@ -16,8 +20,6 @@ except:
 class best_effect_size(sciunit.Score):
     """
     Baysian Estimation Effect Size according to  Kruschke, J. (2012)
-    'Bayesian estimation supersedes the t-test',
-    Journal of Experimental Psychology
 
     Requires the test parameters:
         mcmc_iter : int (default 110000)

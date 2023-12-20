@@ -1,6 +1,9 @@
+"""
+The Eigenangle Test is introduced in Gutzen, Grün, Denker (2023) 
+doi:10.1016/j.biosystems.2022.104813
+"""
 import numpy as np
 from scipy.linalg import eigh
-from scipy.special import binom
 from scipy.integrate import quad
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -18,7 +21,7 @@ class eigenangle(sciunit.Score):
     similar non-random elements by calculating the significance of the angles
     between the corresponding eigenvectors.
     Either the bin_size or the number of bins must be provides to perform the
-    signficnace test.
+    significance test.
     """
     score = np.nan
 

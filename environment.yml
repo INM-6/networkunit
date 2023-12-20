@@ -1,9 +1,7 @@
 name: networkunit_env
 channels:
-  - damianavila82
   - defaults
 dependencies:
-  - rise
   - pip
   - pip:
     - jupyter==1.0.0
