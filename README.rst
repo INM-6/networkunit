@@ -98,8 +98,8 @@ mwu_statistic           Mann-Whitney U test                 rank sum
 levene_score            Levene's test                       sample variance
 effect_size             Effect size                         standardized mean
 best_effect_size        Bayesian estimation effect size     standardized mean
-wasserstein_distance    Wasserstein Distance                multivaraite score distance
-eigenangle              Eigenangle Test                     eigenangles
+wasserstein_distance    Wasserstein Distance                multivariate score distance
+eigenangle              Eigenangle Test                     eigenangle similarity
 ====================    ===============================     ===========================
 
 Overview of model classes
