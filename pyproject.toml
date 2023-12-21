@@ -9,9 +9,7 @@ authors = [
 
 requires-python = ">=3.8"
 dependencies = [
-    "docopt-ng",
-    "ruamel.yaml",
-    "nbconvert == 7.12.0",
+    "nbconvert == 7.12.0", #remove when updating sciunit version
     "sciunit == 0.2.7",
     "elephant >= 0.7.0",
     "neo >= 0.9",
