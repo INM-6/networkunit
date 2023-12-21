@@ -44,7 +44,7 @@ class timescale_test(two_sample_test):
 
     def calc_timescales(self, spiketrain):
         if len(spiketrain.times) >= self.params['min_spikecount']:
-            bst = BinnedSpikeTrain(st, bin_size=self.params['bin_size'])
+            bst = BinnedSpikeTrain(spiketrain, bin_size=self.params['bin_size'])
             tau = timescale(bst, self.params['tau_max'])
             tau = tau.rescale('ms').magnitude
         else:

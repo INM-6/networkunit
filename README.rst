@@ -58,53 +58,60 @@ accessible via the launch-binder button at the top.
 
 Overview of tests
 -----------------
-===================================     =======================     ===================================================
+===================================     =======================     ======================================================
 Class name                              Parent class                Prediction measure
-===================================     =======================     ===================================================
+===================================     =======================     ======================================================
 two_sample_test                         \-                          \-
+firing_rate_test                        two_sample_test             firing rates
+isi_variation_test                      two_sample_test             inter-spike-intervals, their CV, CV2, LV, or LVR
+covariance_test                         two_sample_test             covariances
 correlation_test                        two_sample_test             \-
 correlation_dist_test                   correlation_test            correlation coefficients
 correlation_matrix_test                 correlation_test            correlation coefficient matrix
+avg_std_correlation_test                correlation_test            avg or std of correlation coefficients
 generalized_correlation_matrix_test     correlation_matrix_test     matrix of derived cross-correlation measures
 eigenvalue_test                         correlation_test            eigenvalues of the correlation coefficient matrix
-covariance_test                         two_sample_test             covariances
-firing_rate_test                        two_sample_test             firing rates
-isi_variation_test                      two_sample_test             inter-spike-intervals, their CV, or LV
+power_spectrum_test                     two_sample_test             power spectral density values
+freqband_power_test                     power_spectrum_test         power spectral density values in frequency band
+timescale_test                          two_sample_test             spike train timescale
 graph_centrality_helperclass            sciunit.Test                graph centrality measures of given adjacency matrix
-===================================     =======================     ===================================================
+joint_test                              two_sample_test             joining other test classes for multivariate evaluation
+===================================     =======================     ======================================================
 
 Inheritance order in case of multiple inheritance for derived test classes:
 
-.. code:: python
+.. code:: Python
 
-    class new_test(sciunit.TestM2M, graph_centrality_helperclass, <base_test_class>)
+   class new_test(sciunit.TestM2M, graph_centrality_helperclass, <base_test_class>)
 
 
 Overview of scores
 ------------------
 
-================    ===============================     ===================
-Class name          Test name                           Comparison measure
-================    ===============================     ===================
-students_t          Student't test                      sample mean
-ks_distance         Kolmogorov-Smirnov test             sample distribution
-kl_divergence       Kullback-Leibler divergence         sample entropy
-mwu_statistic       Mann-Whitney U test                 rank sum
-levene_score        Levene's test                       sample variance
-effect_size         Effect size                         standardized mean
-best_effect_size    Bayesian estimation effect size     standardized mean
-================    ===============================     ===================
+====================    ===============================     ===========================
+Class name              Test name                           Comparison measure
+====================    ===============================     ===========================
+students_t              Student't test                      sample mean
+ks_distance             Kolmogorov-Smirnov test             sample distribution
+kl_divergence           Kullback-Leibler divergence         sample entropy
+mwu_statistic           Mann-Whitney U test                 rank sum
+levene_score            Levene's test                       sample variance
+effect_size             Effect size                         standardized mean
+best_effect_size        Bayesian estimation effect size     standardized mean
+wasserstein_distance    Wasserstein Distance                multivariate score distance
+eigenangle              Eigenangle Test                     eigenangle similarity
+====================    ===============================     ===========================
 
 Overview of model classes
 -------------------------
 
-===================     ===================     ===============        ==================================
+===================     ===================     =====================  ==================================
 Model name              Capability              Parent class           Purpose
-===================     ===================     ===============        ==================================
+===================     ===================     =====================  ==================================
 loaded_spiketrains      ProducesSpikeTrains     sciunit.RunnableModel  loading simulated spiking data
 stochastic_activity     ProducesSpikeTrains     sciunit.RunnableModel  generating stochastic spiking data
 nest_simulation         ProducesSpikeTrains     sciunit.RunnableModel  template for NEST models
-===================     ===================     ===============        ==================================
+===================     ===================     =====================  ==================================
 
 Other validation test repositories
 ----------------------------------
