@@ -87,6 +87,7 @@ class stochastic_activity(RunnableModel, ProducesSpikeTrains):
                                                   backend=backend,
                                                   attrs=attrs,
                                                   **params)
+        self.__dict__.update(self.params)
 
     def _check_params(self):
         if not type(self.correlations) == list:
@@ -142,8 +143,8 @@ class stochastic_activity(RunnableModel, ProducesSpikeTrains):
             # ToDo: background generation without cpp
         else:
             spiketrains[sum(self.assembly_sizes):] \
-                = np.array([HPP(rate=self.rate, t_start=self.t_start, t_stop=self.t_stop)
-                            for _ in range(self.size - sum(self.assembly_sizes))])
+                = [HPP(rate=self.rate, t_start=self.t_start, t_stop=self.t_stop)
+                            for _ in range(self.size - sum(self.assembly_sizes))]
 
         if self.shuffle:
             if self.shuffle_seed is None:

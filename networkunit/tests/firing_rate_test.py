@@ -1,3 +1,4 @@
+import numpy as np
 from networkunit.tests.two_sample_test import two_sample_test
 from networkunit.capabilities.ProducesSpikeTrains import ProducesSpikeTrains
 from elephant.statistics import mean_firing_rate
@@ -23,4 +24,4 @@ class firing_rate_test(two_sample_test):
         with parallelize(mean_firing_rate_Hz, self) as parallel_mean_firing_rate_Hz:
             rates = parallel_mean_firing_rate_Hz(spiketrains)
 
-        return rates
+        return np.array(rates)

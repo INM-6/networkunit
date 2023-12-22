@@ -43,27 +43,26 @@ class loaded_spiketrains(RunnableModel, ProducesSpikeTrains):
 
     def load(self):
         """
-        Loads spiketrains from a .nix file in the neo data format.
+        To be overwritten in child class.
 
+        Loads spiketrains from file in the neo data format.
+        
         Returns :
             List of neo.SpikeTrains
-         """
-        file_path = self.params['file_path']
-        if file_path is None:
-            raise ValueError('"file_path" parameter is not set!')
-        if not file_path.endswith('.nix'):
-            raise IOError('file must be in .NIX format')
+        """
+        try:
+            file_path = self.params['file_path']
+            if file_path is None:
+                raise ValueError('"file_path" parameter is not set!')
 
-        if client is None:
-            with neo.NixIO(file_path) as nio:
-                block = nio.read_block()
-        else:
-            store_path = './' + file_path.split('/')[-1]
-            client.download_file(file_path, store_path)
-            with neo.NixIO(store_path) as nio:
+            with neo.io.get_io(str(file_path)) as nio:
                 block = nio.read_block()
 
-        spiketrains = block.list_children_by_class(SpikeTrain)
+            spiketrains = block.list_children_by_class(SpikeTrain)
+    
+        except Exception as e:
+            raise NotImplementedError("")
+        
         return spiketrains
 
 

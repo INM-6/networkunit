@@ -1,0 +1,4 @@
+# Include requirements
+include README.rst
+include LICENSE.txt
+include AUTHORS.txt

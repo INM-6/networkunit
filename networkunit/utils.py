@@ -4,7 +4,7 @@ from elephant.parallel import SingleProcess
 
 def use_cache(original_function=None, cache_key_param=None):
     """
-    Decorator in prarticular for the `generate_prediction()` function of the tests, handles
+    Decorator in particular for the `generate_prediction()` function of the tests, handles
     cached prediction loading, parameter update and prediction saving.
     Optionally, a hash key can be passed to the decorator as name for the cache,
     e.g. for using a shared cache for redundant calculations on the same model
