@@ -6,14 +6,8 @@ A SciUnit_ library for validation testing of spiking networks.
 
 .. _SciUnit: https://github.com/scidash/sciunit
 
-
-
 .. image:: https://readthedocs.org/projects/networkunit/badge/?version=latest
     :target: https://networkunit.readthedocs.io/en/latest/?badge=latest
-
-.. image:: https://mybinder.org/badge.svg
-   :target: https://mybinder.org/v2/gh/INM-6/NetworkUnit/master?filepath=examples%2Findex.ipynb
-   :alt: Binder Link
 
 .. role:: py(code)
    :language: python
