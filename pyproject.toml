@@ -10,7 +10,7 @@ authors = [
 requires-python = ">=3.8"
 dependencies = [
     "nbconvert == 7.12.0", #remove when updating sciunit version
-    "sciunit == 0.2.7",
+    "sciunit >= 0.2.7",
     "elephant >= 0.7.0",
     "neo >= 0.9",
     "networkx >= 2.1",
