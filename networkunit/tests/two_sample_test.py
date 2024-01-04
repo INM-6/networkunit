@@ -4,6 +4,7 @@ from uuid import uuid4
 from networkunit.plots.sample_histogram import sample_histogram
 from networkunit.utils import use_cache
 from elephant.parallel import SingleProcess
+sns.set_palette('colorblind')
 
 
 class two_sample_test(sciunit.Test):
@@ -73,37 +74,31 @@ class two_sample_test(sciunit.Test):
         names = []
         if palette is None:
             palette = []
-            fill_palette = True
-        else:
-            fill_palette = False
         if self.observation is not None:
             samples += [self.observation]
             if hasattr(self, 'observation_model'):
                 names += [self.observation_model.name]
             else:
                 names += ['observation']
-            if fill_palette:
-                try:
-                    palette = palette + [self.observation_params['color']]
-                except:
-                    palette = palette + [sns.color_palette()[0]]
+            try:
+                palette = palette + [self.observation_params['color']]
+            except:
+                pass
         if model1 is not None:
             samples += [self.generate_prediction(model1)]
             names += [model1.name]
-            if fill_palette:
-                try:
-                    palette = palette + [model1.params['color']]
-                except:
-                    palette = palette + [sns.color_palette()[len(samples)-1]]
+            try:
+                palette = palette + [model1.params['color']]
+            except:
+                pass
         if model2 is not None:
             samples += [self.generate_prediction(model2)]
             names += [model2.name]
-            if fill_palette:
-                try:
-                    palette = palette + [model2.params['color']]
-                except:
-                    palette = palette + [sns.color_palette()[len(samples)-2]]
-
+            try:
+                palette = palette + [model2.params['color']]
+            except:
+                pass
+        palette += sns.color_palette()
         return samples, palette, names
 
     def visualize_samples(self, model1=None, model2=None, ax=None, bins=100,

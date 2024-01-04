@@ -9,7 +9,7 @@ def sample_histogram(sample1, sample2=None, ax=None, bins=100, palette=None,
     if ax is None:
         fig, ax = plt.subplots()
     if palette is None:
-        palette = [sns.color_palette()[0], sns.color_palette()[1]]
+       palette = sns.color_palette()
     if sample2 is None:
         P, edges1 = np.histogram(sample1, bins=bins, density=density)
     else:
