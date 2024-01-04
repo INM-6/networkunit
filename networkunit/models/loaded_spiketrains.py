@@ -58,7 +58,7 @@ class loaded_spiketrains(RunnableModel, ProducesSpikeTrains):
             with neo.io.get_io(str(file_path)) as nio:
                 block = nio.read_block()
 
-            spiketrains = block.list_children_by_class(SpikeTrain)
+            spiketrains = block.list_children_by_class(neo.SpikeTrain)
     
         except Exception as e:
             raise NotImplementedError("")
