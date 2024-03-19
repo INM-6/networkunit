@@ -94,6 +94,7 @@ effect_size             Effect size                         standardized mean
 best_effect_size        Bayesian estimation effect size     standardized mean
 wasserstein_distance    Wasserstein Distance                multivariate score distance
 eigenangle              Eigenangle Test                     eigenangle similarity
+singularangle           Singular Angle Similarity Score     singular angle similarity
 ====================    ===============================     ===========================
 
 Overview of model classes
