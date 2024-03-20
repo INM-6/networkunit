@@ -1,5 +1,5 @@
 """
-The Singular Angle Similarity (SAS) Score is introduced in Albers et al. (2024)
+The Singular Angle Similarity (SAS) Score is introduced in Albers, Kurth et al. (2024)
 doi: doi.org/10.5281/zenodo.10680478
 https://github.com/INM-6/SAS
 """
